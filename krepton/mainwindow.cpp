@@ -51,6 +51,7 @@
 #include "gameeditor.h"
 #include "saveepisodedialog.h"
 #include "sounds.h"
+#include "importwizard.h"
 
 #include "mainwindow.h"
 
@@ -811,7 +812,14 @@ void MainWindow::slotRemove()
 void MainWindow::slotImport()
 {
 	kdDebug(0) << k_funcinfo << endl;
-	KMessageBox::sorry(this,"This option is not implemented yet.\nSee the TODO file for more information.");
+        ImportWizard wiz("Import Wizard",this);
+        if (wiz.exec())
+	{
+		QString newEpisodeName = wiz.newEpisodeToLoad();
+		if (newEpisodeName.isNull()) return;
+		if (!queryClose()) return;
+		loadGame(newEpisodeName);
+	}
 }
 
 
