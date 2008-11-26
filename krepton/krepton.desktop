@@ -1,0 +1,11 @@
+# KDE Config File  
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Exec=krepton -caption "%c" %i %m
+Icon=krepton
+DocPath=krepton/index.html
+GenericName=Arcade/Strategy Game
+Terminal=0
+Name=KRepton
+Categories=Qt;KDE;Game;StrategyGame;

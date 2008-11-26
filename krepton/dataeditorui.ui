@@ -1,0 +1,322 @@
+<!DOCTYPE UI><UI version="3.1" stdsetdef="1">
+<class>EditorWidget</class>
+<widget class="QWidget">
+    <property name="name">
+        <cstring>EditorWidget</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>410</width>
+            <height>420</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Edit Episode</string>
+    </property>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>transportGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>210</y>
+                <width>391</width>
+                <height>150</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>Tr&amp;ansporters</string>
+        </property>
+        <widget class="KListBox">
+            <property name="name">
+                <cstring>transportListBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>131</width>
+                    <height>100</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>removetransportPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>40</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Re&amp;move</string>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>changetransportPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>180</x>
+                    <y>90</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Change...</string>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>newtransportPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>180</x>
+                    <y>41</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>N&amp;ew...</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="QGroupBox">
+        <property name="name">
+            <cstring>levelsGroupBox</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>10</x>
+                <y>10</y>
+                <width>390</width>
+                <height>190</height>
+            </rect>
+        </property>
+        <property name="title">
+            <string>&amp;Levels</string>
+        </property>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>timeLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>10</x>
+                    <y>150</y>
+                    <width>70</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Time limit:</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>timeSpinBox</cstring>
+            </property>
+        </widget>
+        <widget class="KLineEdit">
+            <property name="name">
+                <cstring>passwordLineEdit</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>240</x>
+                    <y>150</y>
+                    <width>120</width>
+                    <height>22</height>
+                </rect>
+            </property>
+            <property name="maxLength">
+                <number>20</number>
+            </property>
+        </widget>
+        <widget class="QLabel">
+            <property name="name">
+                <cstring>passwordLabel</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>150</y>
+                    <width>70</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Password:</string>
+            </property>
+            <property name="alignment">
+                <set>AlignVCenter|AlignRight</set>
+            </property>
+            <property name="buddy" stdset="0">
+                <cstring>passwordLineEdit</cstring>
+            </property>
+        </widget>
+        <widget class="KListBox">
+            <property name="name">
+                <cstring>mapsListBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>20</x>
+                    <y>30</y>
+                    <width>131</width>
+                    <height>100</height>
+                </rect>
+            </property>
+        </widget>
+        <widget class="KIntSpinBox">
+            <property name="name">
+                <cstring>timeSpinBox</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>90</x>
+                    <y>150</y>
+                    <width>51</width>
+                    <height>21</height>
+                </rect>
+            </property>
+            <property name="maxValue">
+                <number>999</number>
+            </property>
+            <property name="minValue">
+                <number>30</number>
+            </property>
+            <property name="lineStep">
+                <number>10</number>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>leveldownPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>90</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Move &amp;Down</string>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>levelupPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>180</x>
+                    <y>90</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>Move &amp;Up</string>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>newlevelPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>180</x>
+                    <y>40</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;New...</string>
+            </property>
+        </widget>
+        <widget class="KPushButton">
+            <property name="name">
+                <cstring>removelevelPushButton</cstring>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>280</x>
+                    <y>40</y>
+                    <width>80</width>
+                    <height>25</height>
+                </rect>
+            </property>
+            <property name="text">
+                <string>&amp;Remove</string>
+            </property>
+        </widget>
+    </widget>
+    <widget class="KPushButton">
+        <property name="name">
+            <cstring>checkPushButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>40</x>
+                <y>380</y>
+                <width>130</width>
+                <height>25</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>Check Consistenc&amp;y</string>
+        </property>
+    </widget>
+    <widget class="KPushButton">
+        <property name="name">
+            <cstring>closePushButton</cstring>
+        </property>
+        <property name="geometry">
+            <rect>
+                <x>270</x>
+                <y>377</y>
+                <width>100</width>
+                <height>30</height>
+            </rect>
+        </property>
+        <property name="text">
+            <string>&amp;Close</string>
+        </property>
+        <property name="default">
+            <bool>true</bool>
+        </property>
+    </widget>
+</widget>
+<layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>klistbox.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>klistbox.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+    <includehint>kpushbutton.h</includehint>
+</includehints>
+</UI>

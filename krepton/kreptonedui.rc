@@ -1,0 +1,26 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="kreptoned" version="0.1">
+<MenuBar>
+  <Menu name="file">
+	 <Separator lineSeparator="true"/>
+	<Action name="file_check"/>
+  </Menu>
+
+  <Menu name="window"><text>&amp;Window</text>
+    <Action name="window_spriteeditor"/>
+    <Action name="window_leveleditor"/>
+    <Action name="window_realign"/>
+  </Menu>
+
+  <Menu name="settings"><text>&amp;Settings</text>
+    <Action name="settings_check"/>
+    <Action name="settings_align"/>
+  </Menu>
+
+  <Menu name="help" noMerge="1"><text>&amp;Help</text>
+    <Action name="help_whats_this"/>
+  </Menu>
+
+</MenuBar>
+</kpartgui>
+
