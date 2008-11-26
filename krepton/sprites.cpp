@@ -50,6 +50,28 @@ int Sprites::sprite_width = Sprites::base_width;
 int Sprites::sprite_height = Sprites::base_height;
 bool Sprites::magnificationset = false;
 
+
+Sprites::Sprites()					// create as blank
+{
+	kdDebug(0) << k_funcinfo << endl;
+
+	for (int y = 0; y<ynum; ++y)
+	{
+		for (int x = 0; x<xnum; ++x)
+		{
+			int i = y*xnum + x; 
+			QPixmap px(base_width,base_height);
+			rawsprites[i] = px;
+			edited[i] = true;		// force update first time
+		}
+	}
+
+	this->update();
+	status = QString::null;				// sprites now OK
+}
+
+
+
 Sprites::Sprites(const Episode *e)			// load from episode
 {
 	kdDebug(0) << k_funcinfo << "for '" << e->getName() << "'" << endl;
@@ -97,6 +119,8 @@ Sprites::Sprites(const Episode *e)			// load from episode
 	this->update();
 	status = QString::null;				// sprites now OK
 }
+
+
 
 
 Sprites::Sprites(const Sprites &s)			// copy constructor
@@ -215,7 +239,7 @@ void Sprites::setMagnification(Sprites::Magnification mag)
 
 void Sprites::setPixel(Obj::Type obj,int x,int y,QColor colour)
 {
-	kdDebug(0) << k_funcinfo << "x=" << x << " y=" << y << " c=" << endl;
+	//kdDebug(0) << k_funcinfo << "obj " << obj << " x=" << x << " y=" << y << " c=" << QString::number(colour.rgb(),16) << endl;
 
 	QPainter p;
 
