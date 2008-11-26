@@ -138,9 +138,9 @@ default:			;			// Avoid warning
 		const int y = m->ypos;
 
 		if (!isempty(x-1,y) && isempty(x,y-1)) m->orientation = Orientation::North;
+		else if (!isempty(x,y+1) && isempty(x-1,y)) m->orientation = Orientation::West;
 		else if (!isempty(x,y-1) && isempty(x+1,y)) m->orientation = Orientation::East;	
 		else if (!isempty(x+1,y) && isempty(x,y+1)) m->orientation = Orientation::South;
-		else if (!isempty(x,y+1) && isempty(x-1,y)) m->orientation = Orientation::West;
 	}
 
 	kdDebug(0) << k_funcinfo << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds << endl;
