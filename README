@@ -1,0 +1,70 @@
+README file for KRepton version 4.0
+===================================
+
+This is an update of the version 3.0 applications, most notably to
+combine the game player and editor into a single application.  See the
+ChangeLog file for more detailed history information, and the TODO
+file for possible future development and ideas.
+
+Have fun...
+
+Jonathan Marten
+jjm@keelhaul.demon.co.uk
+
+
+
+README file for KRepton version 3.0
+===================================
+
+This is Sandro Sigala's original KRepton package, updated for KDE 3.0
+or later.  Previous versions, and Sandro's current FX-Repton (using a
+cross-platform toolkit so it is usable under Windows and other OSs as
+well as KDE) are available from his home page at
+http://www.sigala.it/sandro/
+
+An editor application is also available to allow you to create your
+own episodes and sprites.  This should be available from the same
+place as you obtained this KRepton package, under the file name
+'kreptoned-3.0.tar.gz' or similar.
+
+The game and editor applications are copyright (C) the authors (see
+the AUTHORS file within the distribution archives or the "About"
+information in the installed applications for details), and are
+released under the GNU General Public Licence (see the file LICENSE
+within the distribution archives for further information).
+
+The game is installed in much the same way as any other KDE or GNU
+application; you must have the Qt toolkit and KDE 3.0 or later already
+installed, of course.  See the INSTALL file for detailed installation
+instructions.  Once the application (and editor if required) are
+installed, see the application documentation in the KDE Help Centre
+for more information and some useful web links.
+
+
+
+README file for KReptonEd version 3.0
+=====================================
+
+This is the level editor from Sandro Sigala's original KRepton
+package, updated for KDE 3.0 or later.  Previous versions, and
+Sandro's current FX-Repton (using a cross-platform toolkit so it is
+usable under Windows and other OSs as well as KDE) are available from
+his home page at http://www.sigala.it/sandro/
+
+A game application, of course, is available to play the episodes once
+you have created them.  If you don't have this already is should be
+available from the same place as you obtained this KReptonEd package,
+under the file name 'krepton-3.0.tar.gz' or similar.
+
+The editor and game applications are copyright (C) the authors (see
+the AUTHORS file within the distribution archives or the "About"
+information in the installed applications for details), and are
+released under the GNU General Public Licence (see the file LICENSE
+within the distribution archives for further information).
+
+The editor is installed in much the same way as any other KDE or GNU
+application; you must have the Qt toolkit and KDE 3.0 or later already
+installed, of course.  See the INSTALL file for detailed installation
+instructions.  Once the application (and editor if required) are
+installed, see the application documentation in the KDE Help Centre
+for more information and web links.

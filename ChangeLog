@@ -1,0 +1,184 @@
+ChangeLog for KRepton                             -*- mode:text -*-
+=====================
+
+
+Changes from version 3.0.1 to version 4.0:
+-----------------------------------------
+Integrated the separate "Game" and "Editor" applications into a single
+one (and, of course, a single source base and future KDevelop project).
+
+Changed the game selection and playing user interface to a more
+"document"-like model.  A game episode is "loaded" and from then on
+all playing and editing operations apply to that, so allowing a single
+action key to start or restart playing.
+
+Too many changes to mention to the episode file management and the user
+interface as a result of those.
+
+Other enhancements:
+
+Cache pixmaps (in new class 'Pixmaps') to avoid searching for files
+every time.  Centralise sprite management in new class 'Sprites'.
+Converted all graphics from proprietary BMP to unencumbered PNG.
+
+Repton has three lives, as in the original BBC game.  The number of
+lives remaining is shown in the status bar.
+
+Added a "Clear" button for the high score history.
+
+Repton starts to look round if he stands still for too long, as in the
+original BBC game.
+
+Added a "Display Size" option to play the game either as before, or
+half or double the size.  Scaling is handled internally in the
+'Sprites' class.
+
+The editor can now show the transporter routes (very useful for
+verifying that they go to the right place), and the selected
+transporter (for verifying that the intended one is chosen).
+
+Map and sprite editor windows simplified a lot by using higher-level
+Qt classes rather than managing the scroll bars and the object preview
+explicitly.  List of map objects handled in a common class
+'ObjectList'.  Map and sprite coordinate box display handled in a
+common class 'CoordLabel'.
+
+Player and editor 'Map' classes combined into a hierarchy.  Points
+tracking moved from map to parent class to handle multiple levels.
+Playing sounds handled in new class 'Sound'.  Much unnecessary
+repainting of game window optimised.
+
+Episode 'blank' renamed to 'simple' (because it wasn't!), for testing
+and practice.  New, really blank, episode 'blank' added as a base for
+creating new episodes using the editor.
+
+Removed the splash screen.
+
+Report the 'errno' message, wherever possible and appropriate, for
+file operations.
+
+Other bugs fixed:
+
+Set WRepaintNoErase for main game display widget to eliminate flicker.
+
+Editor password field no longer loses focus when typing, when there is
+only one level.
+
+
+Changes from version 3.0 to version 3.0.1:
+----------------------------------------- 
+Fixed geometry setting problem that sometimes left an unpainted strip
+along the bottom of the game window.
+
+Graphical icons used for key and crown in status bar.
+
+Fixed bug which corrupted sprites when saving episode from editor.
+Simple "blank" episode available for starting new one.
+
+
+Game - Changes from version 2.0 to version 3.0:
+---------------------------------------------- 
+Set up as a KDevelop project - this necessitated splitting up the game
+and editor applications into two separate distributions, as currently
+KDevelop doesn't handle building more than one application from one
+source base.
+
+Lots of conversion for for KDE 3 - use its classes whenever available
+rather than the original QT versions, use QT Designer to build the
+dialogues, use the KMainWindow/KAction framework for the menus and key
+shortcuts.  Updated use of some Qt classes (QList<type*> -> QPtrList
+etc).  Update resources searching and audio playing to use the new KDE
+interfaces.
+
+Added an indicator in the status bar to show when the "crown" has been
+taken.
+
+Allowed a rock falling on a broken egg to kill the monster (BBC Repton
+did that, but in original KRepton it just rolled off :-(
+
+Updated the startup splash screen.
+
+Updated the high scores display - now in a column list with sorting.
+The user's Unix login name is filled in as a default.
+
+Cache some bitmaps in the game widget object ('bg' etc) so that the
+resource file search isn't done on every repaint event.
+
+Editor - Changes from version 2.0 to version 3.0:
+------------------------------------------------
+Lots of conversion for for KDE 3 - use its classes whenever available
+rather than the original QT versions, use QT Designer to build the
+dialogues, use the KMainWindow/KAction framework for the menus and key
+shortcuts.  Updated use of some Qt classes (QList -> QPtrList etc).
+Update resources searching to use the new KDE interfaces.
+
+Fixed a number of null-pointer crashes (mostly in event handlers - is
+this a consequence of the now multithreaded Qt?).
+
+Added an application icon.
+
+Editor main window: fade buttons where not allowed or applicable,
+added an option to change an existing transporter.
+
+Renamed "Strict Check"ing to "Consistency Check"ing to better describe
+its function.  Added some more tests - transporter destination should
+be blank (warning only), some rocks are available if eggs are present.
+Split all the checking out into a new class CheckMap in its own source
+files.  Report all of the problems, not just the first one found.
+
+Split out most of the episode locating, loading and saving into a new
+class FileIO, in its own source files.
+
+Warn and ask when exiting the editor, if the episode has been edited
+but not saved.
+
+
+From here on is from the original HTML documentation
+====================================================
+
+Changes from version 1.0 to version 2.0:
+--------------------------------------- 
+Added a powerful editor for creating new episodes (it is possible to
+modify the levels and the sprites).
+ 
+Added the Prelude (E) episode (which is the same as the Prelude
+episode with the sprites repainted).
+ 
+Removed the mask1.bmp and mask2.bmp files from the episodes, because
+can be calculated at run-time.
+ 
+Removed the index file from the episodes; it is now determined at
+run-time.
+ 
+Fixed bug that caused the blip monsters looping forever.
+ 
+
+Changes from version 0.3 to version 1.0:
+---------------------------------------
+Updated the configure files synchronizing with the kexample example of
+KDE SDK package.
+ 
+As a consequence of the above change, the source files are renamed
+from .cc to .cpp.
+ 
+Added sounds (the KDE interface is inadequate, though).
+ 
+Added the High Score board.
+ 
+
+Changes from version 0.2 to version 0.3:
+--------------------------------------- 
+Modified the background image.
+ 
+Added the feature of loading sprites from different episodes.
+ 
+
+Changes from version 0.1 to version 0.2:
+---------------------------------------
+Fixed bug in plants replication code.
+ 
+Removed useless version.h header.
+ 
+Added initialization of random number generator.
+ 
+Cleaned up password dialog.

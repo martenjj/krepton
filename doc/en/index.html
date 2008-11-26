@@ -1,0 +1,360 @@
+<HTML>
+<HEAD>
+   <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=iso-8859-1">
+   <TITLE>KRepton User Manual</TITLE>
+</HEAD>
+<BODY>
+
+<H1>KRepton User Manual</H1>
+
+<P>
+<IMG SRC="screenshot.png" ALIGN="right" HEIGHT="312" WIDTH="394" BORDER="2" HSPACE="10">
+
+KRepton is an implementation of the classic Repton&nbsp;3 game, which
+was originally produced for the BBC Micro and was the third hit Repton
+game for Superior Software.
+
+<P>
+It was originally written by
+<A HREF="http://www.sigala.it/sandro/">Sandro Sigala</A>
+for Linux using the SVGAlib library, and then rewritten entirely using
+the QT and KDE libraries for release 1.0 of KDE.
+
+<P>
+KRepton was converted to KDE&nbsp;3 and this version is currently
+maintained by
+<A HREF="http://www.keelhaul.demon.co.uk/">Jonathan Marten</A>.
+
+<P>
+Sandro is continuing to maintain Repton as
+<A HREF="http://www.sigala.it/sandro/software.html#fxrepton">FX-Repton</A>,
+using the portable
+<A HREF="http://www.fox-toolkit.org/">Fox Toolkit</A>.
+So if you want to run the game on Windows(TM), or any other system
+that doesn't have KDE, then get this version.
+
+
+
+<BR CLEAR="all">
+
+<P>
+<H2>How to Play</H2>
+
+The only keys you need to use to play the game are the four arrow
+keys. The objective is to move Repton around to collect all of the
+diamonds on each level, and then get the bomb before time runs out.
+
+<P>
+Some diamonds are initially visible, and they can be collected easily.
+Some others may be concealed in strongboxes; somewhere on the level
+will be a key which can be taken to open the strongboxes.
+
+<P>
+There may be wandering spirits on the level, either free or initially
+confined in an enclosed space.  They move around always following the
+wall or any other solid object to their left; you should attempt to
+lead them to a cage where they will get trapped and change into a
+diamond, which you can then collect.  You may need to clear passages
+or openings, or block others, by dropping or pushing rocks, but be
+careful to leave yourself a free path to reach the rest of the level!
+
+<P>
+Monster eggs will hatch if they fall, and the monster will pursue you
+remorselessly.  Kill the monster by pushing or dropping a rock onto it.
+
+<P>
+Watch out for replicating plants: these spread slowly through any open
+space and can trap you.  Stop the plants spreading by enclosing them
+with rocks.
+
+<P>
+Search for and collect a golden crown to earn a further points bonus.
+
+<P>
+Some levels may have a short time limit, but if you are lucky there
+will be some time bonus objects which you can collect to gain more
+time.  You can pause the action at any time using the
+<KBD>P</KBD>
+key or by selecting
+<B>Pause</B>
+from the
+<B>Game</B>
+menu.
+
+<P>
+You will die if you touch a spirit, monster, plant or skull, if a rock
+or egg falls on you, or if time runs out.  If you get stuck, then you
+may commit suicide using the
+<KBD>Escape</KBD>
+key or by selecting
+<B>Suicide</B>
+from the
+<B>Game</B>
+menu.
+
+<P>
+In episodes other than Prelude, Toccata and Finale, the objects may
+change.  Their use and the objectives are exactly the same.  Take
+care, in some episodes the objects may not be what they seem!
+
+
+<P>
+<H2>Episodes and Levels</H2>
+
+To select an episode, use
+<B>Select Game</B>
+from the
+<B>File</B>
+menu and choose the episode that you wish to play.  To start at the
+beginning of the first level, select
+<B>Start at first level</B>
+from the
+<B>Game</B>
+menu.
+
+<P>
+You start the game with three lives.  If you are killed or commit
+suicide, and you have some lives remaining, you may restart at the
+same location where you last entered the level or passed through a
+transporter. Unfortunately there may now be no exit from here, so take
+care not to get killed at all costs.  If it is impossible to continue
+then you will have to abandon the game, losing all your remaining
+lives.
+
+<P>
+When you have successfully completed a level, you will be given a
+password for the next.  You can restart the episode from that level,
+at another time, by selecting
+<B>Restart at level</B>
+from the
+<B>Game</B>
+menu and entering the same password.
+
+<P>
+If you lose all of your lives or have to abandon the game, you may
+start again at the beginning of the last level you played by selecting
+<B>Restart last level</B>
+from the
+<B>Game</B>
+menu.
+
+<P>
+For additional variety (or simply to make some levels playable&nbsp;-
+very useful with
+<B>Future</B>
+or
+<B>OAP</B>, for example!),
+you may play the levels from one game using the graphics from another.
+First select the game episode, then select
+<B>Change Sprites</B>
+from the
+<B>Settings</B>
+menu and choose the level from which you want to take the graphics. If
+you want to save a copy of the original episode with the new graphics,
+use
+<B>Save As</B>
+as described below.
+
+
+<P>
+<H2>Editing and Files</H2>
+
+An editor to allow episodes, maps and graphics to be created and
+changed is now integrated into the application.  To edit an episode,
+first load it as if you were intending to play the game and then
+select
+<B>Game Editor</B>
+from the
+<B>Editor</B>
+menu.  The editor window will open showing the general episode
+information.
+
+<P>
+See the
+<A HREF="editor.html">editor documentation</A> for more detailed information on
+editing the levels, maps and graphics.
+
+<P>
+If you have made changes in the editor, you may immediately start
+playing the modified episode using any of the game options as
+above. There is no need to save the episode first. If it is not
+possible to play the episode in its current state (for example, some
+essential objects are missing from any level) you will be informed of
+this and the game will not start.
+
+<P>
+To permanently save the edited episode, use either
+<B>Save</B>
+or
+<B>Save As</B>
+from the
+<B>File</B>
+menu. You cannot directly modify the original episodes distributed
+with the KRepton package, as they are installed in the global
+read-only directory
+<CODE>$KDEDIR/share/</CODE><CODE>apps/krepton/</CODE><CODE>episodes</CODE>.
+So if you want to modify one of these original episodes, use
+<B>Save As</B>
+and enter a new name for the episode.
+It will be stored in your personal directory
+<CODE>$KDEHOME/share/</CODE><CODE>apps/krepton/</CODE><CODE>episodes</CODE>.
+If you have loaded a personal episode that you have already copied or edited,
+use
+<B>Save</B>
+to save it directly back to that location.
+
+<P>
+To delete an edited personal episode that you no longer require, select
+<B>Remove</B>
+from the
+<B>File</B>
+menu and select the episode to be removed. You will only be able to
+select your own personal episodes in this list; the original
+distributed episodes cannot be deleted.
+
+
+<P>
+<H2>Game Settings</H2>
+
+<TABLE WIDTH="100%" BORDER="0" CELLSPACING="1" CELLPADDING="4">
+
+<TR VALIGN="top">
+<TD ALIGN="left">
+You can select the size of the sprites in the game display by choosing
+the required
+<B>Display Size</B>
+from the
+<B>Settings</B>
+menu.  For a change to this setting to take effect, you must exit the
+KRepton application and restart it.
+
+<TD ALIGN="center">
+<IMG SRC="size1.png" HEIGHT="132" WIDTH="132" BORDER="0">
+<EM>Half Size</EM>
+<TD ALIGN="center">
+<IMG SRC="size2.png" HEIGHT="132" WIDTH="132" BORDER="0">
+<EM>Normal Size</EM>
+<TD ALIGN="center">
+<IMG SRC="size3.png" HEIGHT="132" WIDTH="132" BORDER="0">
+<EM>Double Size</EM>
+
+<TR VALIGN="top">
+<TD COLSPAN="4" ALIGN="left">
+<SMALL>
+<U>Note</U>
+that selecting anything other than
+<B>Normal</B>
+here may result in some delay when loading episodes or leaving the editor
+(especially if you have a slow processor).  The sprites are scaled at this
+stage to improve display performance when playing the game.
+</SMALL>
+
+</TABLE>
+<BR CLEAR="all">
+
+The <B>Sounds</B> option in the same menu controls whether sounds are
+played when something happens in the game.
+
+<P>
+See the
+<A HREF="editor.html">editor documentation</A> for information on
+the settings used by the editor.
+
+
+<P>
+<H2>Sources and Links</H2>
+
+You can find KRepton for KDE&nbsp;3 at
+<A HREF="http://www.keelhaul.demon.co.uk/krepton/">www.keelhaul.demon.co.uk</A>,
+along with some other software written by me.  It may also be
+available on
+<A HREF="http://www.kde-apps.org/">kde-apps.org</A>
+and other KDE download sites.
+
+<P>
+The current version of FX-Repton, and earlier versions of KRepton, can
+be found on Sandro Sigala's site at
+<A HREF="http://www.sigala.it/sandro/">www.sigala.it</A>,
+along with other software.
+
+<P>
+For more Repton information and downloads, including games and
+emulators for many other platforms, visit the
+<A HREF="http://www.repton-world.org.uk/ras/">Repton Appreciation Society</A>
+site.
+
+<P>
+Repton will soon live again (on the PC), produced by
+<A HREF="http://www.superiorinteractive.com/">Superior Interactive</A>;
+the name may sound familiar...
+You can also play Repton on Java-enabled mobile phones and some PDAs, courtesy
+of <A HREF="http://www.bluetechnologies.co.uk/masabi/repton/">Masabi</A>.
+
+<P>
+Did you ever wonder about the origins or inspiration of the original
+Repton game?  Whatever the source of that inspiration,
+<A HREF="http://www.solipsistworker.org.uk/ImMDB/repton.html">this probably wasn't it</A>&nbsp;:-)
+
+
+<P>
+<H2>License</H2>
+
+Copyright (c) 1998 Sandro Sigala &lt;sandro@sigala.it&gt;
+<BR>
+Copyright (c) 2003 Jonathan Marten &lt;jjm@keelhaul.demon.co.uk&gt;
+
+<P>
+<U>KRepton&nbsp;3.0</U>
+and later versions are released under the GPL; I have obtained the
+original author's permission for this license change.
+
+<PRE>
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+It is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; see the file COPYING for further details.
+If not, write to the Free Software Foundation, Inc., 59 Temple Place -
+Suite 330, Boston, MA 02111-1307, USA.
+</PRE>
+
+Sandro's original
+<U>version&nbsp;1.0</U>
+was released under a license as follows:
+
+<PRE>
+I release it under an <I>open source code</I> license. If you like this
+program, send me a postcard from your hometown <B>:-)</B>.
+
+        Sandro Sigala
+        Viale De Gasperi, 8
+        25041 Darfo Boario Terme
+        Brescia, Italy
+</PRE>
+
+
+<P>
+<H2>Credits</H2>
+
+<UL>
+<LI>
+Jasper Renow-Clarke &lt;cm5hdjjr@bs41.staffs.ac.uk&gt;
+for the help with the BBC Micro Repton format and for the <B>.rep</B> maps.
+He wrote another Repton clone (for DOS), take a look at <A HREF="http://sol.soc.staffs.ac.uk/cm4bcjs/David/S3/Jasper/repton">this
+address</A>.
+</LI>
+
+<LI>
+George Russell &lt;george.russell@clara.net&gt; for feature suggestions.
+</LI>
+</UL>
+
+</BODY>
+</HTML>

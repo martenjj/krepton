@@ -1,0 +1,19 @@
+#MIN_CONFIG(3)
+
+AM_INIT_AUTOMAKE(krepton,4.0)
+
+dnl CXXFLAGS="$NOOPT_CXXFLAGS" dnl __kdevelop[noopt]__
+dnl CFLAGS="$NOOPT_CFLAGS" dnl __kdevelop[noopt]__
+dnl CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS" dnl __kdevelop[exc]__
+
+AC_C_CONST
+AC_C_INLINE
+AC_FUNC_ERROR_AT_LINE
+AC_PROG_RANLIB
+AC_TYPE_SIZE_T
+
+AC_CHECK_FUNCS([strerror])
+AC_CHECK_HEADERS([errno.h])
+
+AC_SEARCH_LIBS(pow,m,,AC_MSG_ERROR([The 'pow' function is not available]))
+AC_SEARCH_LIBS(sqrt,m,,AC_MSG_ERROR([The 'sqrt' function is not available]))

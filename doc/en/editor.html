@@ -1,0 +1,210 @@
+<HTML>
+<HEAD>
+   <TITLE>KRepton Editor User Manual</TITLE>
+</HEAD>
+<BODY>
+
+<H1>KRepton Editor Manual</H1>
+
+The KRepton Editor can be used to create and amend episodes for the
+KRepton game. It is an integrated part of the
+<A HREF="help:/krepton">KRepton</A> game application.
+
+
+<P>
+<H2>Selecting an episode to edit</H2>
+
+Select the episode to be edited as if you were intending to play the
+game, then select
+<B>Game Editor</B>
+from the
+<B>Editor</B>
+menu.  The editor window will appear showing the general episode
+information.
+
+
+<P>
+<H2>Episode Information</H2>
+
+From the <B>Episode</B> tab you can create, reorder and delete levels.
+The episode name is set when you first save the episode; of course,
+the password for the first level is never requested.  You can also
+change the time limit or the password for an existing level.
+
+<P>
+It is not (yet) possible to change the size of an existing level.
+
+<P>
+Create a transporter by specifying its origin position (which triggers
+the transporter when Repton moves on to it) and the destination
+position (where Repton reappears after transporting).  The map must
+have a transporter sprite at the origin position; the consistency
+check will verify this and tell you if not.
+
+<P>
+When the levels and sprites are to your satisfaction, you can either
+play the game immediately, by selecting an option from the
+<B>Game</B>
+menu, or save the episode using
+<B>Save</B>
+or
+<B>Save As</B>
+from the
+<B>File</B>
+menu.
+
+<P>
+<H2>The Map Editor</H2>
+
+Edit a map by selecting the level in the scrolling list and then
+switching to the <B>Map</B> tab.
+
+<P>
+The level is shown in the large scrolling view, with the current
+coordinates of the mouse pointer; you can use these coordinates as a
+reference when placing transporters.  To place an object, select it in
+the scrolling list of objects (the object graphic will be shown to the
+right of the list) and then click the left mouse button over the map
+to place the object.  Click the right mouse button to delete any
+existing object and place an empty space.
+
+<P>
+<IMG SRC="transp.png" ALIGN="right" HEIGHT="269" WIDTH="239" HSPACE="20">
+There are two display options which can be useful when creating or
+modifying transporters:
+<UL>
+<LI>
+Turning on the
+<B>Transporter Routes</B>
+check&nbsp;box will show the start and end point of each transporter
+route.  This is useful when placing the transporter sprite which must
+be present at the starting point.
+<P>&nbsp;
+<LI>
+Turning on the
+<B>Selected Transporter</B>
+check&nbsp;box and selecting a transporter in the list will show the
+start point of that transporter, marking it with a cross. This can be
+useful in ensuring that the intended transporter to change or delete
+is selected.
+</UL>
+Changes made to transporters in the main editor window will be updated
+and shown here immediately.
+
+
+<P>
+<H2>The Sprite Editor</H2>
+
+Edit the episode's sprites by switching to the <B>Sprites</B> tab.
+
+<P>
+Select the sprite to be modified from the scrolling list, which will
+be previewed at actual size to the right of the list and enlarged in
+the sprite area.  Place coloured pixels using the left and right mouse
+buttons; the colours which each button will place can be selected by
+using the <B>Left</B> and <B>Right</B> buttons below the sprite
+preview.
+
+<P>
+The sprite editor should suffice for simple editing, but it is also
+possible to edit the sprites using any other graphics application.
+The sprites are contained in the <B>sprites.png</B> file (in the
+standard PNG image format) within the episode directory.  For
+advanced sprite editing I suggest using the powerful GIMP (GNU Image
+Manipulation Program), available freely at
+<A HREF="http://www.gimp.org/">www.gimp.org</A> if you do not have it
+installed already.
+
+<P>
+<H2>Consistency Checking</H2>
+
+The consistency check checks the levels for the most common editing
+problems, some of which are merely warnings but others which may make
+the level unplayable.  The check is normally done automatically when
+saving the level (this can be turned off, see
+<A HREF="#options">Editor Options</A>
+below), or the check can be done manually using the
+<B>Check Consistency</B>
+button or the same option in the
+<B>Editor</B>
+menu.
+
+<P>
+The following checks are done for each level in the episode:
+
+<UL>
+<LI>The level password is specified (not blank)</LI>
+<LI>A valid time limit is specified</LI>
+<LI>One and only one Repton (start position) is present</LI>
+<LI>At least one finish level object (in the original
+    episodes, the bomb) is present</LI>
+<LI>For each transporter, their origin and destination coordinates have
+    been entered and a transporter sprite is present at the origin</LI>
+<LI>If cages are present, there must be at least that many spirits
+    to be caught in them</LI>
+<LI>If strongboxes are present, there must be a key to open them</LI>
+<LI>The passwords are unique for all levels in the episode</LI>
+</UL>
+
+<P>
+There are some other conditions which, while not necessarily making
+the level unplayable, may cause problems for the player and so a
+warning will be given:
+
+<UL>
+<LI>The transporter destination should be an empty space, otherwise
+    Repton may die or become stuck when using the transporter</LI>
+<LI>There is no bonus object (in the original
+    episodes, a crown) to be collected</LI>
+<LI>There are more spirits than cages for them to be caught in; it will not
+    be possible to catch all of them</LI>
+<LI>Eggs are present, but there are no rocks available to kill the monsters</LI>
+</UL>
+
+<P>
+<IMG SRC="impossible.png" ALIGN="right" HEIGHT="138" WIDTH="298" BORDER="1" HSPACE="10">
+<SMALL>
+<U>Note</U>
+that the consistency check does not exhaustively test whether the
+level is actually solveable (that would be a far more challenging AI
+problem); for example, it would give no warning for this level:
+</SMALL>
+
+<BR CLEAR="all">
+
+
+<P>
+<H2>Finished!</H2>
+
+When the editing is complete, simply use <B>Close</B> to close the
+editor.  Alternatively, you may start playing the modified episode at
+any time using one of the options from the <B>Game</B> menu.
+
+
+<P>
+<A NAME="options"></A>
+<H2>Editor Options</H2>
+
+There is a <B>Check Consistency Before Saving</B> option on the
+<B>Settings</B> menu.  If this is turned on, the check will be done
+automatically before the episode is saved.  This can be turned off to
+allow partial episodes to be saved while work on them is in progress.
+
+<P>
+<SMALL>
+<U>Note</U>
+that a check is always done before starting to play a level. If the
+check fails for any of the reasons above, it will not be possible to
+start the game; any problems must be fixed first.
+</SMALL>
+
+
+<P>
+<H2>Sources and Links</H2>
+
+See the
+<A HREF="index.html">game documentation</A>
+for further information.
+
+</BODY>
+</HTML>
