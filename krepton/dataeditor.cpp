@@ -37,6 +37,7 @@
 
 #include "krepton.h"
 #include "dataeditor.h"
+#include "dataeditor.moc"
 
 
 DataEditor::DataEditor(QWidget* parent,const char* name)
@@ -123,6 +124,3 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     l->addColSpacing(3,ksh);
     l->addColSpacing(5,ksh);
 }
-
-
-#include "dataeditor.moc"

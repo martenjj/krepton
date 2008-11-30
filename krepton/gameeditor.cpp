@@ -57,6 +57,7 @@
 #include "parentactionmapper.h"
 
 #include "gameeditor.h"
+#include "gameeditor.moc"
 
 
 GameEditor::GameEditor(KXMLGUIClient *parent,const char *name)
