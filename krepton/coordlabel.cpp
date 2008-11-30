@@ -28,6 +28,7 @@
 #include <qlabel.h>
 
 #include "coordlabel.h"
+#include "coordlabel.moc"
 
 
 CoordLabel::CoordLabel(QWidget *parent,const char *name) : QLabel(parent,name)
