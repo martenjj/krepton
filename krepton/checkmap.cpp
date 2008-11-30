@@ -212,7 +212,7 @@ default:				;		// Avoid warnings
 	for (mi.toFirst(); (mm = mi.current())!=NULL; ++mi) pwds.append(mm->password);
 	for (mi.toFirst(),thismap = 1; (mm = mi.current())!=NULL; ++mi,++thismap)
 	{
-		for (const char *s = pwds.at(thismap+1); s!=NULL; s = pwds.next())
+		for (const char *s = pwds.at(thismap); s!=NULL; s = pwds.next())
 		{
 			if (mm->password==s)
 			{
