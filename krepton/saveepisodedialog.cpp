@@ -41,7 +41,7 @@ SaveEpisodeDialog::SaveEpisodeDialog(const QString &title,QWidget *parent,const 
 	setFixedSize(calculateSize(w->size().width(),w->size().height()));
 	adjustSize();
 
-	setButtonOKText(KStdGuiItem::save().text());
+	setButtonOK(KStdGuiItem::save());
 
         connect(w->nameLineEdit,SIGNAL(textChanged(const QString&)),
                 this,SLOT(slotNameChanged(const QString&)));
