@@ -27,6 +27,7 @@
 #include <kapp.h>
 #include <kmessagebox.h>
 #include <kglobal.h>
+#include <kconfig.h>
 #include <kstandarddirs.h>
 
 #include <qbitmap.h>
@@ -42,6 +43,7 @@
 #include "checkmap.h"
 
 #include "gameplayer.h"
+#include "gameplayer.moc"
 
 
 GamePlayer::GamePlayer(QWidget *parent,const char *name)
@@ -94,7 +96,6 @@ const QString GamePlayer::loadSprites(const Episode *e)
 	sprites = new Sprites(e);
 	setCursor(curs);
 
-//	return (sprites->valid());
 	return (sprites->loadStatus());
 }
 
@@ -179,13 +180,13 @@ void GamePlayer::startGame(const Episode *e,int level)
 			return;
 		}
 
-		episodename = e->getName();
+		episodeName = e->getName();
 		lives = 3;
 		points = 0;
 		emit changedGameState(true);
 	}
 
-	kdDebug(0) << k_funcinfo << "name='" << episodename << "' level=" << level << endl;
+	kdDebug(0) << k_funcinfo << "name='" << episodeName << "' level=" << level << endl;
 	if (level>=int(maps.count())) return;
 
 	if (currentmap!=NULL) delete currentmap;
@@ -198,9 +199,11 @@ void GamePlayer::startGame(const Episode *e,int level)
 	havekey = false;
 	havecrown = false;
 
-	QString msg = QString("<qt>Starting level %1 of episode <b>%2</b>").arg(level+1).arg(episodename);
+	QString msg = QString("<qt>Starting level %1 of episode <b>%2</b>").arg(level+1).arg(episodeName);
 	if (level>0) msg += QString("<br>The password is \"<b>%1</b>\"").arg(currentmap->getPassword());
 	KMessageBox::information(this,msg);
+
+        recordLevel(GamePlayer::Started);		// record level as started
 
 	in_game = true;
 	in_pause = false;
@@ -209,6 +212,38 @@ void GamePlayer::startGame(const Episode *e,int level)
 	emit changedFlags(havekey,havecrown);
 	currentmap->startGame();
 }
+
+
+void GamePlayer::recordLevel(GamePlayer::State state)
+{
+	KConfig *conf = KGlobal::config();
+        QString cg = "Episode "+Episode::sanitisedName(episodeName);
+        conf->setGroup(cg);
+        conf->writeEntry(QString::number(currentlevel),state);
+        if (state==GamePlayer::Started) conf->writeEntry("Playing",currentlevel);
+}
+
+
+// each is string of form "status level password"
+QStringList GamePlayer::listLevels(const Episode *e)
+{
+	kdDebug() << k_funcinfo << endl;
+
+	KConfig *conf = KGlobal::config();
+        conf->setGroup("Episode "+Episode::sanitisedName(e->getName()));
+	int playing = conf->readNumEntry("Playing",-1);
+
+	QStringList result;
+	for (int l = 0; l<((int) maps.count()); ++l)
+	{
+		GamePlayer::State state = static_cast<GamePlayer::State>(conf->readNumEntry(QString::number(l),GamePlayer::Unplayed));
+		if (l==playing && state!=GamePlayer::Finished) state = GamePlayer::Playing;
+		result << QString("%1 %2 %3").arg(state).arg(l).arg(maps.at(l)->getPassword());
+        }
+
+	return (result);
+}
+
 
 void GamePlayer::startGamePassword(const Episode *e,const QString& password)
 {
@@ -224,6 +259,7 @@ void GamePlayer::startGamePassword(const Episode *e,const QString& password)
 	KMessageBox::sorry(this,"Unknown password");
 }
 
+
 void GamePlayer::timerEvent(QTimerEvent *e)
 {
 	if (!in_game || in_pause) return;
@@ -232,13 +268,17 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 	{
 		in_game = false;
 		emit changedPlayState(in_game,in_pause);
+
 		if (currentmap->hasDied()) endedGame(currentmap->howDied());
 		else
 		{
-			if ((currentlevel+1)<((int) maps.count()))
+			unsigned int doneLevel = currentlevel+1;
+                        recordLevel(GamePlayer::Finished);
+							// record level as completed
+			if (doneLevel<maps.count())
 			{
 				KMessageBox::information(this,"Level finished!");
-				startGame(NULL,currentlevel+1);
+				startGame(NULL,doneLevel);
 			}
 			else
 			{
@@ -303,14 +343,14 @@ void GamePlayer::paintEvent(QPaintEvent *)
 {
 	if (!in_game)
 	{
-		const QPixmap *bgpix = Pixmaps::find(Pixmaps::Back);
-		if (bgpix->isNull()) return;
+		const QPixmap bgpix = Pixmaps::find(Pixmaps::Back);
+		if (bgpix.isNull()) return;
 
-		for (int y = 0; y<=(height()/bgpix->height()); ++y)
+		for (int y = 0; y<=(height()/bgpix.height()); ++y)
 		{
-			for (int x = 0; x<=(width()/bgpix->width()); ++x)
+			for (int x = 0; x<=(width()/bgpix.width()); ++x)
 			{
-				bitBlt(this,x*(bgpix->width()),y*(bgpix->height()),bgpix);
+				bitBlt(this,x*(bgpix.width()),y*(bgpix.height()),&bgpix);
 			}
 		}
 		return;
@@ -322,9 +362,9 @@ void GamePlayer::paintEvent(QPaintEvent *)
 
 	if (in_pause)
 	{
-		const QPixmap *pausepix = Pixmaps::find(Pixmaps::Pause);
-		p.drawPixmap((width()-pausepix->width())/2, 
-			     (height()-pausepix->height())/2, *pausepix);
+		const QPixmap pausepix = Pixmaps::find(Pixmaps::Pause);
+		p.drawPixmap((width()-pausepix.width())/2, 
+			     (height()-pausepix.height())/2,pausepix);
 	}
 
 	p.end();
@@ -440,9 +480,3 @@ void GamePlayer::suicideAction()
 	if (!in_game) return;
 	endedGame("You killed yourself!",true);
 }
-
-//void GamePlayer::finishAction()
-//{
-//	if (!in_game) return;
-//	endedGame("You gave up!",true);
-//}

@@ -38,6 +38,14 @@ class GamePlayer : public QWidget
 	Q_OBJECT
 
 public:
+	enum State					// level play/finish state
+	{
+		Unplayed = 0,
+		Started = 1,
+		Playing = 2,
+		Finished = 3
+	};
+
 	GamePlayer(QWidget *parent = NULL, const char *name = NULL);
 	~GamePlayer();
 
@@ -49,11 +57,13 @@ public:
 	void setSprites(const Sprites *ss);
 	void setMaps(const MapList ml);
 
+	QStringList listLevels(const Episode *e);
+	void recordLevel(GamePlayer::State state);
+
 	void startGame(const Episode *e,int level = 0);
 	void startGamePassword(const Episode *e,const QString& password);
 	void pauseAction();
 	void suicideAction();
-//	void finishAction();
 
 	int getPoints() const { return (points); }
 	int countLevels() const { return (maps.count()); }
@@ -91,7 +101,7 @@ private:
 	int currentlevel;
 	int timerObjects,timerMonsters,timerEggs;
 	int timerSecs,timerPlants;
-	QString episodename;
+	QString episodeName;
 	bool in_game,in_pause;
 	int lives;
 	int seconds;
