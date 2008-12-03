@@ -24,27 +24,43 @@
 
 #include "config.h"
 
-#include <kapp.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
-#include <kaudioplayer.h>
 
 #include "krepton.h"
 
 #include "sounds.h"
 
+#ifdef SND_PLAYOBJECT
+#include <arts/kartsdispatcher.h>
+#include <arts/kartsserver.h>
+#include <arts/kplayobjectfactory.h>
+#endif
+#ifdef SND_AUDIOPLAYER
+#include <kaudioplayer.h>
+#endif
+#ifdef SND_EXTERNAL
+#include <kprocess.h>
+#endif
 
 static QString sounddir = QString::null;		// directory for sound resources
-
 bool Sound::enabled = false;				// global sound enable flag
 
+#ifdef SND_PLAYOBJECT
+KDE::PlayObject *Sound::playObject = NULL;
+int Sound::lastPlayed = -1;
+#endif
 
 void Sound::playSound(Sound::Type s)
 {
 	if (!enabled) return;
 	kdDebug(0) << k_funcinfo << "type=" << s << endl;
 
-	if (sounddir.isNull()) sounddir = KGlobal::dirs()->findResourceDir("sound","die.wav");
+	if (sounddir.isNull())
+	{
+		sounddir = KGlobal::dirs()->findResourceDir("sound","die.wav");
+		kdDebug(0) << "sounds at " << sounddir << endl;
+	}
 
 	QString name;
 	switch (s)
@@ -61,5 +77,48 @@ case Sound::Broken_Egg:		name = "egg";		break;
 	}
 
 	QString fname = sounddir+name+".wav";
+
+#ifdef SND_PLAYOBJECT
+//	fname = "file://"+fname;
+	if (playObject!=NULL)				// have existing player
+	{
+		if (lastPlayed!=s)			// but not for this sound
+		{
+			delete playObject;
+		}
+		else
+		{
+			if (playObject->state()!=Arts::posPlaying)
+			{
+				playObject->play();
+				return;
+			}
+		}
+	}
+
+	KArtsDispatcher dispatcher;
+	KArtsServer server;
+	KDE::PlayObjectFactory factory(server.server());
+	playObject = factory.createPlayObject(fname,"audio/x-wav",true);
+	if (playObject!=NULL) playObject->play();
+#endif
+
+#ifdef SND_AUDIOPLAYER
 	KAudioPlayer::play(fname);
+#endif
+
+#ifdef SND_EXTERNAL
+	KProcess *proc = new KProcess(NULL);
+#ifdef EXT_ARTSPLAY
+	*proc << "artsplay" << fname;
+#endif
+#ifdef EXT_SOXPLAY
+	*proc << "play" << fname;
+#endif
+#ifdef EXT_ALSAPLAY
+	*proc << "aplay" << "-q" << fname;
+#endif
+	proc->start(KProcess::DontCare);
+#endif
+
 }
