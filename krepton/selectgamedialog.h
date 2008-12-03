@@ -25,39 +25,43 @@
 #ifndef SELECTGAMEDIALOG_H
 #define SELECTGAMEDIALOG_H
 
+
 #include <kdialogbase.h>
 
 #include <qptrlist.h>
 
 #include "episodes.h"
 
-#include "selectgamewidgetui.h"
 
+class QIconView;
 class QIconViewItem;
+
 
 class SelectGameDialog : public KDialogBase
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	SelectGameDialog(const QString title,QWidget *parent = NULL,const char *name = NULL,bool useronly = false);
-	~SelectGameDialog();
-	const Episode *selectedItem();
+    SelectGameDialog(const QString title,QWidget *parent = NULL,const char *name = NULL,bool useronly = false);
+    ~SelectGameDialog();
+
+    const Episode *selectedItem();
 
 public slots:
-	int exec();
+    int exec();
 
 protected slots:
-	void slotSelectionChanged();
-	void slotExecuted(QIconViewItem *item);
-	void timerTick();
+    void slotSelectionChanged();
+    void slotExecuted(QIconViewItem *item);
+    void timerTick();
 
 private:
-	SelectGameUi *u;
+    QIconView *wEpisodeIconView;
 
-	QTimer *icontimer;
-	unsigned int nexticon;
-	EpisodeList *episodes;
+    QTimer *icontimer;
+    unsigned int nexticon;
+    EpisodeList *episodes;
 };
+
 
 #endif							// !SELECTGAMEDIALOG_H
