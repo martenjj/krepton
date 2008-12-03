@@ -57,7 +57,7 @@ int main(int argc,char *argv[])
 			     VERSION,
 			     I18N_NOOP("The Repton game for KDE"),
 			     KAboutData::License_GPL,
-			     "(c) 1998, Sandro Sigala\n(c) 2003-2004, Jonathan Marten",0,
+			     "(c) 1998, Sandro Sigala\n(c) 2003-2008, Jonathan Marten",0,
 			     "http://www.keelhaul.demon.co.uk/krepton/",
 			     "jjm@keelhaul.demon.co.uk");
 
