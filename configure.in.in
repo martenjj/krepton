@@ -19,14 +19,13 @@ AC_MSG_CHECKING([requested sound player option])
 case "${with_sound}"
 in
 ""|kaudioplayer)	snddefs="-DSND_AUDIOPLAYER"				;;
-kdeplayobject)		snddefs="-DSND_PLAYOBJECT";  sndlibs="-lartskde"	;;
+kdeplayobject)		snddefs="-DSND_PLAYOBJECT"; LIB_ARTSKDE="-lartskde"	;;
 artsplay)		snddefs="-DSND_EXTERNAL -DEXT_ARTSPLAY"			;;
 soxplay)		snddefs="-DSND_EXTERNAL -DEXT_SOXPLAY"			;;
 alsaplay)		snddefs="-DSND_EXTERNAL -DEXT_ALSAPLAY"			;;
 *)			snddefs=						;;
 esac
 
-AC_MSG_RESULT([${snddefs} ${sndlibs}])
-AC_SUBST([snddefs])
+AC_MSG_RESULT([${snddefs} ${LIB_ARTSKDE}])
+AC_SUBST([LIB_ARTSKDE])
 CXXFLAGS="$CXXFLAGS $snddefs"
-LDFLAGS="$LDFLAGS $sndlibs"
