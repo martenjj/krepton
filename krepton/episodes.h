@@ -41,7 +41,8 @@ public:
 	const QString getFilePath(const QString file = QString::null) const;
 	bool isGlobal() const { return (global); }
 
-	static const QString savePath(const QString &name);
+	static QString savePath(const QString &name);
+	static QString sanitisedName(const QString &name);
 
 private:
 	QString name;
@@ -56,7 +57,7 @@ public:
 	static EpisodeList *list();
 	const Episode *find(const QString &name);
 	void add(const Episode *e);
-	void remove(const Episode *e);
+	void remove(const Episode *e,bool noDelete = false);
 	bool any() const;
 	bool anyUser() const;
 

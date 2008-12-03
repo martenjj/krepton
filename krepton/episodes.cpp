@@ -174,9 +174,9 @@ bool Episode::removeFiles() const
 }
 
 
-static const QString sanitiseFilename(const QString &s)
+QString Episode::sanitisedName(const QString &name)
 {
-	QString s1 = s.simplifyWhiteSpace();
+	QString s1 = name.simplifyWhiteSpace();
 	QString t = "";
 
 	QChar ch;
@@ -186,8 +186,9 @@ static const QString sanitiseFilename(const QString &s)
 		t += ch.lower();
 	}
 
-	return (t);
+        return (t);
 }
+
 
 
 
@@ -206,10 +207,10 @@ const QString Episode::getFilePath(const QString file) const
 }
 
 
-const QString Episode::savePath(const QString &name)
+QString Episode::savePath(const QString &name)
 {
 	return (KGlobal::dirs()->saveLocation("episodes",QString::null,false)+
-		sanitiseFilename(name)+"/");
+		sanitisedName(name)+"/");
 }
 
 
@@ -320,10 +321,14 @@ void EpisodeList::add(const Episode *e)
 }
 
 
-void EpisodeList::remove(const Episode *e)
+void EpisodeList::remove(const Episode *e,bool noDelete)
 {
 	kdDebug(0) << k_funcinfo << "name='" << e->getName() << "'" << endl;
+
+        bool deleteState = autoDelete();
+        setAutoDelete(!noDelete);
 	removeRef(e);
+        setAutoDelete(deleteState);
 }
 
 
