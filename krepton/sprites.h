@@ -40,6 +40,7 @@ public:
 
 	enum Magnification { Half=0, Normal=1, Double=2 };
 
+	Sprites();					// create as blank
 	Sprites(const Episode *e);			// load from episode
 	Sprites(const Sprites &s);			// copy constructor
 	const QString loadStatus() const { return (status); }
