@@ -1,10 +1,4 @@
-#MIN_CONFIG(3)
-
-AM_INIT_AUTOMAKE(krepton,4.0)
-
-dnl CXXFLAGS="$NOOPT_CXXFLAGS" dnl __kdevelop[noopt]__
-dnl CFLAGS="$NOOPT_CFLAGS" dnl __kdevelop[noopt]__
-dnl CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS" dnl __kdevelop[exc]__
+AM_INIT_AUTOMAKE(krepton,4.1)
 
 AC_C_CONST
 AC_C_INLINE
@@ -17,3 +11,18 @@ AC_CHECK_HEADERS([errno.h])
 
 AC_SEARCH_LIBS(pow,m,,AC_MSG_ERROR([The 'pow' function is not available]))
 AC_SEARCH_LIBS(sqrt,m,,AC_MSG_ERROR([The 'sqrt' function is not available]))
+
+AC_ARG_WITH([sound],[  --with-sound=OPTION     specify how sound is to be played (kaudioplayer,kdeplayobject,artsplay,soxplay,alsaplay,none)])
+AC_MSG_CHECKING([requested sound player option])
+case "${with_sound}"
+in
+""|kaudioplayer)	snddefs="-DSND_AUDIOPLAYER"			;;
+kdeplayobject)		snddefs="-DSND_PLAYOBJECT"			;;
+artsplay)		snddefs="-DSND_EXTERNAL -DEXT_ARTSPLAY"		;;
+soxplay)		snddefs="-DSND_EXTERNAL -DEXT_SOXPLAY"		;;
+alsaplay)		snddefs="-DSND_EXTERNAL -DEXT_ALSAPLAY"		;;
+*)			snddefs=					;;
+esac
+AC_MSG_RESULT([${snddefs}])
+AC_SUBST([snddefs])
+CXXFLAGS="$CXXFLAGS $snddefs"
