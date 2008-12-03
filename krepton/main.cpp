@@ -58,11 +58,11 @@ int main(int argc,char *argv[])
 			     I18N_NOOP("The Repton game for KDE"),
 			     KAboutData::License_GPL,
 			     "(c) 1998, Sandro Sigala\n(c) 2003-2008, Jonathan Marten",0,
-			     "http://www.keelhaul.demon.co.uk/krepton/",
-			     "jjm@keelhaul.demon.co.uk");
+			     "http://www.keelhaul.me.uk/krepton/",
+			     "jjm@keelhaul.me.uk");
 
 	aboutData.addAuthor("Sandro Sigala",I18N_NOOP("Original author"),"ssigala@globalnet.it");
-	aboutData.addAuthor("Jonathan Marten",I18N_NOOP("KDE 3 conversion"),"jjm@keelhaul.demon.co.uk");
+	aboutData.addAuthor("Jonathan Marten",I18N_NOOP("KDE 3 conversion"),"jjm@keelhaul.me.uk");
 	aboutData.addCredit("Jasper Renow-Clarke",I18N_NOOP("BBC format and maps"),"cm5hdjjr@bs41.staffs.ac.uk");
 	aboutData.addCredit("George Russell",I18N_NOOP("Feature suggestions"),"george.russell@clara.net");
 
