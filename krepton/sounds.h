@@ -25,6 +25,10 @@
 #ifndef SOUNDS_H
 #define SOUNDS_H
 
+#ifdef SND_PLAYOBJECT
+#include <arts/kplayobject.h>
+#endif
+
 #include "krepton.h"
 
 
@@ -51,6 +55,11 @@ public:
 
 private:
 	static bool enabled;
+
+#ifdef SND_PLAYOBJECT
+	static KDE::PlayObject* playObject;
+	static int lastPlayed;
+#endif
 };
 
 
