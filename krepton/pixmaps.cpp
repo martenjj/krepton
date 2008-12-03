@@ -24,60 +24,66 @@
 
 #include "config.h"
 
+#include <kdebug.h>
 #include <kstandarddirs.h>
 
 #include <qpixmap.h>
 #include <qbitmap.h>
+#include <qpixmapcache.h>
 
 #include "pixmaps.h"
 
 
-const QPixmap *Pixmaps::key = NULL;
-const QPixmap *Pixmaps::crown = NULL;
-const QPixmap *Pixmaps::back = NULL;
-const QPixmap *Pixmaps::pause = NULL;
+//  Need to pass round and return pixmaps as value here (this is efficient),
+//  not pointers to them.  See documentation for QPixmapCache::find(const QString &)
+//  for the reason why.
 
-const QPixmap *Pixmaps::lives[4] = { NULL, NULL, NULL, NULL };
-
-void loadPixmap(QPixmap **pix,const char *name)
+const QPixmap getPixmap(const char *key)
 {
-	QPixmap *p = *pix;
-	if (p!=NULL) return;
+	QPixmap pm;
 
-	p = new QPixmap(KGlobal::dirs()->findResource("graphics",name));
-	p->setMask(p->createHeuristicMask());
-	*pix = p;
+	if (QPixmapCache::find(key,pm)) return (pm);
+
+	if (!pm.load(KGlobal::dirs()->findResource("graphics",(QString(key)+".png"))))
+        {
+		kdDebug() << k_funcinfo << "cannot load pixmap '" << key << "'" << endl;
+		pm.resize(16,16); pm.fill(Qt::red);
+        }
+	else pm.setMask(pm.createHeuristicMask());
+
+        QPixmapCache::insert(key,pm);
+        return (pm);
 }
 
 
 
-const QPixmap *Pixmaps::find(Pixmaps::type p)
+const QPixmap Pixmaps::find(Pixmaps::type p)
 {
+	QString key;
 	switch (p)
 	{
-case Key:	loadPixmap((QPixmap **) &key,"key.png");
-		return (key);
-
-case Crown:	loadPixmap((QPixmap **) &crown,"crown.png");
-		return (crown);
-
-case Back:	loadPixmap((QPixmap **) &back,"back.png");
-		return (back);
-
-case Pause:	loadPixmap((QPixmap **) &pause,"pause.png");
-		return (pause);
-
-default:	return (NULL);
+case Key:	key = "key";		break;
+case Crown:	key = "crown";		break;
+case Back:	key = "back";		break;
+case Pause:	key = "pause";		break;
+case Started:	key = "started";	break;
+case Playing:	key = "playing";	break;
+case Finished:	key = "finished";	break;
+case Unknown:	key = "unknown";	break;
+case Password:	key = "password";	break;
+case Unplayed:	key = "unplayed";	break;
+default:	key = "unknown";	break;
 	}
+
+        return (getPixmap(key));
 }
 
 
-const QPixmap *Pixmaps::findLives(int l)
+const QPixmap Pixmaps::findLives(int l)
 {
 	if (l<0) l = 0;
 	if (l>3) l = 3;
 
-	const QString file = QString("lives%1.png").arg(l);
-	loadPixmap((QPixmap **) &lives[l],file);
-	return (lives[l]);
+	const QString key = QString("lives%1").arg(l);
+	return (getPixmap(key));
 }

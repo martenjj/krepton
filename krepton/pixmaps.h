@@ -25,22 +25,18 @@
 #ifndef PIXMAPS_H
 #define PIXMAPS_H
 
+
 class QPixmap;
+
 
 class Pixmaps
 {
 public:
-	enum type { Key, Crown, Back, Pause };
-	static const QPixmap *find(Pixmaps::type p);
-	static const QPixmap *findLives(int l);
+	enum type { Key, Crown, Back, Pause, Started, Playing, Finished, Unknown, Password, Unplayed };
 
-private:
-	static const QPixmap *key;
-	static const QPixmap *crown;
-	static const QPixmap *back;
-	static const QPixmap *pause;
-
-	static const QPixmap *lives[4];
+	static const QPixmap find(Pixmaps::type p);
+	static const QPixmap findLives(int l);
 };
+
 
 #endif							// !PIXMAPS_H
