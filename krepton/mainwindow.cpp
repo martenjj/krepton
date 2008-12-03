@@ -29,6 +29,7 @@
 #include <kmainwindow.h>
 #include <kconfig.h>
 #include <kglobal.h>
+#include <klocale.h>
 #include <kstdaction.h>
 #include <kstdaccel.h>
 #include <kaction.h>
@@ -47,18 +48,20 @@
 #include "selectgamedialog.h"
 #include "scoredialog.h"
 #include "newscoredialog.h"
-//#include "splashwindow.h"
 #include "gameeditor.h"
 #include "saveepisodedialog.h"
+#include "selectleveldialog.h"
 #include "sounds.h"
 #include "importwizard.h"
 
 #include "mainwindow.h"
+#include "mainwindow.moc"
 
 static const int minimum_wid = 5;			// sizes for main window
 static const int minimum_hei = 3;
 static const int default_wid = 9;
 static const int default_hei = 9;
+
 
 MainWindow::MainWindow(QWidget *parent,const char *name)
         : KMainWindow(parent,name)
@@ -70,40 +73,36 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 
 	(void) KStdAction::quit(this,SLOT(close()),actionCollection(),"file_quit");
 
-	selectAction = new KAction("Se&lect Game...","fileopen",
-				   KStdAccel::key(KStdAccel::Open),
+	selectAction = new KAction(i18n("Select Game..."),"fileopen",
+				   KStdAccel::shortcut(KStdAccel::Open),
 				   this,SLOT(slotSelectGame()),
 				   actionCollection(),"file_select");
 
-	startAction = new KAction("&Start at first level",Key_S,
+	startAction = new KAction(i18n("Start at first level"),Key_S,
 					this,SLOT(slotStartGame()),
 					actionCollection(),"game_start");
 
-	restartAction = new KAction("&Restart last level",Key_R,
+	restartAction = new KAction(i18n("Restart last level"),Key_R,
 					this,SLOT(slotRestartGame()),
 					actionCollection(),"game_restart");
 
-	continueAction = new KAction("Restart at &level...",Key_C,
+	continueAction = new KAction(i18n("Restart at level..."),Key_C,
 					this,SLOT(slotContinueGame()),
 					actionCollection(),"game_continue");
 
-	pauseAction = new KToggleAction("&Pause",Key_P,
+	pauseAction = new KToggleAction(i18n("Pause"),Key_P,
 					this,SLOT(slotPauseGame()),
 					actionCollection(),"game_pause");
 
-	suicideAction = new KAction("&Suicide",Key_Escape,
+	suicideAction = new KAction(i18n("Suicide"),Key_Escape,
 				this,SLOT(slotSuicide()),
 				actionCollection(),"game_suicide");
 
-//	finishAction = new KAction("&Finish",SHIFT+Key_Escape,
-//				this,SLOT(slotFinish()),
-//				actionCollection(),"game_finish");
-
-	(void) new KAction("&High Scores...",CTRL+Key_H,
+	(void) new KAction(i18n("High Scores..."),CTRL+Key_H,
 			   this,SLOT(slotHighScores()),
 			   actionCollection(),"file_highscores");
 
-	soundsAction = new KToggleAction("&Sounds",0,
+	soundsAction = new KToggleAction(i18n("Sounds"),0,
 					 this,SLOT(slotSoundsChanged()),
 					 actionCollection(),"settings_sounds");
 
@@ -111,11 +110,11 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 					this,SLOT(slotLoadSprites()),
 					actionCollection(),"settings_loadsprites");
 
-	magnificationList = new KSelectAction("&Display Size",0,
+	magnificationList = new KSelectAction(i18n("Display Size"),0,
 					      this,SLOT(slotSetMagnification()),
 					      actionCollection(),"settings_magnification");
 
-	editAction = new KAction("Game &Editor...",CTRL+Key_E,
+	editAction = new KAction(i18n("Game Editor..."),CTRL+Key_E,
 				   this,SLOT(slotEdit()),
 				   actionCollection(),"edit_edit");
 
@@ -125,86 +124,85 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 	saveAsAction = KStdAction::saveAs(this,SLOT(slotSaveAs()),
 				      actionCollection());
 
-	importAction = new KAction("&Import...",0,
+	importAction = new KAction(i18n("Import..."),0,
 				   this,SLOT(slotImport()),
 				   actionCollection(),"file_import");
 
-	exportAction = new KAction("E&xport...",0,
+	exportAction = new KAction(i18n("Export..."),0,
 				   this,SLOT(slotExport()),
 				   actionCollection(),"file_export");
 
-	printAction = new KAction("&Print...","fileprint",
-				  KStdAccel::key(KStdAccel::Print),
+	printAction = new KAction(i18n("Print..."),"fileprint",
+				  KStdAccel::shortcut(KStdAccel::Print),
 				  this,SLOT(slotPrint()),
 				  actionCollection(),"file_print");
 
-	removeAction = new KAction("&Remove...",0,
+	removeAction = new KAction(i18n("Remove..."),0,
 				   this,SLOT(slotRemove()),
 				   actionCollection(),"file_remove");
 
-	checkAction = new KAction("Check Consistenc&y","ok",Key_F10,
+	checkAction = new KAction(i18n("Check Consistency"),"ok",Key_F10,
 				  this,SLOT(slotStrictCheck()),
 				  actionCollection(),"edit_check");
 
-	strictToggle = new KToggleAction("Check Consistenc&y Before Saving",0,
+	strictToggle = new KToggleAction(i18n("Check Consistency Before Saving"),0,
 					 actionCollection(),"settings_check");
 #ifdef EDITOR_3_WINDOWS
-	alignToggle = new KToggleAction("&Align Editor Windows",0,
+	alignToggle = new KToggleAction(i18n("Align Editor Windows"),0,
 					 this,SLOT(slotAlignChanged()),
 					 actionCollection(),"settings_align");
 
-	spriteToggle = new KToggleAction("&Sprite Editor",Key_F2,
+	spriteToggle = new KToggleAction(i18n("Sprite Editor"),Key_F2,
 					 this,SLOT(slotSpriteEditor()),
 					 actionCollection(),"window_spriteeditor");
 
-	mapToggle = new KToggleAction("&Map Editor",Key_F3,
+	mapToggle = new KToggleAction(i18n("Map Editor"),Key_F3,
 				      this,SLOT(slotLevelEditor()),
 				      actionCollection(),"window_leveleditor");
 
-	realignAction = new KAction("&Realign Windows",Key_F4,
+	realignAction = new KAction(i18n("Realign Windows"),Key_F4,
 				    this,SLOT(slotRealignEditor()),
 				    actionCollection(),"window_realign");
 #else
-	spriteAction = new KAction("&Sprite Page",Key_F2,
+	spriteAction = new KAction(i18n("Sprite Page"),Key_F2,
 				   this,SLOT(slotSpriteEditor()),
 				   actionCollection(),"window_spriteeditor");
 
-	mapAction = new KAction("&Map Page",Key_F3,
+	mapAction = new KAction(i18n("Map Page"),Key_F3,
 				this,SLOT(slotLevelEditor()),
 				actionCollection(),"window_leveleditor");
 
-	dataAction = new KAction("Episo&de Page",Key_F4,
+	dataAction = new KAction(i18n("Episode Page"),Key_F4,
 				 this,SLOT(slotDataEditor()),
 				 actionCollection(),"window_dataeditor");
 #endif
 	createGUI("kreptonui.rc");
 
 	QStringList list;
-	list << "&Half" << "&Normal" << "&Double";
+	list << i18n("Half") << i18n("Normal") << i18n("Double");
 	magnificationList->setItems(list);
 
-	const QPixmap *keypix = Pixmaps::find(Pixmaps::Key);
-	const QPixmap *crownpix = Pixmaps::find(Pixmaps::Crown);
-	const QPixmap *livespix = Pixmaps::findLives(0);
-
 	KStatusBar *status = statusBar();
-	status->insertFixedItem("Diamonds: Plenty!",1);
-	status->insertFixedItem("Time: 99:99",2);
-	status->insertFixedItem("Score: 999999",3);
+	status->insertFixedItem(i18n("Diamonds: Plenty!"),1);
+	status->insertFixedItem(i18n("Time: 999:99"),2);
+	status->insertFixedItem(i18n("Score: 999999"),3);
 
+	const QPixmap keypix = Pixmaps::find(Pixmaps::Key);
 	keyflag = new QLabel(this,QString::null,Qt::WStyle_Customize|Qt::WStyle_NoBorder);
-	keyflag->setFixedSize(keypix->size());
-	keyflag->setPixmap(*keypix);
+	keyflag->setFixedSize(keypix.size());
+	keyflag->setPixmap(keypix);
 	keyflag->setEnabled(false);
 
+	const QPixmap crownpix = Pixmaps::find(Pixmaps::Crown);
 	crownflag = new QLabel(this,QString::null,Qt::WStyle_Customize|Qt::WStyle_NoBorder);
-	crownflag->setFixedSize(crownpix->size());
-	crownflag->setPixmap(*crownpix);
+	crownflag->setFixedSize(crownpix.size());
+	crownflag->setPixmap(crownpix);
 	crownflag->setEnabled(false);
 
+	const QPixmap livespix = Pixmaps::findLives(0);
 	livesflag = new QLabel(this,QString::null,Qt::WStyle_Customize|Qt::WStyle_NoBorder);
-	livesflag->setFixedSize(livespix->size());
-	livesflag->setPixmap(*livespix);
+	livesflag->setFixedSize(livespix.size());
+	livesflag->setPixmap(livespix);
 	livesflag->setEnabled(false);
 
 	status->addWidget(keyflag,0,true);
@@ -246,8 +244,6 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 	updateGameState(false);
 	updateWindowStates();
 
-//	SplashWindow *splash = new SplashWindow();
-//	splash->show();
 	kdDebug(0) << k_funcinfo << "done" << endl;
 }
 
@@ -279,6 +275,7 @@ void MainWindow::readOptions()
 	slotAlignChanged();
 }
 
+
 void MainWindow::saveOptions()
 {
 	kdDebug(0) << k_funcinfo << endl;
@@ -303,8 +300,10 @@ bool MainWindow::queryClose()
 	const bool emod = (edit==NULL ? false : edit->isModified());
 	if (!modified && !emod) return (true);		// can close now
 
-	switch (KMessageBox::warningYesNoCancel(
-			this,QString("<qt>Save changes to episode <b>%1</b>?").arg(currentepisode->getName())))
+	switch (KMessageBox::warningYesNoCancel(this,
+                                                (currentepisode->isGlobal() ?
+                                                 i18n("<qt>Save a copy of episode <b>%1</b>?") :
+                                                 i18n("<qt>Save changes to episode <b>%1</b>?")).arg(currentepisode->getName())))
 	{
 case KMessageBox::Yes:
 		slotSave();				// save the episode
@@ -320,16 +319,15 @@ default:	return (false);				// cancel
 
 void MainWindow::updateCaption()
 {
-	QString cap = "Game";
+	QString cap = i18n("Game");
 
 	if (currentepisode)
 	{
 		cap += QString(" '%1'").arg(currentepisode->getName());
-		if (game->inGame()) cap += QString(" level %1").arg(game->lastLevel()+1);
+		if (game->inGame()) cap += i18n(" level %1").arg(game->lastLevel()+1);
 	}
 	setCaption(cap,modified);
 }
-
 
 
 void MainWindow::slotHighScores()
@@ -338,10 +336,12 @@ void MainWindow::slotHighScores()
 	d.exec();
 }
 
+
 void MainWindow::slotSoundsChanged()
 {
 	Sound::setEnabled(soundsAction->isChecked());
 }
+
 
 void MainWindow::slotAlignChanged()
 {
@@ -351,7 +351,6 @@ void MainWindow::slotAlignChanged()
 }
 
 
-
 void MainWindow::updateStats(int diamonds,int secs,int points)
 {
 	KStatusBar *status = statusBar();
@@ -359,10 +358,10 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 	QString ds = QString::null;
 	if (diamonds>=0)
 	{
-		if (diamonds==0) ds = "Finish!";
-		else if (diamonds>50) ds = "Plenty!";
+		if (diamonds==0) ds = i18n("Finish!");
+		else if (diamonds>50) ds = i18n("Plenty!");
 		else ds.setNum(diamonds);
-		ds = QString("Diamonds: ")+ds;
+		ds = i18n("Diamonds: %1").arg(ds);
 	}
 	status->changeItem(ds,1);
 
@@ -371,12 +370,13 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 	{
 		const int min = secs / 60;
 		const int sec = secs % 60;
-		ts.sprintf("Time: %2d:%02d",min,sec);
+		ts.sprintf(i18n("Time: %3d:%02d"),min,sec);
 	}
 	status->changeItem(ts,2);
 
-	status->changeItem((points<0 ? QString::null : QString("Score: %1").arg(points)),3);
+	status->changeItem((points<0 ? QString::null : i18n("Score: %1").arg(points)),3);
 }
+
 
 void MainWindow::updateFlags(bool key,bool crown)
 {
@@ -384,12 +384,13 @@ void MainWindow::updateFlags(bool key,bool crown)
 	crownflag->setEnabled(crown);
 }
 
+
 void MainWindow::updateLives(int lives)
 {
 	kdDebug(0) << k_funcinfo << " lives=" << lives << endl;
-	const QPixmap *p = Pixmaps::findLives(lives);
-	if (p!=NULL) livesflag->setPixmap(*p);
+	livesflag->setPixmap(Pixmaps::findLives(lives));
 }
+
 
 void MainWindow::updateGameState(bool playing)
 {
@@ -415,6 +416,7 @@ void MainWindow::updateGameState(bool playing)
 	updateCaption();
 }
 
+
 void MainWindow::updatePlayState(bool ingame,bool inpause)
 {
 	kdDebug(0) << k_funcinfo << "game=" << ingame << " pause=" << inpause << endl;
@@ -424,12 +426,13 @@ void MainWindow::updatePlayState(bool ingame,bool inpause)
 	pauseAction->setChecked(inpause);
 	pauseAction->setEnabled(ingame);
 	suicideAction->setEnabled(ingame);
-//	finishAction->setEnabled(ingame);
 
 	startAction->setEnabled(loaded && !ingame && game->countLevels()>0);
 	restartAction->setEnabled(loaded && !ingame && game->lastLevel()>0);
-	continueAction->setEnabled(loaded && !ingame && game->countLevels()>1);
+//	continueAction->setEnabled(loaded && !ingame && game->countLevels()>1);
+	continueAction->setEnabled(loaded && !ingame);
 }
+
 
 void MainWindow::gameOver()
 {
@@ -476,6 +479,7 @@ void MainWindow::slotStartGame()
 	game->startGame(currentepisode);
 }
 
+
 void MainWindow::slotRestartGame()
 {
 	kdDebug(0) << k_funcinfo << endl;
@@ -485,25 +489,41 @@ void MainWindow::slotRestartGame()
 	game->startGame(currentepisode,game->lastLevel());
 }
 
+
 void MainWindow::slotContinueGame()
 {
 	kdDebug(0) << k_funcinfo << endl;
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 	fetchFromEditor();
 
-	QString msg = QString("<qt>Continuing episode <b>%1</b>").arg(currentepisode->getName());
-	QCString pwd;
-	if (KPasswordDialog::getPassword(pwd,msg)!=KPasswordDialog::Accepted) return;
+	QStringList levels = game->listLevels(currentepisode);
+
+	QCString pwd = NULL;
+	QString msg = i18n("<qt>Continuing episode <b>%1</b>").arg(currentepisode->getName());
+	if (levels.count()>0)
+	{
+		SelectLevelDialog d(levels,msg,this);
+		if (!d.exec()) return;
+
+		pwd = d.selectedPassword();
+	}
+
+	if (pwd.isEmpty())
+	{
+		if (KPasswordDialog::getPassword(pwd,msg)!=KPasswordDialog::Accepted) return;
+	}
+
 	pwd = pwd.stripWhiteSpace();
-	if (pwd.isEmpty()) KMessageBox::information(this,"No idea? You need to start at the first level.");
+	if (pwd.isEmpty()) KMessageBox::information(this,i18n("No idea? You need to start at the first level."));
 	else game->startGamePassword(currentepisode,pwd);
 }
+
 
 void MainWindow::slotLoadSprites()
 {
 	if (!queryClose()) return;
 
-	SelectGameDialog d("Select Sprites",this);
+	SelectGameDialog d(i18n("Select Sprites"),this);
 	if (!d.exec()) return;
 	const Episode *e = d.selectedItem();
 	kdDebug(0) << k_funcinfo << "selected = '" << e->getName() << "'" << endl;
@@ -512,19 +532,18 @@ void MainWindow::slotLoadSprites()
 	if (!status.isNull())
 	{
 		KMessageBox::error(
-			this,QString("<qt>Unable to load the sprites for episode <b>%1</b>."
-				     "<br>%2"
-				     "<p>The application may not be properly installed.")
+			this,i18n("<qt>Unable to load the sprites for episode <b>%1</b>."
+                                  "<br>%2"
+                                  "<p>The application may not be properly installed.")
 			.arg(e->getName())
 			.arg(status));
 		return;
 	}
 
-//	modified = true;
-//	updateCaption();
 	game->repaint(false);
 	if (edit!=NULL) passToEditor();
 }
+
 
 void MainWindow::slotPauseGame()
 {
@@ -532,17 +551,12 @@ void MainWindow::slotPauseGame()
 	game->pauseAction();
 }
 
+
 void MainWindow::slotSuicide()
 {
 	kdDebug(0) << k_funcinfo << endl;
 	game->suicideAction();
 }
-
-//void MainWindow::slotFinish()
-//{
-//	kdDebug(0) << k_funcinfo << endl;
-//	game->finishAction();
-//}
 
 
 void MainWindow::slotSelectGame()
@@ -550,7 +564,7 @@ void MainWindow::slotSelectGame()
 	kdDebug(0) << k_funcinfo << endl;
 	if (!queryClose()) return;
 
-	SelectGameDialog d("Select Game",this);
+	SelectGameDialog d(i18n("Select Game"),this);
 	if (!d.exec()) return;
 	const Episode *e = d.selectedItem();
 	kdDebug(0) << k_funcinfo << "selected = '" << e->getName() << "'" << endl;
@@ -568,9 +582,9 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 	if (!status.isNull())
 	{
 		KMessageBox::error(
-			this,QString("<qt>Unable to load the episode <b>%1</b>."
-				     "<br>%2"
-				     "<p>The application may not be properly installed.")
+			this,i18n("<qt>Unable to load the episode <b>%1</b>."
+                                  "<br>%2"
+                                  "<p>The application may not be properly installed.")
 			.arg(e->getName())
 			.arg(status));
 		return;
@@ -579,15 +593,14 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 	if (game->countLevels()==0)
 	{
 		KMessageBox::information(
-			this,QString("<qt>The episode <b>%1</b> has no levels available to play."
-				     "<p>You can use its sprites with another episode, or"
-				     "<br>create new levels in the editor.").arg(e->getName()),
+			this,i18n("<qt>The episode <b>%1</b> has no levels available to play."
+                                  "<p>You can use its sprites with another episode, or"
+                                  "<br>create new levels in the editor.").arg(e->getName()),
 			QString::null,"emptyMapsMessage");
 	}
 
 	modified = false;
 	updateGameState(false);
-//	setCaption(e->getName());
 }
 
 
@@ -598,8 +611,8 @@ void MainWindow::loadGame(const QString name)		// from command line
 	if (e==NULL)
 	{
 		KMessageBox::error(
-			this,QString("<qt>Unable to load the episode named <b>%1</b>."
-				     "<p>There may be no episode with that name, or the application may not be properly installed.").arg(name));
+			this,i18n("<qt>Unable to load the episode named <b>%1</b>."
+                                  "<p>There may be no episode with that name, or the application may not be properly installed.").arg(name));
 		return;
 	}
 
@@ -613,7 +626,7 @@ void MainWindow::slotSetMagnification()
 	kdDebug(0) << k_funcinfo << " selected=" << selection << endl;
 	if (selection==((int) Sprites::getMagnification())) return;
 
-	KMessageBox::information(this,QString("This change will take effect when %1 is next started.").arg(kapp->caption()),
+	KMessageBox::information(this,i18n("This change will take effect when %1 is next started.").arg(kapp->caption()),
 				 QString::null,"sizeChangeMessage");
 
 	KConfig *config = KGlobal::config();
@@ -635,7 +648,6 @@ const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
 }
 
 
-
 void MainWindow::slotEdit()
 {
 	kdDebug(0) << k_funcinfo << "edit=" << ((void*)edit) << endl;
@@ -644,9 +656,7 @@ void MainWindow::slotEdit()
 
 	if (edit==NULL)
 	{
-		edit = new GameEditor(this,"Editor");
-//		connect(edit,SIGNAL(editAccepted(const MapList,const Sprites *)),
-//			this,SLOT(slotEditAccepted(const MapList,const Sprites *)));
+		edit = new GameEditor(this,i18n("Editor"));
 		connect(edit,SIGNAL(editWindowChange()),
 			this,SLOT(updateWindowStates()));
 		connect(edit,SIGNAL(closed()),
@@ -660,14 +670,10 @@ void MainWindow::slotEdit()
 	}
 
 	passToEditor();
-//	QCursor curs = cursor();
-//	setCursor(QCursor(Qt::WaitCursor));
-//	edit->startEdit(currentepisode->getName(),game->getMaps(),game->getSprites());
-//	setCursor(curs);
-//
 	edit->show();
 	updateWindowStates();
 }
+
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
@@ -718,7 +724,7 @@ bool MainWindow::prepareSave()
 		CheckMap cm(game->getMaps());
 		if (cm.status()!=CheckMap::Ok)
 		{
-			if (cm.report(this,"Do you want to save this episode?",
+			if (cm.report(this,i18n("Do you want to save this episode?"),
 				      false)==KMessageBox::No) return (false);
 		}
 	}
@@ -744,11 +750,12 @@ void MainWindow::slotSave()
 	}
 }
 
+
 void MainWindow::slotSaveAs()
 {
 	if (!prepareSave()) return;
 
-	SaveEpisodeDialog d("Save Episode",this);
+	SaveEpisodeDialog d(i18n("Save Episode"),this);
 	if (!d.exec()) return;
 
 	kdDebug(0) << k_funcinfo << "name='" << d.name() << "' path='" << d.path() << "'" << endl;
@@ -757,9 +764,9 @@ void MainWindow::slotSaveAs()
 	if (dir.exists())
 	{
 		if (KMessageBox::warningContinueCancel(
-			    this,QString("<qt>Overwrite existing episode <b>%1</b>?").arg(d.name()),
+			    this,i18n("<qt>Overwrite existing episode <b>%1</b>?").arg(d.name()),
 			    QString::null,
-			    KGuiItem("&Overwrite"))!=KMessageBox::Continue) return;
+			    KGuiItem(i18n("Overwrite")))!=KMessageBox::Continue) return;
 	}
 
 	const Episode *e = game->saveEpisode(d.name(),d.path());
@@ -776,9 +783,7 @@ void MainWindow::slotRemove()
 {
 	kdDebug(0) << k_funcinfo << endl;
 
-//	if (currentepisode!=NULL && currentepisode->isGlobal()) return;
-
-	SelectGameDialog d("Remove Game",this,NULL,true);
+	SelectGameDialog d(i18n("Remove Game"),this,NULL,true);
 	if (!d.exec()) return;
 
 	const Episode *e = d.selectedItem();
@@ -788,17 +793,17 @@ void MainWindow::slotRemove()
 	kdDebug(0) << k_funcinfo << "selected = '" << e->getName() << "'" << endl;
 
 	if (KMessageBox::warningContinueCancel(
-		    this,QString("<qt>Are you sure you want to remove the episode <b>%2</b>,"
-				 "<br>located at '%1'?")
+		    this,i18n("<qt>Are you sure you want to remove the episode <b>%2</b>,"
+                              "<br>located at '%1'?")
 		    .arg(Episode::savePath(name)).arg(name),
-		    QString::null,KGuiItem("&Remove"))!=KMessageBox::Continue) return;
+		    QString::null,KGuiItem(i18n("Remove")))!=KMessageBox::Continue) return;
 
 	kdDebug(0) << "e=" << ((void*)e) << " current=" << ((void*)currentepisode) << endl;
 
 	const bool iscurrent = (currentepisode!=NULL && e==currentepisode);
 							// is it current episode?
 	if (!e->removeFiles()) return;			// remove episode files
-	if (!iscurrent) EpisodeList::list()->remove(e);	// remove from our list
+	EpisodeList::list()->remove(e,iscurrent);	// remove from our list
 	updateGameState(false);				// may have been the last
 
 	if (iscurrent)					// have removed the current?
@@ -812,7 +817,7 @@ void MainWindow::slotRemove()
 void MainWindow::slotImport()
 {
 	kdDebug(0) << k_funcinfo << endl;
-        ImportWizard wiz("Import Wizard",this);
+        ImportWizard wiz(i18n("Import Wizard"),this);
         if (wiz.exec())
 	{
 		QString newEpisodeName = wiz.newEpisodeToLoad();
@@ -826,14 +831,14 @@ void MainWindow::slotImport()
 void MainWindow::slotExport()
 {
 	kdDebug(0) << k_funcinfo << endl;
-	KMessageBox::sorry(this,"This option is not implemented yet.\nSee the TODO file for more information.");
+	KMessageBox::sorry(this,i18n("This option is not implemented yet.\nSee the TODO file for more information."));
 }
 
 
 void MainWindow::slotPrint()
 {
 	kdDebug(0) << k_funcinfo << endl;
-	KMessageBox::sorry(this,"This option is not implemented yet.\nSee the TODO file for more information.");
+	KMessageBox::sorry(this,i18n("This option is not implemented yet.\nSee the TODO file for more information."));
 }
 
 
@@ -865,6 +870,7 @@ void MainWindow::slotStrictCheck()
 	if (edit!=NULL) edit->menuStrictCheck();
 }
 
+
 void MainWindow::slotSpriteEditor()
 {
 #ifdef EDITOR_3_WINDOWS
@@ -874,6 +880,7 @@ void MainWindow::slotSpriteEditor()
 #endif
 	if (edit!=NULL) edit->showSpriteEditor(show);
 }
+
 
 void MainWindow::slotLevelEditor()
 {
@@ -885,6 +892,7 @@ void MainWindow::slotLevelEditor()
 	if (edit!=NULL) edit->showLevelEditor(show);
 }
 
+
 void MainWindow::slotDataEditor()
 {
 #ifndef EDITOR_3_WINDOWS
@@ -892,10 +900,12 @@ void MainWindow::slotDataEditor()
 #endif
 }
 
+
 void MainWindow::slotRealignEditor()
 {
 	if (edit!=NULL) edit->menuRealign();
 }
+
 
 void MainWindow::updateEditLevels()
 {
