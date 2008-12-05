@@ -46,7 +46,6 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	how_died = QString::null;
 	levelfinished = false;
 
-//	monsters.setAutoDelete(true);
 	kdDebug(0) << k_funcinfo << "done" << endl;
 }
 
@@ -83,7 +82,6 @@ void MapPlay::restartGame()
 	sprite = Obj::Repton;
 
 	how_died = QString::null;
-//??????????	levelfinished = false;
 	num_secs = num_points = 0;			// nothing accumulated yet
 }
 
@@ -174,7 +172,7 @@ bool MapPlay::tryFallDown(int x, int y)
 	ref(x,y) = Obj::Empty;
 
 	Monster *m;
-	if ((m = findMonster(x,y+1))!=0 && m->type==Obj::Monster)
+	if ((m = findMonster(x,y+1))!=NULL && m->type==Obj::Monster)
 	{
 		Sound::playSound(Sound::Kill_Monster);
 		killMonster(m);
@@ -222,7 +220,7 @@ bool MapPlay::tryFallLeftOrRight(int x,int y)
 	const Obj::Type obj = xy(x,y);
 	bool done = false;
 
-	switch(xy(x,y+1))
+	switch (xy(x,y+1))
 	{
 case Obj::Rock:
 case Obj::Skull:
@@ -294,8 +292,6 @@ default:	if (obj==Obj::Falling_Egg)
 // Check if the specified object can fall.
 bool MapPlay::tryFall(int x,int y)
 {
-//	if (!tryFallDown(x, y))
-//		tryFallLeftOrRight(x, y);
 	return (tryFallDown(x,y) || tryFallLeftOrRight(x,y));
 }
 
@@ -473,7 +469,7 @@ bool MapPlay::updateObjects()
 	{
 		for (int x = width-1; x>=0; --x)
 		{
-			switch(xy(x,y))
+			switch (xy(x,y))
 			{
 case Obj::Rock:						// Check if the object can fall
 case Obj::Egg:
@@ -501,6 +497,9 @@ bool MapPlay::tryPlant(int x, int y, int dx, int dy)
 		return (true);
 	}
 
+//  TODO: replicating plant can kill monster (see http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108)
+//  ALSO: can plant replicate into earth?
+
 	if (xy(x+dx,y+dy)==Obj::Empty)
 	{
 		ref(x+dx,y+dy) = Obj::Plant;
@@ -527,7 +526,7 @@ bool MapPlay::updatePlant(Monster *m)
 // Reproduce the plants
 bool MapPlay::updatePlants()
 {
-	for (Monster *m = monsters.first(); m!=0; m = monsters.next())
+	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
 	{
 		if (m->type==Obj::Plant)
 		{
@@ -543,7 +542,7 @@ bool MapPlay::updateMonsters()
 {
 	bool done = false;
 
-	for (Monster *m = monsters.first(); m!=0; m = monsters.next())
+	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
 	{
 		switch (m->type)
 		{
@@ -737,7 +736,7 @@ void MapPlay::gotKey()
 	have_key = true;
 }
 
-// This function is called when Repton get an object.
+// This function is called when Repton gets an object.
 void MapPlay::gotObject(Obj::Type obj)
 {
 	switch (obj)
@@ -775,6 +774,11 @@ default:	;					// Avoid warning
 void MapPlay::useTransporter(int x,int y)
 {
 	const Transporter *t = findTransporter(x,y);
+        if (t==NULL)					// map inconsistent!
+        {
+		ref(x,y) = Obj::Repton;
+		return;
+        }
 
 	// Remove the transporter and Repton from the original location.
 	ref(x,y) = Obj::Empty;
@@ -803,7 +807,7 @@ case Obj::Ground2:
 
 case Obj::Empty:
 		if (findMonster(xpos,ypos)!=NULL) die("You transported onto a monster!");
-		// Move Repton to the new location.
+		// Move Repton to the new location
 		ref(xpos,ypos) = Obj::Repton;
 		sprite = Obj::Repton;
 		break;
@@ -866,7 +870,7 @@ void MapPlay::moveHorizontalMoveObj(int xd, Obj::Type obj)
 	if (xy(xpos + xd*2, ypos)==Obj::Empty)
 	{
 		Monster *m;
-		if ((m = findMonster(xpos + xd*2, ypos))!=0 && m->type==Obj::Monster)
+		if ((m = findMonster(xpos + xd*2, ypos))!=NULL && m->type==Obj::Monster)
 		{
 			Sound::playSound(Sound::Kill_Monster);
 			killMonster(m);
