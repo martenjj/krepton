@@ -160,7 +160,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
             ++ptr;
             ++l;
         }
-        if (pw.length()<1) pw.sprintf("L%d",i+1);	// substitute blank passwords
+        if (pw.length()<1) pw.sprintf("%c",i+'A');	// substitute blank passwords
 
         MapEdit *m = new MapEdit(BBC_MAP_WIDTH,BBC_MAP_HEIGHT,pw);
 
