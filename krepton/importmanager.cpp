@@ -29,8 +29,6 @@
 #include <kwizard.h>
 #include <kdialog.h>
 #include <kurlrequester.h>
-//#include <kfiledialog.h>
-//#include <kmessagebox.h>
 #include <kactivelabel.h>
 
 #include <qlabel.h>
@@ -41,48 +39,7 @@
 #include <qfileinfo.h>
 #include <qpushbutton.h>
 
-//#include "gamemanager.h"
-
 #include "importmanager.h"
-
-//#include "importwizard.h"
-//#include "importwizard.moc"
-
-
-//////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////
-////									//
-////  Common text strings							//
-////									//
-////////////////////////////////////////////////////////////////////////////
-//
-//							// used for WAD and PWAD
-//const QString GameManager::wadFilterText = i18n("*.WAD *.wad|Doom WAD Files (*.wad)\n"
-//						"*.ZIP *.zip|Zip Archives (*.zip)\n"
-//						"*|All Files");
-//const QString GameManager::wadCaptionText = i18n("Select WAD");
-//
-//const QString GameManager::lmpFilterText = i18n("*.LMP *.lmp|Doom LMP Files (*.lmp)\n"
-//						"*.ZIP *.zip|Zip Archives (*.zip)\n"
-//						"*.EDM *.edm|EDGE Demo Files (*.edm)\n"
-//						"*|All Files");
-//const QString GameManager::lmpCaptionText = i18n("Select Demo");
-//
-////////////////////////////////////////////////////////////////////////////
-////									//
-////  Standard search paths						//
-////									//
-////////////////////////////////////////////////////////////////////////////
-//
-//static const QString execPaths = "/usr/games/bin:/usr/local/bin:/usr/bin";
-//static const QString dataPaths = "/usr/share/games/doom-data:/usr/share/games/doom";
 
 //////////////////////////////////////////////////////////////////////////
 //									//
@@ -178,53 +135,3 @@ const ImportManager::formatInfo *ImportManager::findNamed(const QString &name) c
 	}
 	return (NULL);
 }
-
-////////////////////////////////////////////////////////////////////////////
-////									//
-////  Searching for files							//
-////									//
-////////////////////////////////////////////////////////////////////////////
-//
-//const QString ImportManager::findExecFor(const ImportManager::formatInfo *g) const
-//{
-//	QString exe = QString::null;
-//
-//	const QStringList names = QStringList::split(':',g->execname);
-//	for (QStringList::const_iterator it = names.begin(); it!=names.end(); ++it)
-//	{						// try all possible names
-//		if (!g->execpaths.isNull()) exe = KStandardDirs::findExe(*it,g->execpaths);
-//		if (exe.isNull()) exe = KStandardDirs::findExe(*it,execPaths);
-//		if (exe.isNull()) exe = KStandardDirs::findExe(*it);
-//		if (!exe.isNull()) break;
-//	}
-//
-//	kdDebug(0) << k_funcinfo << "for " << g->name << " = " << exe << endl;
-//	return (exe);
-//}
-//
-//
-//const QString ImportManager::findDataFor(const ImportManager::formatInfo *g) const
-//{
-//	QString dir = QString::null;
-//	QStringList dl;
-//
-//	if (!g->datapaths.isNull()) dl += QStringList::split(':',g->datapaths,true);
-//	dl += QStringList::split(':',dataPaths,true);
-//
-//	for ( QStringList::ConstIterator it = dl.begin(); it!=dl.end(); ++it)
-//	{						// try all possible locations
-//		QDir d(*it);
-//		if (!d.exists()) continue;
-//
-//		d.setFilter(QDir::Files+QDir::Readable);
-//		d.setNameFilter("*.wad;*.WAD");
-//		if (d.count()>0)			// look for any WAD files
-//		{
-//			dir = d.absPath();
-//			break;
-//		}
-//	}
-//
-//	kdDebug(0) << k_funcinfo << "for " << g->name << " = " << dir << endl;
-//	return (dir);
-//}

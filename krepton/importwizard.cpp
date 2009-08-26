@@ -40,11 +40,8 @@
 #include <qwidget.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-//#include <qpushbutton.h>
 #include <qcheckbox.h>
 #include <qcursor.h>
-
-//#include "gamemanager.h"
 
 #include "episodes.h"
 #include "importmanager.h"
@@ -52,7 +49,6 @@
 
 #include "importwizard.h"
 #include "importwizard.moc"
-
 
 //////////////////////////////////////////////////////////////////////////
 //									//
@@ -62,8 +58,8 @@
 
 #undef  TESTING
 #define TEST_FORMAT		0
-#define TEST_SOURCE		"/usr/home/ws/jjm/krepton-4.1/krepton/test/MFoot/JULIE"
-#define TEST_NAME		"JULIE"
+#define TEST_SOURCE		""
+#define TEST_NAME		""
 
 //////////////////////////////////////////////////////////////////////////
 //									//
