@@ -75,7 +75,7 @@ private:
 	QString how_died;
 
 	int xpos,ypos;					// current Repton position
-	Obj::Type sprite;				// current Repton image
+	Obj::Type currentRepton;			// sprite shown for him
 
 	QPtrList<Monster> monsters;
 
@@ -84,6 +84,7 @@ private:
 	void addMonster(int x,int y,Obj::Type type);
 	void prepareMap();
 
+	bool tryBreakEgg(int x,int y);
 	bool tryFallDown(int x,int y);
 	bool tryFallHorizontal(int x,int y,int xd);
 	bool tryFallLeftOrRight(int x,int y);

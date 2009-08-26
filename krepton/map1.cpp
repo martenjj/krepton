@@ -36,13 +36,20 @@
 #include "map1.h"
 
 
+//  These chances are a percentage per-thing, per-tick.
+#define CHANCE_PLANT_REPRODUCE		10		// plant will reproduce (3s tick)
+#define CHANCE_MONSTER_PURSUE		1		// monster avoids obstacle (0.3s tick)
+
+#define chance(c)			((rand() % 100)<(c))
+
+
 MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 {
 	kdDebug(0) << k_funcinfo << "pw='" << m.getPassword() << "'" << endl;
 
 	num_diamonds = 0;
 	have_key = have_crown = false;
-	sprite = Obj::Repton;
+	currentRepton = Obj::Repton;
 	how_died = QString::null;
 	levelfinished = false;
 
@@ -72,14 +79,13 @@ void MapPlay::startGame()
 }
 
 
-//void MapPlay::restartGame(const Map *m)
 void MapPlay::restartGame()
 {
 	if (ref(xpos,ypos)==Obj::Repton) ref(xpos,ypos) = Obj::Empty;
 
 	xpos = xstart; ypos = ystart;			// where last materialised
 	ref(xpos,ypos) = Obj::Repton;
-	sprite = Obj::Repton;
+	currentRepton = Obj::Repton;
 
 	how_died = QString::null;
 	num_secs = num_points = 0;			// nothing accumulated yet
@@ -96,6 +102,7 @@ const Transporter *MapPlay::findTransporter(int x,int y)
 	kdDebug(0) << k_funcinfo << "Inconsistent map, no transporter at " << x << "," << y << endl;
 	return (NULL);
 }
+
 
 void MapPlay::prepareMap()
 {
@@ -154,6 +161,7 @@ Monster *MapPlay::findMonster(int x,int y)
 	return (NULL);
 }
 
+
 void MapPlay::addMonster(int x, int y, Obj::Type type)
 {
 	kdDebug(0) << k_funcinfo << "xy=" <<x << "," << y << " type=" << type << endl;
@@ -161,8 +169,20 @@ void MapPlay::addMonster(int x, int y, Obj::Type type)
 }
 
 
+bool MapPlay::tryBreakEgg(int x,int y)
+{
+	Obj::Type obj = xy(x,y);
+
+	if (obj!=Obj::Falling_Egg) return (false);
+
+	Sound::playSound(Sound::Broken_Egg);
+	ref(x,y) = Obj::Broken_Egg;
+	return (true);
+}
+
+
 // Try falling down.
-bool MapPlay::tryFallDown(int x, int y)
+bool MapPlay::tryFallDown(int x,int y)
 {
 	Obj::Type obj = xy(x,y);
 	const Obj::Type next1 = xy(x,y+1);
@@ -178,14 +198,12 @@ bool MapPlay::tryFallDown(int x, int y)
 		killMonster(m);
 	}
 
-	if (obj==Obj::Rock && (next2==Obj::Broken_Egg || next2==Obj::Broken_Egg1 ||
-			       next2==Obj::Broken_Egg2 || next2==Obj::Broken_Egg3))
-	{
-		Sound::playSound(Sound::Kill_Monster);
-		ref(x,y+2) = Obj::Empty;
-	}
+//	Rock will land and stop on a broken egg, see comment in
+//	tryFallLeftOrRight() below.
 
-// TODO: falling egg can land on other things too?
+//	I think this handles the case where a falling egg lands on the
+//      'bottom' of the scenario.  Falling egg landing elsewhere is handled
+//      in the 'default' case in tryFallLeftOrRight() below.
 	if (next2==Obj::Wall && (obj==Obj::Egg || obj==Obj::Falling_Egg))
 	{
 		Sound::playSound(Sound::Broken_Egg);
@@ -199,51 +217,46 @@ bool MapPlay::tryFallDown(int x, int y)
 	return (true);
 }
 
+
 // Check if the specified object can fall to the left or to the right.
 bool MapPlay::tryFallHorizontal(int x, int y, int xd)
 {
-	const Obj::Type obj = xy(x,y);
+	Obj::Type obj = xy(x,y);
 
-	if (xy(x+xd,y+1)==Obj::Empty && xy(x+xd,y)==Obj::Empty)
+	if (xy(x+xd,y)==Obj::Empty && xy(x+xd,y+1)==Obj::Empty)
 	{
 		ref(x,y) = Obj::Empty;
-		if (obj==Obj::Egg) ref(x+xd,y) = Obj::Falling_Egg;
-		else ref(x+xd,y) = obj;
+		if (obj==Obj::Egg) obj = Obj::Falling_Egg;
+		ref(x+xd,y) = obj;
 		return (true);
 	}
 
 	return (false);
 }
 
+
 bool MapPlay::tryFallLeftOrRight(int x,int y)
 {
-	const Obj::Type obj = xy(x,y);
 	bool done = false;
 
 	switch (xy(x,y+1))
 	{
+		// Curved objects.  Rocks and eggs can fall onto these objects.
+		// If can't fall to the left, fall to the right.
 case Obj::Rock:
 case Obj::Skull:
 case Obj::Diamond:
 case Obj::Egg:
 case Obj::Key:
 case Obj::Bomb:
-case Obj::Broken_Egg:
-case Obj::Broken_Egg1:
-case Obj::Broken_Egg2:
-case Obj::Broken_Egg3:
-		// Curved objects.  Rocks and eggs can fall onto these objects.
-		// If can't fall to the left, fall to the right.
+		// Broken eggs are not curved, rocks will land on top of them
+		// and stay until they hatch.
+		// See http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108
 		if (!tryFallHorizontal(x,y,-1))
 		{
 			if (!tryFallHorizontal(x,y,1))
 			{
-				if (obj==Obj::Falling_Egg)
-				{
-					Sound::playSound(Sound::Broken_Egg);
-					ref(x,y) = Obj::Broken_Egg;
-					done = true;
-				}
+				done = tryBreakEgg(x,y);
 			}
 			else done = true;
 		}
@@ -254,12 +267,7 @@ case Obj::Wall_North_West:
 case Obj::Filled_Wall_North_West:
 		if (!tryFallHorizontal(x,y,-1))
 		{
-			if (obj==Obj::Falling_Egg)
-			{
-				Sound::playSound(Sound::Broken_Egg);
-				ref(x,y) = Obj::Broken_Egg;
-				done = true;
-			}
+			done = tryBreakEgg(x,y);
 		}
 		else done = true;
 		break;		
@@ -268,32 +276,24 @@ case Obj::Wall_North_East:
 case Obj::Filled_Wall_North_East:
 		if (!tryFallHorizontal(x,y,1))
 		{
-			if (obj==Obj::Falling_Egg)
-			{
-				Sound::playSound(Sound::Broken_Egg);
-				ref(x,y) = Obj::Broken_Egg;
-				done = true;
-			}
+			done = tryBreakEgg(x,y);
 		}
 		else done = true;
 		break;
 
-default:	if (obj==Obj::Falling_Egg)
-		{
-			Sound::playSound(Sound::Broken_Egg);
-			ref(x,y) = Obj::Broken_Egg;
-			done = true;
-		}
+default:	done = tryBreakEgg(x,y);
 	}
 
 	return (done);
 }
+
 
 // Check if the specified object can fall.
 bool MapPlay::tryFall(int x,int y)
 {
 	return (tryFallDown(x,y) || tryFallLeftOrRight(x,y));
 }
+
 
 // Check if the blip can go into a direction.
 bool MapPlay::blipTryDirection(Monster *m,Orientation::Type dir,int xd,int yd)
@@ -321,6 +321,7 @@ default:	;					// Avoid warning
 
 	return (false);
 }
+
 
 // Check and move the blip.
 bool MapPlay::updateBlip(Monster *m)
@@ -372,6 +373,10 @@ case Orientation::West:
 	return (true);					// because of animation
 }
 
+
+#define MONSTER_BLOCKED		666			// a very large distance
+
+
 // Check if the monster can go into a direction, and calculate the
 // distance between it and Repton.
 double MapPlay::monsterTryDirection(Monster *m, int xd, int yd)
@@ -389,7 +394,7 @@ case Obj::Repton:
 default:	;
 	}
 
-	return (666);					// A rather large number
+	return (MONSTER_BLOCKED);
 }
 
 // Check the Repton position and move the monster according with it.
@@ -418,11 +423,29 @@ bool MapPlay::updateMonster(Monster *m)
 		xd = -1; yd = 0;
 	}
 
+        if (xd==0 && yd==0)				// monster can't move
+        {
+		// Blocked monster in a direct line can move down (if horizontal from
+		// Repton) or right (if vertical from Repton).
+		// See http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108
+		// The % chance is my invention.
+		if (m->ypos==ypos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,0,1)<MONSTER_BLOCKED)
+		{
+			xd = 0; yd = 1;
+		}
+		else
+		if (m->xpos==xpos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,1,0)<MONSTER_BLOCKED)
+		{
+			xd = 1; yd = 0;
+		}
+        }
+
 	m->xpos += xd;
 	m->ypos += yd;
 	m->sprite = (m->sprite==Obj::Monster) ? Obj::Monster2 : Obj::Monster;
 	return (true);					// because of animation
 }
+
 
 // Check the broken eggs.
 bool MapPlay::updateEggs()
@@ -460,6 +483,7 @@ default:			;			// Avoid warning
 	return (done);
 }
 
+
 // Check the moveable objects (rocks and eggs).
 bool MapPlay::updateObjects()
 {
@@ -488,32 +512,45 @@ default:			;			// Avoid warning
 	return (done);
 }
 
+
 // Try to reproduce the plant.
 bool MapPlay::tryPlant(int x, int y, int dx, int dy)
 {
-	if (xy(x+dx,y+dy)==Obj::Repton)
-	{
-		die("The plant got you!");
-		return (true);
-	}
+    x += dx; y += dy;
 
-//  TODO: replicating plant can kill monster (see http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108)
-//  ALSO: can plant replicate into earth?
+    if (xy(x,y)==Obj::Repton)
+    {
+        die("The plant got you!");
+        return (true);
+    }
 
-	if (xy(x+dx,y+dy)==Obj::Empty)
+//  Replicating plant can kill a monster, but not a blip
+//  (see http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108)
+
+    Monster *m;
+    if ((m = findMonster(x,y))!=NULL && m->type==Obj::Monster)
+    {
+        Sound::playSound(Sound::Kill_Monster);
+        killMonster(m);
+    }
+
+//  Also, IIRC, it can replicate into earth
+
+	if (isempty(x,y))
 	{
-		ref(x+dx,y+dy) = Obj::Plant;
-		addMonster(x+dx,y+dy,Obj::Plant);
+		ref(x,y) = Obj::Plant;
+		addMonster(x,y,Obj::Plant);
 		return (true);
 	}
 
 	return (false);
 }
 
+
 // Check the plants and reproduce.
 bool MapPlay::updatePlant(Monster *m)
 {
-	if ((rand() % 100)<=10)
+	if (chance(CHANCE_PLANT_REPRODUCE))
 	{
 		if (tryPlant(m->xpos, m->ypos, 1, 0)) return (true);
 		else if (tryPlant(m->xpos, m->ypos, -1, 0)) return (true);
@@ -563,7 +600,7 @@ default:		;				// Avoid warning
 // Start looking look round if Repton has been idle for too long
 bool MapPlay::updateIdle()
 {
-	switch (sprite)
+	switch (currentRepton)
 	{
 case Obj::Repton_Go_Right1:
 case Obj::Repton_Go_Right2:
@@ -575,27 +612,27 @@ case Obj::Repton_Go_Left3:
 case Obj::Repton_Go_Left4:
 case Obj::Repton_Go_Up2:
 case Obj::Repton_Go_Up1:
-		sprite = Obj::Repton;
+		currentRepton = Obj::Repton;
 		break;
 
 case Obj::Repton:
-		sprite = ((rand() % 1)==0 ? Obj::Repton_Look_Left : Obj::Repton_Look_Right);
+		currentRepton = ((rand() % 1)==0 ? Obj::Repton_Look_Left : Obj::Repton_Look_Right);
 		break;
 
 case Obj::Repton_Look_Left:
-		sprite = Obj::Repton_Idle1;
+		currentRepton = Obj::Repton_Idle1;
 		break;
 
 case Obj::Repton_Look_Right:
-		sprite = Obj::Repton_Idle2;
+		currentRepton = Obj::Repton_Idle2;
 		break;
 
 case Obj::Repton_Idle1:
-		sprite = Obj::Repton_Look_Right;
+		currentRepton = Obj::Repton_Look_Right;
 		break;
 
 case Obj::Repton_Idle2:
-		sprite = Obj::Repton_Look_Left;
+		currentRepton = Obj::Repton_Look_Left;
 		break;
 
 default:	;					// Avoid warning
@@ -614,7 +651,7 @@ void MapPlay::moveVerticalDirect(int yd)
 	ypos += yd;
 
 	// Change the Repton sprite orientation.
-	switch (sprite)
+	switch (currentRepton)
 	{
 case Obj::Repton:
 case Obj::Repton_Look_Left:
@@ -630,11 +667,11 @@ case Obj::Repton_Go_Left4:
 case Obj::Repton_Go_Up2:
 case Obj::Repton_Idle1:
 case Obj::Repton_Idle2:
-		sprite = Obj::Repton_Go_Up1;
+		currentRepton = Obj::Repton_Go_Up1;
 		break;
 
 case Obj::Repton_Go_Up1:
-		sprite = Obj::Repton_Go_Up2;
+		currentRepton = Obj::Repton_Go_Up2;
 		break;
 
 default:	;					// Avoid warning
@@ -653,7 +690,7 @@ void MapPlay::moveHorizontalDirect(int xd)
 	// Change the Repton sprite orientation.
 	if (xd==-1)					// Move Repton to the left.
 	{
-		switch (sprite)
+		switch (currentRepton)
 		{
 case Obj::Repton:
 case Obj::Repton_Look_Left:
@@ -667,19 +704,19 @@ case Obj::Repton_Go_Right4:
 case Obj::Repton_Go_Left4:
 case Obj::Repton_Idle1:
 case Obj::Repton_Idle2:
-			sprite = Obj::Repton_Go_Left1;
+			currentRepton = Obj::Repton_Go_Left1;
 			break;
 
 case Obj::Repton_Go_Left1:
-			sprite = Obj::Repton_Go_Left2;
+			currentRepton = Obj::Repton_Go_Left2;
 			break;
 
 case Obj::Repton_Go_Left2:
-			sprite = Obj::Repton_Go_Left3;
+			currentRepton = Obj::Repton_Go_Left3;
 			break;
 
 case Obj::Repton_Go_Left3:
-			sprite = Obj::Repton_Go_Left4;
+			currentRepton = Obj::Repton_Go_Left4;
 			break;
 
 default:		;				// Avoid warning
@@ -687,7 +724,7 @@ default:		;				// Avoid warning
 	}
 	else						// Move Repton to the right.
 	{
-		switch (sprite)
+		switch (currentRepton)
 		{
 case Obj::Repton:
 case Obj::Repton_Look_Left:
@@ -701,19 +738,19 @@ case Obj::Repton_Go_Left4:
 case Obj::Repton_Go_Right4:
 case Obj::Repton_Idle1:
 case Obj::Repton_Idle2:
-			sprite = Obj::Repton_Go_Right1;
+			currentRepton = Obj::Repton_Go_Right1;
 			break;
 
 case Obj::Repton_Go_Right1:
-			sprite = Obj::Repton_Go_Right2;
+			currentRepton = Obj::Repton_Go_Right2;
 			break;
 
 case Obj::Repton_Go_Right2:
-			sprite = Obj::Repton_Go_Right3;
+			currentRepton = Obj::Repton_Go_Right3;
 			break;
 
 case Obj::Repton_Go_Right3:
-			sprite = Obj::Repton_Go_Right4;
+			currentRepton = Obj::Repton_Go_Right4;
 			break;
 
 default:		;				// Avoid warning
@@ -797,7 +834,7 @@ case Obj::Crown:
 		gotObject(xy(xpos,ypos));
 		// Move Repton to the new location.
 		ref(xpos,ypos) = Obj::Repton;
-		sprite = Obj::Repton;
+		currentRepton = Obj::Repton;
 		break;
 
 case Obj::Ground1:
@@ -809,7 +846,7 @@ case Obj::Empty:
 		if (findMonster(xpos,ypos)!=NULL) die("You transported onto a monster!");
 		// Move Repton to the new location
 		ref(xpos,ypos) = Obj::Repton;
-		sprite = Obj::Repton;
+		currentRepton = Obj::Repton;
 		break;
 
 case Obj::Transport:
@@ -981,7 +1018,7 @@ case Obj::Broken_Egg3:		obj = Obj::Broken_Egg;
 case Obj::Falling_Egg:		obj = Obj::Egg;
 				break;
 
-case Obj::Repton:		obj = sprite;
+case Obj::Repton:		obj = currentRepton;
 				if (obj==Obj::Repton_Idle1 || obj==Obj::Repton_Idle2) obj = Obj::Repton;
 				break;
 
