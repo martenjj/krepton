@@ -1,6 +1,8 @@
 Things to do for KRepton
 ========================
 
+Allow for per-level colour schemes, as used in Repton 1 and Repton 3.
+
 Need some high colour and themed icons.
 
 Convert the documentation to Docbook format and update it.
@@ -13,6 +15,7 @@ Same for the editor widget?
 listing them).
 
 Import/export FX-Repton, original BBC and other format episodes.
+** BBC format import done - version 4.1
 
 Print the maps, in colour and with annotation of course!
 
@@ -32,12 +35,14 @@ Global KDE games high score support (KDE 3.2).
 
 Should plants kill monsters in the same way as they do Repton?  They
 don't in KRepton, but I think they did in the original.
+** Fixed in version 4.1, along with some of the logic for falling eggs
 
 
 From the original HTML documentation
 ====================================
 
 The Work and Baby II episodes are to be fixed because corrupted.
+** Fixed in version 4.1
 
 The KDE audio interface is inadequate for complex sound applications
 like games. Need to find a best method for playing sounds.
@@ -47,6 +52,7 @@ objects).
 
 Make the High Score board global, not local (this requires making the
 score data globally writable).
+** See "Global KDE games high score support" above
 
 Add keys redefinition support.
 
