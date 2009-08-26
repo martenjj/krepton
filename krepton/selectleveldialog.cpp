@@ -71,6 +71,8 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
     l->setBuddy(wPasswdEdit);
 
     mLevelStates.resize(levels.count());
+
+    int toSelect = 0;
     for (QStringList::const_iterator it = levels.begin(); it!=levels.end(); ++it)
     {
         QStringList fields = QStringList::split(" ",(*it));
@@ -93,9 +95,12 @@ default:			pix = Pixmaps::Unknown;						break;
         QString txt = QString("  %1: %2").arg(1+level).arg(pwd);
 
         wListBox->insertItem(Pixmaps::find(pix),txt);
-        if (playing) wListBox->setSelected(wListBox->count()-1,true);
+        if (playing) toSelect = wListBox->count()-1;
+        else if (toSelect==0 && state==GamePlayer::Started) toSelect = wListBox->count()-1;
         mLevelStates[level] = state;
     }
+
+    wListBox->setSelected(toSelect,true);
 
     connect(wListBox,SIGNAL(selectionChanged(QListBoxItem *)),SLOT(slotItemSelected(QListBoxItem *)));
     connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotPasswdChanged()));
