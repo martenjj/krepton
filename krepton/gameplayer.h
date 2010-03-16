@@ -70,7 +70,7 @@ public:
 	int lastLevel() const { return (currentlevel); }
 
 	bool inGame() const { return (in_game); }
-	const Sprites *getSprites() const { return (sprites); }
+	Sprites *getSprites() const { return (sprites); }
 	const MapList &getMaps() const { return (maps); }
 
 signals:

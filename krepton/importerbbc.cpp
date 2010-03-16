@@ -147,6 +147,30 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
     QByteArray data = f.readAll();			// grab the complete file
     int ptr;						// data pointer into that
 
+    char refpal[BBC_NUM_COLOURS];			// first level reference palette
+    bool samepal[BBC_NUM_MAPS];				// other palettes same as that?
+
+    ptr = 0x00E0;					// first level colour palette
+    for (int c = 0; c<BBC_NUM_COLOURS; ++c)
+    {
+        refpal[c] = data[ptr+c];
+    }
+
+    for (int i = 1; i<BBC_NUM_MAPS; ++i)		// look at subsequent levels
+    {
+        ptr = 0x00E0 + i*4;				// that level colour palette
+        samepal[i] = true;				// assume so for now
+        for (int c = 0; c<BBC_NUM_COLOURS; ++c)
+        {
+            if (data[ptr+c]!=refpal[c])			// we have a mismatch
+            {
+                samepal[i] = false;			// note for sprites later
+                break;					// no need to check any more
+            }
+        }
+	kdDebug() << "  same palette for level " << i << "? " << samepal[i] << endl;
+    }
+
     for (int i = 0; i<BBC_NUM_MAPS; ++i)
     {
         ptr = 0x0000 + i*8;				// point to password
@@ -207,42 +231,45 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
             }
         }
 
-        maplist->append(m);
-    }
+        maplist->append(m);				// store the map
 
-    //  TODO: currently KRepton has one sprite bitmap and therefore one colour
-    //  palette for all 8 screens, whereas the BBC R3 file format allows for 
-    //  different palette for each screen.  This is not so important for the
-    //  R3 sequels, where each episode had a single colour scheme, but for
-    //  original R3 and also for R1 (if I ever get around to importing that),
-    //  the colors are rather monotonous.
+        // Although the sprite data is the same for all levels, for those levels
+        // where the colour is different from the first level (as tested above)
+        // create a separate sprite file so that the palette is honoured.
+        // This mainly applies to the three original Repton 3 levels (Prelude,
+        // Toccata and Finale).
 
-    QColor palette[BBC_NUM_COLOURS];
-    ptr = 0x00E0;					// point to colour palette
-    for (int c = 0; c<BBC_NUM_COLOURS; ++c)
-    {
-        palette[c] = BBCcolours[(int) data[ptr+c]];
-    }
+        if (i>0 && samepal[i]) continue;		// already done, no need
 
-    ptr = 0x0E20;					// point to sprite data
-    for (int c = 0; c<BBC_NUM_SPRITES; ++c)
-    {
-        Obj::Type obj = static_cast<Obj::Type>(c);
-
-        for (int j = 0; j<=127; ++j)
+        QColor palette[BBC_NUM_COLOURS];
+        ptr = 0x00E0 + i*4;				// point to colour palette
+        for (int c = 0; c<BBC_NUM_COLOURS; ++c)
         {
-            int sx = 2*((j%32)/8)*4;
-            int sy = ((j%8)+8*(j/32));
-            unsigned char temp = data[ptr++];
+            palette[c] = BBCcolours[(int) data[ptr+c]];
+        }
 
-            for (int k = 0; k<=3; ++k)
+        ptr = 0x0E20;					// point to sprite data
+        int tgtlev = (i==0 ? 0 : i+1);			// target level or default
+
+        for (int c = 0; c<BBC_NUM_SPRITES; ++c)
+        {
+            Obj::Type obj = static_cast<Obj::Type>(c);
+
+            for (int j = 0; j<=127; ++j)
             {
-                int col = (((temp&0x80)>>3)+(temp&0x08))>>3;
-                sprites->setPixel(obj,sx,sy,palette[col]);
-                ++sx;
-                sprites->setPixel(obj,sx,sy,palette[col]);
-                ++sx;
-                temp <<= 1;
+                int sx = 2*((j%32)/8)*4;
+                int sy = ((j%8)+8*(j/32));
+                unsigned char temp = data[ptr++];
+
+                for (int k = 0; k<=3; ++k)
+                {
+                    int col = (((temp&0x80)>>3)+(temp&0x08))>>3;
+                    sprites->setPixel(obj,sx,sy,palette[col],tgtlev);
+                    ++sx;
+                    sprites->setPixel(obj,sx,sy,palette[col],tgtlev);
+                    ++sx;
+                    temp <<= 1;
+                }
             }
         }
     }

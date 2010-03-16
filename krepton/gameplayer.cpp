@@ -52,7 +52,7 @@ GamePlayer::GamePlayer(QWidget *parent,const char *name)
 	in_game = false;
 	in_pause = false;
 	currentmap = NULL;
-	currentlevel = 0;
+	currentlevel = -1;
 	sprites = NULL;
 
 	setFocusPolicy(QWidget::StrongFocus);
@@ -90,11 +90,10 @@ const QString GamePlayer::loadSprites(const Episode *e)
 {
 	kdDebug(0) << k_funcinfo << "name='" << e->getName() << "'" << endl;
 
-	QCursor curs = cursor();
 	setCursor(QCursor(Qt::WaitCursor));
 	if (sprites!=NULL) delete sprites;
 	sprites = new Sprites(e);
-	setCursor(curs);
+	unsetCursor();
 
 	return (sprites->loadStatus());
 }
@@ -106,7 +105,7 @@ const QString GamePlayer::loadMaps(const Episode *e)
 	const QString status = e->loadMaps(&maps);
 	if (!status.isNull()) return (status);
 
-	currentlevel = 0;				// not valid any longer
+	currentlevel = -1;				// not valid any longer
 	if (currentmap!=NULL) delete currentmap;
 	currentmap = NULL;
 	return (QString::null);
@@ -162,7 +161,7 @@ void GamePlayer::setMaps(const MapList ml)
 // check how many levels now, may need to trim 'lastlevel'
 	kdDebug(0) << k_funcinfo << "count=" << maps.count() <<
 		" last=" << currentlevel << endl;
-	if (currentlevel<((int) (maps.count()-1))) currentlevel = 0;
+	if (currentlevel>((int) (maps.count()-1))) currentlevel = -1;
 	if (currentmap!=NULL) delete currentmap;
 	currentmap = NULL;
 }
@@ -191,6 +190,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 
 	if (currentmap!=NULL) delete currentmap;
 	currentmap = new MapPlay(*maps.at(level));
+        sprites->prepare(level+1);
 
 	currentlevel = level;
 	seconds = currentmap->getSeconds();
@@ -272,13 +272,12 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 		if (currentmap->hasDied()) endedGame(currentmap->howDied());
 		else
 		{
-			unsigned int doneLevel = currentlevel+1;
                         recordLevel(GamePlayer::Finished);
 							// record level as completed
-			if (doneLevel<maps.count())
+			if (currentlevel<(maps.count()-1))
 			{
 				KMessageBox::information(this,"Level finished!");
-				startGame(NULL,doneLevel);
+				startGame(NULL,currentlevel+1);
 			}
 			else
 			{
