@@ -32,6 +32,7 @@
 #include <qvbox.h>
 #include <qlayout.h>
 #include <qhbox.h>
+#include <qtooltip.h>
 
 #include "krepton.h"
 
@@ -72,7 +73,7 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
 
     mLevelStates.resize(levels.count());
 
-    int toSelect = 0;
+    int toSelect = -1;
     for (QStringList::const_iterator it = levels.begin(); it!=levels.end(); ++it)
     {
         QStringList fields = QStringList::split(" ",(*it));
@@ -96,14 +97,32 @@ default:			pix = Pixmaps::Unknown;						break;
 
         wListBox->insertItem(Pixmaps::find(pix),txt);
         if (playing) toSelect = wListBox->count()-1;
-        else if (toSelect==0 && state==GamePlayer::Started) toSelect = wListBox->count()-1;
+        else if (toSelect<0 && state==GamePlayer::Started) toSelect = wListBox->count()-1;
         mLevelStates[level] = state;
     }
 
+    if (toSelect<0) toSelect = 0;
     wListBox->setSelected(toSelect,true);
 
     connect(wListBox,SIGNAL(selectionChanged(QListBoxItem *)),SLOT(slotItemSelected(QListBoxItem *)));
+    connect(wListBox,SIGNAL(returnPressed(QListBoxItem *)),SLOT(slotOk()));
+    connect(wListBox,SIGNAL(doubleClicked(QListBoxItem *)),SLOT(slotOk()));
     connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotPasswdChanged()));
+
+    Pixmaps::find(Pixmaps::Finished,true);		// set MIME source, see docs for
+    Pixmaps::find(Pixmaps::Password,true);		// QMimeSourceFactory
+    Pixmaps::find(Pixmaps::Playing,true);
+    Pixmaps::find(Pixmaps::Started,true);
+    Pixmaps::find(Pixmaps::Unplayed,true);
+
+    QToolTip::add(wListBox,i18n("<qt>\
+<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\
+<tr><td><img src=\"pixmap_unplayed\"></td><td>First level, start here</td></tr>\
+<tr><td><img src=\"pixmap_playing\"></td><td>Level that was last played</td></tr>\
+<tr><td><img src=\"pixmap_started\"></td><td>A level that has been started, but not yet finished</td></tr>\
+<tr><td><img src=\"pixmap_finished\"></td><td>Level successfully completed</td></tr>\
+<tr><td><img src=\"pixmap_password\"></td><td>Level not started, a password is needed to play it</td></tr>\
+</table>"));
 
     slotItemSelected(wListBox->selectedItem());
 }
@@ -143,10 +162,8 @@ QCString SelectLevelDialog::selectedPassword()
 {
     QListBoxItem *cur = wListBox->selectedItem();
     if (cur==NULL) return (NULL);
-    //kdDebug() << k_funcinfo << "selected [" << cur->text() << "]" << endl;
 
     QCString pass = cur->text().section(": ",1).local8Bit();
     if (pass.isEmpty()) pass = wPasswdEdit->text().local8Bit();
-    //kdDebug() << k_funcinfo << "password[" << pass << "]" << endl;
     return (pass);
 }
