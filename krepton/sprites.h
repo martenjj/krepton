@@ -27,8 +27,11 @@
 
 #include <qcolor.h>
 #include <qpixmap.h>
+#include <qmap.h>
+
 
 class Episode;
+
 
 class Sprites
 {
@@ -42,31 +45,38 @@ public:
 
 	Sprites();					// create as blank
 	Sprites(const Episode *e);			// load from episode
-	Sprites(const Sprites &s);			// copy constructor
+        Sprites(const Sprites &s);			// copy constructor
 	const QString loadStatus() const { return (status); }
 
+	void prepare(int level);
 	QPixmap get(Obj::Type obj) const { return (sprites[obj]); }
 	QPixmap getRaw(Obj::Type obj) const { return (rawsprites[obj]); }
 
-	void setPixel(Obj::Type obj,int x,int y,QColor colour);
-	bool save(const Episode *e) const;
+	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
+	bool save(const Episode *e);
+
+	bool hasMultiLevels() const;
+	void removeMultiLevels();
 
 	static QPixmap preview(const Episode *e);
 	static void setMagnification(Sprites::Magnification mag);
 	static Sprites::Magnification getMagnification() { return (magnification); }
 
 private:
-	static const int xnum = 8;
-	static const int ynum = 6;
 	static Sprites::Magnification magnification;
 	static bool magnificationset;
 
-	void update();
+	void ensureRaw();
 
+        QMap<int,QPixmap> files;			// source files per-level
 	QPixmap sprites[Obj::num_sprites];		// scaled & masked, for game
 	QPixmap rawsprites[Obj::num_sprites];		// unprocessed, for editor
-	bool edited[Obj::num_sprites];			// updated in editor
-	QString status;
+
+	int preparedFor;				// level sprites are ready for
+	bool multiRemoved;				// remove levels on saving
+	bool rawSet;					// rawsprites have been created
+
+	QString status;					// file loading status
 };
 
 #endif							// !SPRITES_H
