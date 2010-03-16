@@ -57,14 +57,16 @@ int main(int argc,char *argv[])
 			     VERSION,
 			     I18N_NOOP("The Repton game for KDE"),
 			     KAboutData::License_GPL,
-			     "(c) 1998, Sandro Sigala\n(c) 2003-2009, Jonathan Marten",0,
+			     "(c) 1998, Sandro Sigala\n(c) 2003-2010, Jonathan Marten",0,
 			     "http://www.keelhaul.me.uk/krepton/",
 			     "jjm@keelhaul.me.uk");
 
 	aboutData.addAuthor("Sandro Sigala",I18N_NOOP("Original author"),"ssigala@globalnet.it");
 	aboutData.addAuthor("Jonathan Marten",I18N_NOOP("KDE 3 conversion"),"jjm@keelhaul.me.uk");
+
 	aboutData.addCredit("Jasper Renow-Clarke",I18N_NOOP("BBC format and maps"),"cm5hdjjr@bs41.staffs.ac.uk");
 	aboutData.addCredit("George Russell",I18N_NOOP("Feature suggestions"),"george.russell@clara.net");
+	aboutData.addCredit("Stairway to Hell contributors",I18N_NOOP("Compatibility questions"),NULL,"http://www.stairwaytohell.com");
 
 	KCmdLineArgs::init(argc,argv,&aboutData);
 	KCmdLineArgs::addCmdLineOptions(options);
