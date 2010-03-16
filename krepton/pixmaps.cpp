@@ -30,6 +30,7 @@
 #include <qpixmap.h>
 #include <qbitmap.h>
 #include <qpixmapcache.h>
+#include <qmime.h>
 
 #include "pixmaps.h"
 
@@ -51,13 +52,12 @@ const QPixmap getPixmap(const char *key)
         }
 	else pm.setMask(pm.createHeuristicMask());
 
-        QPixmapCache::insert(key,pm);
+        QPixmapCache::insert(key,pm);			// save in cache
         return (pm);
 }
 
 
-
-const QPixmap Pixmaps::find(Pixmaps::type p)
+const QPixmap Pixmaps::find(Pixmaps::type p,bool setMimeSource)
 {
 	QString key;
 	switch (p)
@@ -75,7 +75,12 @@ case Unplayed:	key = "unplayed";	break;
 default:	key = "unknown";	break;
 	}
 
-        return (getPixmap(key));
+        QPixmap pm = getPixmap(key);
+        if (setMimeSource)				// set for labels/tooltips
+        {
+            QMimeSourceFactory::defaultFactory()->setPixmap(QString("pixmap_")+key,pm);
+        }
+        return (pm);
 }
 
 

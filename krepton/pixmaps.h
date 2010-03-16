@@ -34,7 +34,7 @@ class Pixmaps
 public:
 	enum type { Key, Crown, Back, Pause, Started, Playing, Finished, Unknown, Password, Unplayed };
 
-	static const QPixmap find(Pixmaps::type p);
+	static const QPixmap find(Pixmaps::type p,bool setMimeSource = false);
 	static const QPixmap findLives(int l);
 };
 
