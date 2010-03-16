@@ -1,7 +1,10 @@
 Things to do for KRepton
 ========================
 
+Port to KDE 4
+
 Allow for per-level colour schemes, as used in Repton 1 and Repton 3.
+** Done in version 4.2
 
 Need some high colour and themed icons.
 
@@ -36,6 +39,13 @@ Global KDE games high score support (KDE 3.2).
 Should plants kill monsters in the same way as they do Repton?  They
 don't in KRepton, but I think they did in the original.
 ** Fixed in version 4.1, along with some of the logic for falling eggs
+
+Update scoring - according to
+http://www.stairwaytohell.com/gamehelp/solution-repton3-ms.txt:
+  For collecting a diamond: 5 points
+  For collecting a crown: 50 points
+  For killing a monster: 20 points
+
 
 
 From the original HTML documentation

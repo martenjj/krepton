@@ -2,6 +2,53 @@ ChangeLog for KRepton                             -*- mode:text -*-
 =====================
 
 
+Changes from version 4.1 to version 4.2:
+---------------------------------------
+
+Allow per-level sprite files, so that imported episodes where the
+palette varies between levels (notably the 3 original episodes
+Prelude, Toccata and Finale) can be accurately reproduced.  Backwards
+and forwards compatible.
+
+Levels removed from Prelude(E) episode, now sprites only - its maps
+were the same as the original.
+
+Added a tooltop to explain the level selection dialogue.
+
+
+
+Changes from version 4.0 to version 4.1:
+---------------------------------------
+
+Added an import wizard to allow game files in other formats to be imported.
+Currently the only format supported is BBC Repton 3 (and sequels).
+
+Successfully completed levels are now saved in the user configuration, so
+allowing levels to be continued or played again (via the "Start at level"
+option) without having to specify the password.
+
+The game playing logic for some of the characters has been changed to
+be more faithful to the original (which could affect the playing of
+certain levels):
+
+  -  A rock falling onto a broken egg will now rest there until it hatches
+     and then kill the monster; previously the rock would just roll off
+     the broken egg.
+
+  -  Growing plants can replicate onto a monster and kill it.
+
+  -  A monster which is in a straight line from Repton but is blocked by a
+     solid object between them can try to move one square right or down
+     to try to get round the obstacle.
+
+Many thanks to those on the Stairway To Hell forums,
+http://www.stairwaytohell.com, who provided information.
+
+The corrupted "Baby II" and "Work" episodes are now fixed and playable
+(but not able to verify if they are completable).
+
+
+
 Changes from version 3.0.1 to version 4.0:
 -----------------------------------------
 Integrated the separate "Game" and "Editor" applications into a single
