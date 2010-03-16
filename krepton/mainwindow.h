@@ -27,9 +27,6 @@
 
 #include <kmainwindow.h>
 
-#include "map.h"
-#include "sprites.h"
-
 
 class GamePlayer;
 class GameEditor;
@@ -134,6 +131,7 @@ private:
 	GameEditor *edit;
 	const Episode *currentepisode;
 	bool modified;
+	bool editWarned;
 
 	QLabel *keyflag;				// toolbar icons
 	QLabel *crownflag;

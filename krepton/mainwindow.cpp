@@ -57,6 +57,7 @@
 #include "mainwindow.h"
 #include "mainwindow.moc"
 
+
 static const int minimum_wid = 5;			// sizes for main window
 static const int minimum_hei = 3;
 static const int default_wid = 9;
@@ -70,6 +71,7 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 
 	currentepisode = NULL;
 	modified = false;
+        editWarned = false;
 
 	(void) KStdAction::quit(this,SLOT(close()),actionCollection(),"file_quit");
 
@@ -90,11 +92,11 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 					this,SLOT(slotContinueGame()),
 					actionCollection(),"game_continue");
 
-	pauseAction = new KToggleAction(i18n("Pause"),Key_P,
+	pauseAction = new KToggleAction(i18n("Pause"),"P;Pause",
 					this,SLOT(slotPauseGame()),
 					actionCollection(),"game_pause");
 
-	suicideAction = new KAction(i18n("Suicide"),Key_Escape,
+	suicideAction = new KAction(i18n("Give up"),Key_Escape,
 				this,SLOT(slotSuicide()),
 				actionCollection(),"game_suicide");
 
@@ -428,8 +430,7 @@ void MainWindow::updatePlayState(bool ingame,bool inpause)
 	suicideAction->setEnabled(ingame);
 
 	startAction->setEnabled(loaded && !ingame && game->countLevels()>0);
-	restartAction->setEnabled(loaded && !ingame && game->lastLevel()>0);
-//	continueAction->setEnabled(loaded && !ingame && game->countLevels()>1);
+	restartAction->setEnabled(loaded && !ingame && game->lastLevel()>=0);
 	continueAction->setEnabled(loaded && !ingame);
 }
 
@@ -600,6 +601,7 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 	}
 
 	modified = false;
+        editWarned = false;
 	updateGameState(false);
 }
 
@@ -640,7 +642,11 @@ const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
 	if (e==NULL) return (QString::null);
 	kdDebug(0) << k_funcinfo << "name=" << e->getName() << endl;
 
-	if (spritesonly) return (game->loadSprites(e));
+	if (spritesonly)
+        {
+            editWarned = false;
+            return (game->loadSprites(e));
+        }
 
 	const QString status = game->loadEpisode(e);
 	currentepisode = (status.isNull() ? e : NULL);
@@ -653,6 +659,40 @@ void MainWindow::slotEdit()
 	kdDebug(0) << k_funcinfo << "edit=" << ((void*)edit) << endl;
 
 	if (currentepisode==NULL) return;
+
+        if (game->getSprites()->hasMultiLevels() && !editWarned)
+        {
+            switch (KMessageBox::questionYesNoCancel(this,
+                                                     i18n("<qt><p>\
+This game contains level-specific sprite files.  If you edit the sprites using \
+the sprite editor, you will only be editing the default sprites which are used for any \
+levels that do not have specific sprite images.  For levels that do have \
+specific sprites, changes made in the sprite editor will have no effect.\
+<p>\
+To remove the level-specific sprite files, select <b>Remove</b>.  All levels in \
+the game will then use the same sprite images;  these can be edited using the sprite \
+editor in the usual way.  No files will be removed from the saved copy of the \
+game until it is saved.\
+<p>\
+To retain the level-specific sprite files, select <b>Keep</b>.  Changes made \
+using the sprite editor may not have any effect on played levels."),\
+                                                     i18n("Multiple Sprites"),
+                                                     KGuiItem("Remove"),
+                                                     KGuiItem("Keep")))
+            {
+case KMessageBox::Yes:
+		game->getSprites()->removeMultiLevels();
+                break;
+
+case KMessageBox::No:
+                break;
+
+case KMessageBox::Cancel:
+		return;
+            }
+
+            editWarned = true;				// not again for this game
+        }
 
 	if (edit==NULL)
 	{
@@ -693,11 +733,10 @@ void MainWindow::fetchFromEditor()
 	if (!edit->isModified()) return;		// nothing to do
 	if (game->inGame()) return;			// shouldn't happen
 
-	QCursor curs = cursor();
 	setCursor(QCursor(Qt::WaitCursor));
 	game->setSprites(edit->getSprites());
 	game->setMaps(edit->getMaps());
-	setCursor(curs);
+	unsetCursor();
 
 	modified = true;
 	updateGameState(false);
@@ -709,10 +748,9 @@ void MainWindow::passToEditor()
 {
 	kdDebug(0) << k_funcinfo << endl;
 
-	QCursor curs = cursor();
 	setCursor(QCursor(Qt::WaitCursor));
 	edit->startEdit(currentepisode->getName(),game->getMaps(),game->getSprites());
-	setCursor(curs);
+	unsetCursor();
 }
 
 
