@@ -34,6 +34,10 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <QTimerEvent>
+#include <QPaintEvent>
+#include <QKeyEvent>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -47,7 +51,7 @@
 
 
 GamePlayer::GamePlayer(QWidget *parent,const char *name)
-        : QWidget(parent,name,Qt::WRepaintNoErase)
+        : QWidget(parent,name,Qt::WNoAutoErase)
 {
 	in_game = false;
 	in_pause = false;
@@ -55,7 +59,7 @@ GamePlayer::GamePlayer(QWidget *parent,const char *name)
 	currentlevel = -1;
 	sprites = NULL;
 
-	setFocusPolicy(QWidget::StrongFocus);
+	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
 
 	timerObjects = startTimer(200);
@@ -402,16 +406,16 @@ void GamePlayer::keyPressEvent(QKeyEvent *e)
 {
 	switch (e->key())
 	{
-case Key_Up:	goUp();
+case Qt::Key_Up:	goUp();
 		break;
 
-case Key_Down:	goDown();
+case Qt::Key_Down:	goDown();
 		break;
 
-case Key_Left:	goLeft();
+case Qt::Key_Left:	goLeft();
 		break;
 
-case Key_Right:	goRight();
+case Qt::Key_Right:	goRight();
 		break;
 
 default:	e->ignore();

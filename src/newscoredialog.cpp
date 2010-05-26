@@ -29,6 +29,8 @@
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 
 #include <kdialogbase.h>
 
@@ -44,7 +46,7 @@ NewScoreDialog::NewScoreDialog(QWidget *parent, const char *name)
 
 	QWidget *page = new QWidget(this);
 	setMainWidget(page);
-	QVBoxLayout *topLayout = new QVBoxLayout(page,0,spacingHint());
+	Q3VBoxLayout *topLayout = new Q3VBoxLayout(page,0,spacingHint());
 
 	le = new QLineEdit(username,page);
 	le->setMinimumWidth(fontMetrics().maxWidth()*20);

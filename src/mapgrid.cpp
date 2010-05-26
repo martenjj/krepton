@@ -24,12 +24,14 @@
 
 #include "config.h"
 
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qpixmap.h>
 #include <qpainter.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qpen.h>
 #include <qcolor.h>
+//Added by qt3to4:
+#include <QMouseEvent>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -39,7 +41,7 @@
 
 
 MapGrid::MapGrid(QWidget *parent,const char *name)
-	: QScrollView(parent,name,Qt::WResizeNoErase|Qt::WRepaintNoErase)
+	: Q3ScrollView(parent,name,Qt::WResizeNoErase|Qt::WNoAutoErase)
 {
 	kdDebug(0) << k_funcinfo << endl;
 
@@ -50,12 +52,12 @@ MapGrid::MapGrid(QWidget *parent,const char *name)
 	showsel = false;
 	xtrans = ytrans = 0;
 
-	setHScrollBarMode(QScrollView::AlwaysOn);
-	setVScrollBarMode(QScrollView::AlwaysOn);
+	setHScrollBarMode(Q3ScrollView::AlwaysOn);
+	setVScrollBarMode(Q3ScrollView::AlwaysOn);
 	horizontalScrollBar()->setLineStep(Sprites::base_width);
 	verticalScrollBar()->setLineStep(Sprites::base_width);
 
-	setResizePolicy(QScrollView::Manual);
+	setResizePolicy(Q3ScrollView::Manual);
 	viewport()->setMouseTracking(true);
 
 	kdDebug(0) << k_funcinfo << "done" << endl;
@@ -112,7 +114,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 
 	if (showtrans)
 	{
-		const QPtrList<Transporter> tl = map->getTransportersList();
+		const Q3PtrList<Transporter> tl = map->getTransportersList();
 		for (unsigned int i = 0; i<tl.count(); ++i)
 		{
 			int ox,oy,dx,dy;
@@ -151,7 +153,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 
 void MapGrid::contentsMousePressEvent(QMouseEvent *e)
 {
-	if (!(e->button()==LeftButton || e->button()==RightButton)) return;
+	if (!(e->button()==Qt::LeftButton || e->button()==Qt::RightButton)) return;
 
 	int x = e->x()/Sprites::base_width;
 	int y = e->y()/Sprites::base_height;
@@ -164,7 +166,7 @@ void MapGrid::contentsMouseMoveEvent(QMouseEvent *e)
 	int x = e->x()/Sprites::base_width;
 	int y = e->y()/Sprites::base_height;
 
-	int b = e->state() & (LeftButton|RightButton);
+	int b = e->state() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x,y);
 }

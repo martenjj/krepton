@@ -27,6 +27,8 @@
 #include "krepton.h"
 
 #include "map2.h"
+//Added by qt3to4:
+#include <Q3PtrList>
 
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
@@ -45,7 +47,7 @@ MapEdit::~MapEdit()
 	kdDebug(0) << k_funcinfo << "pw='" << getPassword() << "'" << endl;
 }
 
-QPtrList<Transporter> MapEdit::getTransportersList()
+Q3PtrList<Transporter> MapEdit::getTransportersList()
 {
 	return (transporters);
 }

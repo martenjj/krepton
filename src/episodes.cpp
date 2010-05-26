@@ -32,13 +32,16 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
-#include <qtstream.h>
+#include <qtextstream.h>
 #include <qregexp.h>
+//Added by qt3to4:
+#include <Q3TextStream>
+#include <Q3PtrCollection>
 
 #include "krepton.h"
 #include "map.h"
@@ -112,13 +115,13 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 
 	path = getFilePath("info");			// information file
 	QFile f(path);
-	if (!f.open(IO_WriteOnly))
+	if (!f.open(QIODevice::WriteOnly))
 	{
 		reportError("Cannot write to file '%1'",path);
 		return (false);
 	}
 
-	QTextStream t(&f);
+	Q3TextStream t(&f);
 	t << name << '\n';
 	t << maps->count() << '\n';
 	f.close();
@@ -217,7 +220,7 @@ QString Episode::savePath(const QString &name)
 
 
 
-EpisodeList::EpisodeList() : QPtrList<Episode>()
+EpisodeList::EpisodeList() : Q3PtrList<Episode>()
 {
 	const QString localdir = QDir(KGlobal::dirs()->localkdedir()).canonicalPath()+"/";
 	kdDebug(0) << k_funcinfo << "local='" << localdir << "'" << endl;
@@ -258,13 +261,13 @@ EpisodeList::EpisodeList() : QPtrList<Episode>()
 			QFile f(filename);
 			dir.cdUp();
 
-			if (!f.open(IO_ReadOnly))
+			if (!f.open(QIODevice::ReadOnly))
 			{
 				reportError("Cannot read information file '%1'",filename);
 				continue;
 			}
 
-			QTextStream t(&f);
+			Q3TextStream t(&f);
 			QString name;
 			name = t.readLine().stripWhiteSpace();
 			f.close();
@@ -334,7 +337,7 @@ void EpisodeList::remove(const Episode *e,bool noDelete)
 
 bool EpisodeList::anyUser() const
 {
-	QPtrListIterator<Episode> ei(*this);
+	Q3PtrListIterator<Episode> ei(*this);
 	for (const Episode *e; (e = ei.current())!=NULL; ++ei)
 	{
 		if (!e->isGlobal()) return (true);
@@ -347,7 +350,7 @@ bool EpisodeList::any() const
 	return (count()>0);
 }
 
-int EpisodeList::compareItems(QPtrCollection::Item item1,QPtrCollection::Item item2)
+int EpisodeList::compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2)
 {
 	const QString n1 = ((const Episode *) item1)->getName();
 	const QString n2 = ((const Episode *) item2)->getName();

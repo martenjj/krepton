@@ -29,8 +29,10 @@
 #include <klistview.h>
 #include <kmessagebox.h>
 
-#include <qheader.h>
+#include <q3header.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3VBoxLayout>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -44,16 +46,16 @@ const char *groupname = "High Score";
 class ScoreListItem : public KListViewItem
 {
 public:
-	ScoreListItem(QListView *parent,QString col1,QString col2,QString col3);
-	int compare(QListViewItem *i,int col,bool ascending) const;
+	ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3);
+	int compare(Q3ListViewItem *i,int col,bool ascending) const;
 };
 
-ScoreListItem::ScoreListItem(QListView *parent,QString col1,QString col2,QString col3)
+ScoreListItem::ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3)
 	: KListViewItem(parent,col1,col2,col3)
 {
 }
 
-int ScoreListItem::compare(QListViewItem *i,int col,bool ascending) const
+int ScoreListItem::compare(Q3ListViewItem *i,int col,bool ascending) const
 {
 	if (col!=1) return (key(col,ascending).compare(i->key(col,ascending)));
 
@@ -74,11 +76,11 @@ KGuiItem("C&lear")
 	config->setGroup(groupname);
 
 	QWidget *page = new QWidget(this);
-	QVBoxLayout *vl = new QVBoxLayout(page,0,spacingHint());
+	Q3VBoxLayout *vl = new Q3VBoxLayout(page,0,spacingHint());
 	setMainWidget(page);
 
 	list = new KListView(page);
-	list->setSelectionMode(QListView::NoSelection);
+	list->setSelectionMode(Q3ListView::NoSelection);
 	list->setItemMargin(4);
 
 	list->addColumn("Episode");

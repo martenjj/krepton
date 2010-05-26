@@ -25,7 +25,7 @@
 #ifndef LEVELEDITOR_H
 #define LEVELEDITOR_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qstring.h>
 
 #include "map.h"
@@ -33,7 +33,7 @@
 class LevelEditor
 {
 public:
-	static QPtrList<Transporter> getTransportersList(const Map *mm);
+	static Q3PtrList<Transporter> getTransportersList(const Map *mm);
 	static void mapInsert(MapList *ml,int sx,int sy,const QString password);
 	static void mapRemove(MapList *ml,int item);
 	static void mapMoveUp(MapList *ml,int item);

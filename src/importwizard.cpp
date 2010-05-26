@@ -35,13 +35,16 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qwidget.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qcheckbox.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <Q3HBoxLayout>
+#include <Q3VBoxLayout>
 
 #include "episodes.h"
 #include "importmanager.h"
@@ -267,12 +270,12 @@ void ImportWizard::setupPage1()
 {
 	page1 = new QWidget(this);
 
-	QHBoxLayout *l = new QHBoxLayout(page1,KDialog::marginHint(),KDialog::spacingHint());
+	Q3HBoxLayout *l = new Q3HBoxLayout(page1,KDialog::marginHint(),KDialog::spacingHint());
 
-	page1list = new QListBox(page1);
-	page1list->setSelectionMode(QListBox::Single);
-	page1list->setHScrollBarMode(QScrollView::AlwaysOff);
-	page1list->setVScrollBarMode(QScrollView::AlwaysOn);
+	page1list = new Q3ListBox(page1);
+	page1list->setSelectionMode(Q3ListBox::Single);
+	page1list->setHScrollBarMode(Q3ScrollView::AlwaysOff);
+	page1list->setVScrollBarMode(Q3ScrollView::AlwaysOn);
 	page1list->setMinimumHeight(80);
 	connect(page1list,SIGNAL(selectionChanged()),this,SLOT(slotPage1FormatSelected()));
 	l->addWidget(page1list);
@@ -298,7 +301,7 @@ void ImportWizard::slotPage1FormatSelected()
 {
     QString t = page1text;
 
-    QListBoxItem *item = page1list->selectedItem();
+    Q3ListBoxItem *item = page1list->selectedItem();
     QString fmtName = (item==NULL ? QString::null : item->text());
 
     format = manager->findNamed(fmtName);
@@ -336,7 +339,7 @@ void ImportWizard::slotPage1FormatSelected()
 void ImportWizard::setupPage2()
 {
 	page2 = new QWidget(this);
-	QVBoxLayout *l = new QVBoxLayout(page2,KDialog::marginHint(),KDialog::spacingHint());
+	Q3VBoxLayout *l = new Q3VBoxLayout(page2,KDialog::marginHint(),KDialog::spacingHint());
 
 	page2info = new QLabel(page2text.arg(""),page2);
 	l->addWidget(page2info,1,Qt::AlignTop);
@@ -379,7 +382,7 @@ void ImportWizard::slotPage2SourceSelected()
 void ImportWizard::setupPage3()
 {
 	page3 = new QWidget(this);
-	QVBoxLayout *l = new QVBoxLayout(page3,KDialog::marginHint(),KDialog::spacingHint());
+	Q3VBoxLayout *l = new Q3VBoxLayout(page3,KDialog::marginHint(),KDialog::spacingHint());
 
 	KActiveLabel *info = new KActiveLabel(page3text,page3);
 	l->addWidget(info,1,Qt::AlignTop);
@@ -417,7 +420,7 @@ void ImportWizard::slotPage3NameChanged()
 void ImportWizard::setupPage4()
 {
 	page4 = new QWidget(this);
-	QVBoxLayout *l = new QVBoxLayout(page4,KDialog::marginHint(),KDialog::spacingHint());
+	Q3VBoxLayout *l = new Q3VBoxLayout(page4,KDialog::marginHint(),KDialog::spacingHint());
 
 	QLabel *info = new QLabel(page4text,page4);
 	l->addWidget(info,1,Qt::AlignTop);
@@ -440,7 +443,7 @@ void ImportWizard::setupPage4()
 void ImportWizard::setupPage5()
 {
 	page5 = new QWidget(this);
-	QVBoxLayout *l = new QVBoxLayout(page5,KDialog::marginHint(),KDialog::spacingHint());
+	Q3VBoxLayout *l = new Q3VBoxLayout(page5,KDialog::marginHint(),KDialog::spacingHint());
 
 	QLabel *info = new QLabel(page5text,page5);
 	l->addWidget(info,1,Qt::AlignTop);

@@ -41,6 +41,8 @@
 
 #include "krepton.h"
 #include "mainwindow.h"
+//Added by qt3to4:
+#include <Q3CString>
 
 
 // TODO: options for mode, start game or editor
@@ -71,7 +73,7 @@ int main(int argc,char *argv[])
 	KCmdLineArgs::init(argc,argv,&aboutData);
 	KCmdLineArgs::addCmdLineOptions(options);
 
-	QCString name;					// '-l' -> load episode
+	Q3CString name;					// '-l' -> load episode
 
 	KApplication app;
  	if (!app.isRestored())

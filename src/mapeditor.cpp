@@ -25,11 +25,14 @@
 #include "config.h"
 
 #include <qlabel.h>
-#include <qscrollview.h>
+#include <q3scrollview.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qcheckbox.h>
-#include <qbuttongroup.h>
+#include <q3buttongroup.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <QCloseEvent>
 
 #include <kdialog.h>
 #ifdef EDITOR_3_WINDOWS
@@ -63,7 +66,7 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	map = NULL;
 	sprites = ss;
 
-	QGridLayout *gl = new QGridLayout(this,6,6,KDialog::marginHint(),KDialog::spacingHint());
+	Q3GridLayout *gl = new Q3GridLayout(this,6,6,KDialog::marginHint(),KDialog::spacingHint());
 	gl->setRowStretch(1,9);
 	gl->setColStretch(5,9);
 	gl->addColSpacing(1,KDialog::spacingHint());
@@ -88,7 +91,7 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	label = new QLabel("Object:", this);
 	gl->addWidget(label,0,2,Qt::AlignLeft);
 
-	optiongroup = new QButtonGroup(1,Qt::Horizontal,"D&isplay",this);
+	optiongroup = new Q3ButtonGroup(1,Qt::Horizontal,"D&isplay",this);
 	connect(optiongroup,SIGNAL(clicked(int)),this,SLOT(optionButton(int)));
 	gl->addMultiCellWidget(optiongroup,3,3,0,2,Qt::AlignLeft);
 
@@ -151,8 +154,8 @@ void MapEditor::pressedButton(int button,int x,int y)
 	if (current_sprite==((Obj::Type) -1)) return;
 
 	bool changed = false;
-	if (button & LeftButton) changed = map->setCell(x,y,current_sprite);
-	else if (button & RightButton) changed = map->setCell(x,y,Obj::Empty);
+	if (button & Qt::LeftButton) changed = map->setCell(x,y,current_sprite);
+	else if (button & Qt::RightButton) changed = map->setCell(x,y,Obj::Empty);
 	if (!changed) return;
 
 	map_area->updatedCell(x,y);

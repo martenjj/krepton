@@ -26,6 +26,9 @@
 #define MAINWINDOW_H
 
 #include <kmainwindow.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <QCloseEvent>
 
 
 class GamePlayer;

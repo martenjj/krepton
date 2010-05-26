@@ -25,7 +25,7 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -54,7 +54,7 @@ public:
 		return (xy(x,y));
 	}
 
-	QPtrList<Transporter> getTransportersList();
+	Q3PtrList<Transporter> getTransportersList();
 	void transporterInsert(int ox,int oy,int dx,int dy);
 	void transporterGet(int item,int *ox,int *oy,int *dx = NULL,int *dy = NULL);
 	void transporterChange(int item,int ox,int oy,int dx,int dy);
@@ -64,7 +64,7 @@ public:
 };
 
 
-class MapEditList : public QPtrList<MapEdit>
+class MapEditList : public Q3PtrList<MapEdit>
 {
 public:
 	void mapInsert(int sx,int sy,const QString password);
@@ -75,7 +75,7 @@ public:
 	operator MapList();
 };
 
-typedef QPtrListIterator<MapEdit> MapEditListIterator;
+typedef Q3PtrListIterator<MapEdit> MapEditListIterator;
 
 
 #endif							// !MAPEDIT_H

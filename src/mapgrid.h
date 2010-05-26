@@ -25,14 +25,16 @@
 #ifndef MAPGRID_H
 #define MAPGRID_H
 
-#include <qscrollview.h>
+#include <q3scrollview.h>
+//Added by qt3to4:
+#include <QMouseEvent>
 
 #include "krepton.h"
 
 class MapEdit;
 class Sprites;
 
-class MapGrid : public QScrollView
+class MapGrid : public Q3ScrollView
 {
 	Q_OBJECT
 

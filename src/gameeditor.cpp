@@ -24,7 +24,12 @@
 
 #include "config.h"
 
-#include <qgroupbox.h>
+#include <q3groupbox.h>
+//Added by qt3to4:
+#include <QMoveEvent>
+#include <QCloseEvent>
+#include <Q3GridLayout>
+#include <Q3PtrList>
 
 #include <kmainwindow.h>
 #include <kmessagebox.h>
@@ -86,7 +91,7 @@ GameEditor::GameEditor(KXMLGUIClient *parent,const char *name)
 	const int ksh = KDialog::spacingHint();
 
 	QWidget *mw = new QWidget(this);
-	QGridLayout *l = new QGridLayout(mw,3,5,kmh,ksh);
+	Q3GridLayout *l = new Q3GridLayout(mw,3,5,kmh,ksh);
 
 	tabs = new QTabWidget(mw);
 	l->addMultiCellWidget(tabs,0,0,0,4);
@@ -199,7 +204,7 @@ void GameEditor::updateTransportersList(int item)
 	view->transportListBox->setAutoUpdate(false);
 	view->transportListBox->clear();
 
-	QPtrList<Transporter> tl = map->getTransportersList();
+	Q3PtrList<Transporter> tl = map->getTransportersList();
 	for (const Transporter *t = tl.first(); t!=NULL; t = tl.next())
 	{
 		QString s;

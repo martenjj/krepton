@@ -25,9 +25,11 @@
 #include "config.h"
 
 #include <qlayout.h>
-#include <qgroupbox.h>
+#include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
 
 #include <kpushbutton.h>
 #include <klistbox.h>
@@ -48,7 +50,7 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     const int kmh = KDialog::marginHint();
     const int ksh = KDialog::spacingHint();
 
-    QGridLayout *l = new QGridLayout(this,16,8,kmh,ksh);
+    Q3GridLayout *l = new Q3GridLayout(this,16,8,kmh,ksh);
 
     QLabel *transportLabel = new QLabel("&Transporters:",this);
     l->addMultiCellWidget(transportLabel,10,10,1,2,Qt::AlignLeft);
@@ -73,7 +75,7 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     l->addMultiCellWidget(passwordLineEdit,7,7,5,6,Qt::AlignLeft);
 
     QLabel *passwordLabel = new QLabel("&Password:",this);
-    passwordLabel->setAlignment( int( QLabel::AlignVCenter | QLabel::AlignRight ) );
+    passwordLabel->setAlignment( int( Qt::AlignVCenter | Qt::AlignRight ) );
     l->addWidget(passwordLabel,7,4,Qt::AlignRight);
 
     mapsListBox = new KListBox(this);
@@ -86,7 +88,7 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     l->addWidget(timeSpinBox,7,2,Qt::AlignLeft);
 
     QLabel *timeLabel = new QLabel("T&ime limit:",this);
-    timeLabel->setAlignment( int( QLabel::AlignVCenter | QLabel::AlignRight ) );
+    timeLabel->setAlignment( int( Qt::AlignVCenter | Qt::AlignRight ) );
     l->addWidget(timeLabel,7,1,Qt::AlignRight);
 
     leveldownPushButton = new KPushButton("Move Do&wn",this);

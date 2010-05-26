@@ -78,7 +78,7 @@ default:	key = "unknown";	break;
         QPixmap pm = getPixmap(key);
         if (setMimeSource)				// set for labels/tooltips
         {
-            QMimeSourceFactory::defaultFactory()->setPixmap(QString("pixmap_")+key,pm);
+            Q3MimeSourceFactory::defaultFactory()->setPixmap(QString("pixmap_")+key,pm);
         }
         return (pm);
 }

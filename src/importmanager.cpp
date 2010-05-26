@@ -33,11 +33,13 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qwidget.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qpushbutton.h>
+//Added by qt3to4:
+#include <Q3PtrList>
 
 #include "importmanager.h"
 
@@ -63,7 +65,7 @@ ImportManager *ImportManager::self()
 
 ImportManager::ImportManager()
 {
-	formats = new QPtrList<ImportManager::formatInfo>;
+	formats = new Q3PtrList<ImportManager::formatInfo>;
 }
 
 

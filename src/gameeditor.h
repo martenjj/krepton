@@ -30,6 +30,9 @@
 #include "krepton.h"
 #include "sprites.h"
 #include "map2.h"
+//Added by qt3to4:
+#include <QMoveEvent>
+#include <QCloseEvent>
 
 class DataEditor;
 class SpriteEditor;

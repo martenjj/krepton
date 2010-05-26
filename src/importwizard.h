@@ -30,14 +30,17 @@
 #include <kwizard.h>
 
 #include "importmanager.h"
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <QLabel>
 
 
 class QWidget;
-class QListBox;
+class Q3ListBox;
 class QLineEdit;
 class QLabel;
 class QCheckBox;
-class QGridLayout;
+class Q3GridLayout;
 class KURLRequester;
 class KActiveLabel;
 class KTextEdit;
@@ -68,7 +71,7 @@ private:
 
 	void setupPage1();
 	QWidget *page1;
-	QListBox *page1list;
+	Q3ListBox *page1list;
 	KActiveLabel *page1info;
 
 	void setupPage2();

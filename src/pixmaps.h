@@ -1,3 +1,5 @@
+//Added by qt3to4:
+#include <QPixmap>
 ////////////////////////////////////////////////////// -*- mode:c++; -*- ///
 //  
 //  KRepton - the classic Repton game for KDE

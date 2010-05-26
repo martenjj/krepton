@@ -30,6 +30,9 @@
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Q3GridLayout>
+#include <QCloseEvent>
 
 #include <kcolorbtn.h>
 #include <kdialog.h>
@@ -58,7 +61,7 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 	sprites = ss;
 	current_sprite = Obj::Empty;
 
-	QGridLayout *gl = new QGridLayout(this,8,9,KDialog::marginHint(),KDialog::spacingHint());
+	Q3GridLayout *gl = new Q3GridLayout(this,8,9,KDialog::marginHint(),KDialog::spacingHint());
 	gl->setRowStretch(5,5);
 	gl->setColStretch(8,5);
 	gl->addColSpacing(1,KDialog::spacingHint());
@@ -143,8 +146,8 @@ void SpriteEditor::selectedSprite(int i)
 void SpriteEditor::pressedButton(int button,int x,int y)
 {
 	QColor col;
-	if (button & LeftButton) col = left_color->color();
-	else if (button & RightButton) col = right_color->color();
+	if (button & Qt::LeftButton) col = left_color->color();
+	else if (button & Qt::RightButton) col = right_color->color();
 	else return;
 
 	(*sprites)->setPixel(current_sprite,x,y,col);

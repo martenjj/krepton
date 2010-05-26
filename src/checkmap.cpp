@@ -27,7 +27,7 @@
 #include <kmessagebox.h>
 
 #include <qstringlist.h>
-#include <qstrlist.h>
+#include <q3strlist.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -61,7 +61,7 @@ void CheckMap::strictCheckTransporter(const QString maploc,const Map *mm,int x,i
 {
 	int found = 0;
 
-	QPtrListIterator<Transporter> ti(mm->transporters);
+	Q3PtrListIterator<Transporter> ti(mm->transporters);
 	for (const Transporter *tt; (tt = ti.current())!=NULL; ++ti)
 	{
 		if (tt->orig_x==x && tt->orig_y==y) ++found;
@@ -77,7 +77,7 @@ void CheckMap::strictCheckTransporter(const QString maploc,const Map *mm,int x,i
 
 void CheckMap::strictCheckTransporters(const QString maploc,const Map *mm)
 {
-	QPtrListIterator<Transporter> ti(mm->transporters);
+	Q3PtrListIterator<Transporter> ti(mm->transporters);
 	const Transporter *tt;
 	for (int thistrans = 1; (tt = ti.current())!=NULL; ++ti,++thistrans)
 	{
@@ -117,7 +117,7 @@ CheckMap::CheckMap(const MapList maps)
 		return;
 	}
 
-	QPtrListIterator<Map> mi(maps);
+	Q3PtrListIterator<Map> mi(maps);
 	const Map *mm;
 	int thismap;
 
@@ -207,7 +207,7 @@ default:				;		// Avoid warnings
 	}
 
 	// Check for duplicated passwords
-	QStrList pwds(false);
+	Q3StrList pwds(false);
 
 	for (mi.toFirst(); (mm = mi.current())!=NULL; ++mi) pwds.append(mm->password);
 	for (mi.toFirst(),thismap = 1; (mm = mi.current())!=NULL; ++mi,++thismap)

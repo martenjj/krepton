@@ -80,7 +80,7 @@ bool ImporterBase::import(const QString &source,const QString &newName,QString *
         return (false);
     }
 
-    if (!f.open(IO_ReadOnly))
+    if (!f.open(QIODevice::ReadOnly))
     {
         *results = i18n("Cannot open file <b>%1</b>").arg(source);
         return (false);

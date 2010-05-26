@@ -25,7 +25,7 @@
 #define IMPORTMANAGER_H
 
 #include <qstring.h>
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 
 class ImporterBase;
@@ -62,7 +62,7 @@ private:
     ImportManager();
     ~ImportManager();
 
-    QPtrList<ImportManager::formatInfo> *formats;
+    Q3PtrList<ImportManager::formatInfo> *formats;
 };
 
 

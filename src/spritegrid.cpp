@@ -24,10 +24,12 @@
 
 #include "config.h"
 
-#include <qframe.h>
+#include <q3frame.h>
 #include <qpixmap.h>
 #include <qpainter.h>
 #include <qimage.h>
+//Added by qt3to4:
+#include <QMouseEvent>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -38,12 +40,12 @@
 static const int previewscale = 8;
 
 
-SpriteGrid::SpriteGrid(QWidget *parent,const char *name) : QFrame(parent,name)
+SpriteGrid::SpriteGrid(QWidget *parent,const char *name) : Q3Frame(parent,name)
 {
 	sprites = NULL;
 	object = Obj::Empty;
 
-	setFrameStyle(QFrame::Box|QFrame::Raised);
+	setFrameStyle(Q3Frame::Box|Q3Frame::Raised);
 	setLineWidth(2);
 	setMidLineWidth(1);
 	border = lineWidth() * 2 + midLineWidth();
@@ -74,7 +76,7 @@ void SpriteGrid::drawContents(QPainter *p)
 
 void SpriteGrid::mousePressEvent(QMouseEvent *e)
 {
-	if (e->button()==LeftButton || e->button()==RightButton)
+	if (e->button()==Qt::LeftButton || e->button()==Qt::RightButton)
 	{
 		if (e->x()<border || e->x()>(width()-border) ||
 		    e->y()<border || e->y()>(height()-border)) return;
@@ -94,7 +96,7 @@ void SpriteGrid::mouseMoveEvent(QMouseEvent *e)
 	int x = (e->x()-border)/previewscale;
 	int y = (e->y()-border)/previewscale;
 
-	int b = e->state() & (LeftButton|RightButton);
+	int b = e->state() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x, y);
 }

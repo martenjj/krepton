@@ -25,14 +25,17 @@
 #ifndef SPRITEGRID_H
 #define SPRITEGRID_H
 
-#include <qframe.h>
+#include <q3frame.h>
+//Added by qt3to4:
+#include <QMouseEvent>
+#include <QPixmap>
 
 #include "krepton.h"
 
 class QPixmap;
 class Sprites;
 
-class SpriteGrid : public QFrame
+class SpriteGrid : public Q3Frame
 {
 	Q_OBJECT
 

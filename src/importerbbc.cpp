@@ -25,7 +25,7 @@
 
 #include <qcolor.h>
 #include <qfile.h>
-#include <qcstring.h>
+#include <q3cstring.h>
 
 #include "map2.h"
 #include "sprites.h"
@@ -174,7 +174,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
     for (int i = 0; i<BBC_NUM_MAPS; ++i)
     {
         ptr = 0x0000 + i*8;				// point to password
-        QCString pw;
+        Q3CString pw;
         int l = 0;
         while (l<=BBC_PW_MAXLEN)
         {

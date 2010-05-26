@@ -26,6 +26,8 @@
 #define MAPEDITOR_H
 
 #include <qwidget.h>
+//Added by qt3to4:
+#include <QCloseEvent>
 
 #include "krepton.h"
 
@@ -33,7 +35,7 @@ class SpritePreview;
 class MapGrid;
 class CoordLabel;
 class ObjectListBox;
-class QButtonGroup;
+class Q3ButtonGroup;
 class MapEdit;
 class Sprites;
 
@@ -68,7 +70,7 @@ private:
 	MapGrid *map_area;
 	Sprites **sprites;
 	Obj::Type current_sprite;
-	QButtonGroup *optiongroup;
+	Q3ButtonGroup *optiongroup;
 	CoordLabel *coord;
 	MapEdit *map;
 

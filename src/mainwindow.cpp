@@ -38,6 +38,11 @@
 
 #include <qdir.h>
 #include <qcursor.h>
+//Added by qt3to4:
+#include <QLabel>
+#include <Q3CString>
+#include <QPixmap>
+#include <QCloseEvent>
 
 #include "krepton.h"
 #include "pixmaps.h"
@@ -80,15 +85,15 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 				   this,SLOT(slotSelectGame()),
 				   actionCollection(),"file_select");
 
-	startAction = new KAction(i18n("Start at first level"),Key_S,
+	startAction = new KAction(i18n("Start at first level"),Qt::Key_S,
 					this,SLOT(slotStartGame()),
 					actionCollection(),"game_start");
 
-	restartAction = new KAction(i18n("Restart last level"),Key_R,
+	restartAction = new KAction(i18n("Restart last level"),Qt::Key_R,
 					this,SLOT(slotRestartGame()),
 					actionCollection(),"game_restart");
 
-	continueAction = new KAction(i18n("Restart at level..."),Key_C,
+	continueAction = new KAction(i18n("Restart at level..."),Qt::Key_C,
 					this,SLOT(slotContinueGame()),
 					actionCollection(),"game_continue");
 
@@ -96,11 +101,11 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 					this,SLOT(slotPauseGame()),
 					actionCollection(),"game_pause");
 
-	suicideAction = new KAction(i18n("Give up"),Key_Escape,
+	suicideAction = new KAction(i18n("Give up"),Qt::Key_Escape,
 				this,SLOT(slotSuicide()),
 				actionCollection(),"game_suicide");
 
-	(void) new KAction(i18n("High Scores..."),CTRL+Key_H,
+	(void) new KAction(i18n("High Scores..."),Qt::CTRL+Qt::Key_H,
 			   this,SLOT(slotHighScores()),
 			   actionCollection(),"file_highscores");
 
@@ -116,7 +121,7 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 					      this,SLOT(slotSetMagnification()),
 					      actionCollection(),"settings_magnification");
 
-	editAction = new KAction(i18n("Game Editor..."),CTRL+Key_E,
+	editAction = new KAction(i18n("Game Editor..."),Qt::CTRL+Qt::Key_E,
 				   this,SLOT(slotEdit()),
 				   actionCollection(),"edit_edit");
 
@@ -143,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 				   this,SLOT(slotRemove()),
 				   actionCollection(),"file_remove");
 
-	checkAction = new KAction(i18n("Check Consistency"),"ok",Key_F10,
+	checkAction = new KAction(i18n("Check Consistency"),"ok",Qt::Key_F10,
 				  this,SLOT(slotStrictCheck()),
 				  actionCollection(),"edit_check");
 
@@ -154,27 +159,27 @@ MainWindow::MainWindow(QWidget *parent,const char *name)
 					 this,SLOT(slotAlignChanged()),
 					 actionCollection(),"settings_align");
 
-	spriteToggle = new KToggleAction(i18n("Sprite Editor"),Key_F2,
+	spriteToggle = new KToggleAction(i18n("Sprite Editor"),Qt::Key_F2,
 					 this,SLOT(slotSpriteEditor()),
 					 actionCollection(),"window_spriteeditor");
 
-	mapToggle = new KToggleAction(i18n("Map Editor"),Key_F3,
+	mapToggle = new KToggleAction(i18n("Map Editor"),Qt::Key_F3,
 				      this,SLOT(slotLevelEditor()),
 				      actionCollection(),"window_leveleditor");
 
-	realignAction = new KAction(i18n("Realign Windows"),Key_F4,
+	realignAction = new KAction(i18n("Realign Windows"),Qt::Key_F4,
 				    this,SLOT(slotRealignEditor()),
 				    actionCollection(),"window_realign");
 #else
-	spriteAction = new KAction(i18n("Sprite Page"),Key_F2,
+	spriteAction = new KAction(i18n("Sprite Page"),Qt::Key_F2,
 				   this,SLOT(slotSpriteEditor()),
 				   actionCollection(),"window_spriteeditor");
 
-	mapAction = new KAction(i18n("Map Page"),Key_F3,
+	mapAction = new KAction(i18n("Map Page"),Qt::Key_F3,
 				this,SLOT(slotLevelEditor()),
 				actionCollection(),"window_leveleditor");
 
-	dataAction = new KAction(i18n("Episode Page"),Key_F4,
+	dataAction = new KAction(i18n("Episode Page"),Qt::Key_F4,
 				 this,SLOT(slotDataEditor()),
 				 actionCollection(),"window_dataeditor");
 #endif
@@ -499,7 +504,7 @@ void MainWindow::slotContinueGame()
 
 	QStringList levels = game->listLevels(currentepisode);
 
-	QCString pwd = NULL;
+	Q3CString pwd = NULL;
 	QString msg = i18n("<qt>Continuing episode <b>%1</b>").arg(currentepisode->getName());
 	if (levels.count()>0)
 	{

@@ -24,14 +24,14 @@
 
 #include "config.h"
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 
 #include "krlistbox.h"
 
 #include <kdebug.h>
 
-KRlistBox::KRListBox(QWidget *parent = NULL,const char* name = NULL,WFlags f = 0)
-	: QListBox(parent,name,f)
+KRlistBox::KRListBox(QWidget *parent = NULL,const char* name = NULL,Qt::WFlags f = 0)
+	: Q3ListBox(parent,name,f)
 {
 }
 
@@ -41,10 +41,10 @@ KRlistBox::~KRListBox()
 }
 
 
-KRListBox::clicked(QListBoxItem *item)
+KRListBox::clicked(Q3ListBoxItem *item)
 {
 	kdDebug(0) << k_funcinfo << "item=" << ((void*)item) << endl;
 
-	QListBox::clicked(item);
+	Q3ListBox::clicked(item);
 	if (item==NULL) clearSelection();
 }

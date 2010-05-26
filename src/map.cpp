@@ -30,7 +30,9 @@
 #endif
 
 #include <qfile.h>
-#include <qtstream.h>
+#include <qtextstream.h>
+//Added by qt3to4:
+#include <Q3TextStream>
 
 #include "krepton.h"
 
@@ -42,13 +44,13 @@ Map::Map(const QString &path)				// create from file
 	kdDebug(0) << k_funcinfo << "path='" << path << "'" << endl;
 
 	QFile f(path);
-	if (!f.open(IO_ReadOnly))
+	if (!f.open(QIODevice::ReadOnly))
 	{
 		status = QString("%1, %2").arg(strerror(errno)).arg(path);
 		return;
 	}
 
-	QTextStream t(&f);
+	Q3TextStream t(&f);
 	int num_transporters;
 	t >> width >> height >> num_transporters >> num_secs;
 	t >> password;
@@ -91,7 +93,7 @@ Map::Map(const Map &m)					// copy constructor
 	memcpy(data,m.data,width*height*sizeof(Obj::Type));
 	findStart();
 
-	QPtrListIterator<Transporter> ti(m.transporters);
+	Q3PtrListIterator<Transporter> ti(m.transporters);
 	for (const Transporter *tt; (tt = ti.current())!=NULL; ++ti)
 	{
 		transporters.append(new Transporter(*tt));
@@ -135,17 +137,17 @@ bool Map::save(const QString &path) const
 	kdDebug(0) << k_funcinfo << "pw='" << password << "' to='" << path << "'" << endl;
 
 	QFile f(path);
-	if (!f.open(IO_WriteOnly))
+	if (!f.open(QIODevice::WriteOnly))
 	{
 		reportError("Cannot save map to '%1'",path);
 		return (false);
 	}
 
-	QTextStream t(&f);
+	Q3TextStream t(&f);
 	t << width << ' ' << height << ' ' << transporters.count() << ' ' << num_secs << '\n';
 	t << password << '\n';
 
-	QPtrListIterator<Transporter> ti(transporters);
+	Q3PtrListIterator<Transporter> ti(transporters);
 	const Transporter *tr;
 	while ((tr = ti.current())!=NULL)
 	{

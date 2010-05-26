@@ -26,13 +26,15 @@
 
 #include <klocale.h>
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <qvbox.h>
+#include <q3vbox.h>
 #include <qlayout.h>
-#include <qhbox.h>
+#include <q3hbox.h>
 #include <qtooltip.h>
+//Added by qt3to4:
+#include <Q3CString>
 
 #include "krepton.h"
 
@@ -49,19 +51,19 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
 {
     setCaption("Select Level");
 
-    QVBox *vb = makeVBoxMainWidget();
+    Q3VBox *vb = makeVBoxMainWidget();
     vb->setMargin(KDialog::marginHint());
     vb->setSpacing(KDialog::spacingHint());
 
     (void) new QLabel(msg,vb);
     (void) new QWidget(vb);
 
-    wListBox = new QListBox(vb);
-    wListBox->setSelectionMode(QListBox::Single);
+    wListBox = new Q3ListBox(vb);
+    wListBox->setSelectionMode(Q3ListBox::Single);
     wListBox->setMinimumSize(280,160);
     vb->setStretchFactor(wListBox,1);
 
-    QHBox *hb = new QHBox(vb);
+    Q3HBox *hb = new Q3HBox(vb);
     hb->setSpacing(KDialog::spacingHint());
 
     QLabel *l = new QLabel(i18n("Password:"),hb);
@@ -104,9 +106,9 @@ default:			pix = Pixmaps::Unknown;						break;
     if (toSelect<0) toSelect = 0;
     wListBox->setSelected(toSelect,true);
 
-    connect(wListBox,SIGNAL(selectionChanged(QListBoxItem *)),SLOT(slotItemSelected(QListBoxItem *)));
-    connect(wListBox,SIGNAL(returnPressed(QListBoxItem *)),SLOT(slotOk()));
-    connect(wListBox,SIGNAL(doubleClicked(QListBoxItem *)),SLOT(slotOk()));
+    connect(wListBox,SIGNAL(selectionChanged(Q3ListBoxItem *)),SLOT(slotItemSelected(Q3ListBoxItem *)));
+    connect(wListBox,SIGNAL(returnPressed(Q3ListBoxItem *)),SLOT(slotOk()));
+    connect(wListBox,SIGNAL(doubleClicked(Q3ListBoxItem *)),SLOT(slotOk()));
     connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotPasswdChanged()));
 
     Pixmaps::find(Pixmaps::Finished,true);		// set MIME source, see docs for
@@ -135,7 +137,7 @@ void SelectLevelDialog::checkButtonOk()
 }
 
 
-void SelectLevelDialog::slotItemSelected(QListBoxItem *item)
+void SelectLevelDialog::slotItemSelected(Q3ListBoxItem *item)
 {
     if (item!=NULL)
     {
@@ -158,12 +160,12 @@ void SelectLevelDialog::slotPasswdChanged()
 }
 
 
-QCString SelectLevelDialog::selectedPassword()
+Q3CString SelectLevelDialog::selectedPassword()
 {
-    QListBoxItem *cur = wListBox->selectedItem();
+    Q3ListBoxItem *cur = wListBox->selectedItem();
     if (cur==NULL) return (NULL);
 
-    QCString pass = cur->text().section(": ",1).local8Bit();
+    Q3CString pass = cur->text().section(": ",1).local8Bit();
     if (pass.isEmpty()) pass = wPasswdEdit->text().local8Bit();
     return (pass);
 }

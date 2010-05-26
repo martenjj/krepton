@@ -25,7 +25,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krepton.h"
 
@@ -78,7 +78,7 @@ protected:
 	QString password;
 	int xstart,ystart;				// last appear/transport
 	int width,height;				// map overall size
-	QPtrList<Transporter> transporters;
+	Q3PtrList<Transporter> transporters;
 
 	void findStart();
 	void addTransporter(int ox,int oy,int dx,int dy);
@@ -100,11 +100,11 @@ private:
 };
 
 
-class MapList : public QPtrList<Map>
+class MapList : public Q3PtrList<Map>
 {
 };
 
-typedef QPtrListIterator<Map> MapListIterator;
+typedef Q3PtrListIterator<Map> MapListIterator;
 
 
 

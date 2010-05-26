@@ -24,7 +24,7 @@
 
 #include "config.h"
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -32,7 +32,7 @@
 #include "leveleditor.h"
 
 
-QPtrList<Transporter> LevelEditor::getTransportersList(const Map *mm)
+Q3PtrList<Transporter> LevelEditor::getTransportersList(const Map *mm)
 {
 	return (mm->transporters);
 }

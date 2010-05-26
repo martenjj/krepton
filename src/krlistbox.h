@@ -25,14 +25,14 @@
 #ifndef KRLISTBOX_H
 #define KRLISTBOX_H
 
-#include <qlistbox.h>
+#include <q3listbox.h>
 
 class QWidget;
 
-class KRListBox : public QListBox
+class KRListBox : public Q3ListBox
 {
 public:
-	KRListBox(QWidget *parent = NULL,const char *name = NULL,WFlags f = 0);
+	KRListBox(QWidget *parent = NULL,const char *name = NULL,Qt::WFlags f = 0);
 	~KRListBox();
 };
 

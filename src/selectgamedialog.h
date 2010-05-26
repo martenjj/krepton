@@ -28,13 +28,13 @@
 
 #include <kdialogbase.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 
 #include "episodes.h"
 
 
-class QIconView;
-class QIconViewItem;
+class Q3IconView;
+class Q3IconViewItem;
 
 
 class SelectGameDialog : public KDialogBase
@@ -52,11 +52,11 @@ public slots:
 
 protected slots:
     void slotSelectionChanged();
-    void slotExecuted(QIconViewItem *item);
+    void slotExecuted(Q3IconViewItem *item);
     void timerTick();
 
 private:
-    QIconView *wEpisodeIconView;
+    Q3IconView *wEpisodeIconView;
 
     QTimer *icontimer;
     unsigned int nexticon;

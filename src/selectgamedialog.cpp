@@ -26,9 +26,11 @@
 
 #include <kiconview.h>
 
-#include <qptrlist.h>
+#include <q3ptrlist.h>
 #include <qtimer.h>
-#include <qvbox.h>
+#include <q3vbox.h>
+//Added by qt3to4:
+#include <QPixmap>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -43,15 +45,15 @@ SelectGameDialog::SelectGameDialog(const QString title,QWidget *parent, const ch
 {
     setCaption("Select Game");
 
-    QVBox *vb = makeVBoxMainWidget();
+    Q3VBox *vb = makeVBoxMainWidget();
     vb->setMargin(KDialog::marginHint());
     vb->setSpacing(KDialog::spacingHint());
 
-    wEpisodeIconView = new QIconView(vb);
+    wEpisodeIconView = new Q3IconView(vb);
     wEpisodeIconView->clear();
     wEpisodeIconView->setItemsMovable(false);
     wEpisodeIconView->setAutoArrange(true);
-    wEpisodeIconView->setResizeMode(QIconView::Adjust);
+    wEpisodeIconView->setResizeMode(Q3IconView::Adjust);
     wEpisodeIconView->setSpacing(10);
     wEpisodeIconView->setGridX(70);
     wEpisodeIconView->setGridY(50);
@@ -61,17 +63,17 @@ SelectGameDialog::SelectGameDialog(const QString title,QWidget *parent, const ch
     wEpisodeIconView->setMinimumSize(200,140);
 
     episodes = EpisodeList::list();
-    QPtrListIterator<Episode> ei(*episodes);
+    Q3PtrListIterator<Episode> ei(*episodes);
     for (const Episode *e; (e = ei.current())!=NULL; ++ei)
     {
-        QIconViewItem *ic = new QIconViewItem(wEpisodeIconView,e->getName());
+        Q3IconViewItem *ic = new Q3IconViewItem(wEpisodeIconView,e->getName());
         if (useronly && e->isGlobal()) ic->setSelectable(false);
     }
 
     connect(wEpisodeIconView,SIGNAL(selectionChanged()),
             this,SLOT(slotSelectionChanged()));
-    connect(wEpisodeIconView,SIGNAL(doubleClicked(QIconViewItem *)),
-            this,SLOT(slotExecuted(QIconViewItem *)));
+    connect(wEpisodeIconView,SIGNAL(doubleClicked(Q3IconViewItem *)),
+            this,SLOT(slotExecuted(Q3IconViewItem *)));
 
     nexticon = 0;
     icontimer = new QTimer(this);
@@ -99,20 +101,20 @@ int SelectGameDialog::exec()
 
 void SelectGameDialog::slotSelectionChanged()
 {
-    const QIconViewItem *sel = wEpisodeIconView->currentItem();
+    const Q3IconViewItem *sel = wEpisodeIconView->currentItem();
     enableButtonOK(sel!=NULL && sel->isSelected());
 }
 
 
 const Episode *SelectGameDialog::selectedItem()
 {
-    const QIconViewItem *sel = wEpisodeIconView->currentItem();
+    const Q3IconViewItem *sel = wEpisodeIconView->currentItem();
     if (sel==NULL) return (NULL);
     return (episodes->at(wEpisodeIconView->index(sel)));
 }
 
 
-void SelectGameDialog::slotExecuted(QIconViewItem *item)
+void SelectGameDialog::slotExecuted(Q3IconViewItem *item)
 {
     slotOk();
 }
@@ -126,7 +128,7 @@ void SelectGameDialog::timerTick()
         return;
     }
 
-    QIconViewItem *it;
+    Q3IconViewItem *it;
     int i = nexticon;
     for (it = wEpisodeIconView->firstItem();
          i>0 && it!=NULL; it = it->nextItem()) --i;
