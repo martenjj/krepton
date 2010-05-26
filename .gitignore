@@ -1,0 +1,7 @@
+SCCS
+.directory
+stamp-h.in
+po
+admin
+aclocal.m4
+*.o
