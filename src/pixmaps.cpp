@@ -22,15 +22,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kdebug.h>
 #include <kstandarddirs.h>
 
 #include <qpixmap.h>
 #include <qbitmap.h>
 #include <qpixmapcache.h>
-#include <qmime.h>
+#include <Q3MimeSourceFactory>
 
 #include "pixmaps.h"
 
@@ -47,8 +45,8 @@ const QPixmap getPixmap(const char *key)
 
 	if (!pm.load(KGlobal::dirs()->findResource("graphics",(QString(key)+".png"))))
         {
-		kdDebug() << k_funcinfo << "cannot load pixmap '" << key << "'" << endl;
-		pm.resize(16,16); pm.fill(Qt::red);
+		kDebug() << "cannot load pixmap" << QString(key);
+		pm = QPixmap(16,16); pm.fill(Qt::red);
         }
 	else pm.setMask(pm.createHeuristicMask());
 
@@ -59,7 +57,7 @@ const QPixmap getPixmap(const char *key)
 
 const QPixmap Pixmaps::find(Pixmaps::type p,bool setMimeSource)
 {
-	QString key;
+	const char *key;
 	switch (p)
 	{
 case Key:	key = "key";		break;
@@ -90,5 +88,5 @@ const QPixmap Pixmaps::findLives(int l)
 	if (l>3) l = 3;
 
 	const QString key = QString("lives%1").arg(l);
-	return (getPixmap(key));
+	return (getPixmap(key.toAscii()));
 }

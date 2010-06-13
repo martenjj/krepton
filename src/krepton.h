@@ -26,6 +26,7 @@
 #define KREPTON_H
 
 #include <kdebug.h>
+#include <klocale.h>
 
 class Obj
 {
@@ -97,7 +98,8 @@ class Orientation
 public:	enum Type { North, South, East, West };
 };
 
-extern void reportError(const QString &message,const QString &filename = QString::null,
-			bool system = true,bool fatal = false);
+extern void reportError(const KLocalizedString &message,
+                        const QString &filename = QString::null,
+			bool system = true, bool fatal = false);
 
 #endif							// !KREPTON_H

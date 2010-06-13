@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <qlabel.h>
 #include <q3scrollview.h>
 #include <qtooltip.h>
@@ -31,7 +29,7 @@
 #include <qcheckbox.h>
 #include <q3buttongroup.h>
 //Added by qt3to4:
-#include <Q3GridLayout>
+#include <qgridlayout.h>
 #include <QCloseEvent>
 
 #include <kdialog.h>
@@ -54,11 +52,11 @@ const int default_height = 355;
 
 
 MapEditor::MapEditor(QWidget *parent,Sprites **ss)
-	: QWidget(parent,QString::null,Qt::WType_TopLevel)
+	: QWidget(parent)
 {
-	kdDebug(0) << k_funcinfo << "sprites=" << ((void*)*ss) << endl;
+	kDebug() << "sprites=" << *ss;
 
-	setCaption("Level Editor");
+	setWindowTitle("Level Editor");
 	setMinimumSize(default_width, default_height);
 	resize(default_width, default_height);
 	setSizeIncrement(Sprites::base_width,Sprites::base_height);
@@ -66,26 +64,25 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	map = NULL;
 	sprites = ss;
 
-	Q3GridLayout *gl = new Q3GridLayout(this,6,6,KDialog::marginHint(),KDialog::spacingHint());
+	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(1,9);
-	gl->setColStretch(5,9);
-	gl->addColSpacing(1,KDialog::spacingHint());
-	gl->addColSpacing(3,KDialog::spacingHint());
-	gl->addRowSpacing(2,KDialog::spacingHint());
-	gl->addRowSpacing(4,KDialog::marginHint());
+	gl->setColumnStretch(5,9);
+	gl->setColumnMinimumWidth(1,KDialog::spacingHint());
+	gl->setColumnMinimumWidth(3,KDialog::spacingHint());
+	gl->setRowMinimumHeight(2,KDialog::spacingHint());
+	gl->setRowMinimumHeight(4,KDialog::marginHint());
 
 	sprite_list = new ObjectListBox(false,this);
-	QToolTip::add(sprite_list, "The list of available objects to insert");
-	connect(sprite_list,SIGNAL(highlighted(int)),
-		this,SLOT(selectedSprite(int)));
-	gl->addMultiCellWidget(sprite_list,1,1,0,0);
+	sprite_list->setToolTip(i18n("The list of available objects to insert"));
+	connect(sprite_list, SIGNAL(currentRowChanged(int)), SLOT(selectedSprite(int)));
+	gl->addWidget(sprite_list,1,0);
 
 	QLabel *label = new QLabel("Object &list:",this);
 	label->setBuddy(sprite_list);
 	gl->addWidget(label,0,0,Qt::AlignLeft);
 
 	preview_sprite = new SpritePreview(this);
-	QToolTip::add(preview_sprite, "The current selected object");
+	preview_sprite->setToolTip(i18n("The current selected object"));
 	gl->addWidget(preview_sprite,1,2,Qt::AlignTop);
 
 	label = new QLabel("Object:", this);
@@ -93,7 +90,7 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 
 	optiongroup = new Q3ButtonGroup(1,Qt::Horizontal,"D&isplay",this);
 	connect(optiongroup,SIGNAL(clicked(int)),this,SLOT(optionButton(int)));
-	gl->addMultiCellWidget(optiongroup,3,3,0,2,Qt::AlignLeft);
+	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
 
 	(void) new QCheckBox("&Transporter routes",optiongroup);	// ID 0
 	(void) new QCheckBox("S&elected transporter",optiongroup);	// ID 1
@@ -103,7 +100,7 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 		this,SLOT(pressedButton(int,int,int)));
 	connect(map_area,SIGNAL(changedCoordinates(int,int)),
 		this,SLOT(updateCoordinates(int,int)));
-	gl->addMultiCellWidget(map_area,1,5,4,5);
+	gl->addWidget(map_area,1,4,4,2);
 
 	label = new QLabel("Ma&p:", this);
 	label->setBuddy(map_area);
@@ -125,13 +122,13 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	optionButton(0);
 	optionButton(1);
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
 void MapEditor::setMap(MapEdit *mm)
 {
-	kdDebug(0) << k_funcinfo << "pw='" << (mm?mm->getPassword():QString("NULL")) << "'" << endl;
+	kDebug() << "pw='" << (mm?mm->getPassword():QString("NULL")) << "'";
 
 	map = mm;
 	map_area->setMap(map);
@@ -140,9 +137,9 @@ void MapEditor::setMap(MapEdit *mm)
 
 void MapEditor::selectedSprite(int i)
 {
-	kdDebug(0) << k_funcinfo << "i=" << i << endl;
+	kDebug() << "i=" << i;
 
-	current_sprite = (Obj::Type) i;
+	current_sprite = static_cast<Obj::Type>(i);
 	preview_sprite->setSprite(*sprites,current_sprite);
 	map_area->setSprite(*sprites,current_sprite);
 }
@@ -151,7 +148,7 @@ void MapEditor::selectedSprite(int i)
 void MapEditor::pressedButton(int button,int x,int y)
 {
 	if (map==NULL) return;
-	if (current_sprite==((Obj::Type) -1)) return;
+	if (current_sprite==static_cast<Obj::Type>(-1)) return;
 
 	bool changed = false;
 	if (button & Qt::LeftButton) changed = map->setCell(x,y,current_sprite);
@@ -178,13 +175,13 @@ void MapEditor::updateChilds()
 
 void MapEditor::optionButton(int id)
 {
-	const QButton *but = optiongroup->find(id);
+	const QCheckBox *but = static_cast<const QCheckBox *>(optiongroup->find(id));
 	switch (id)
 	{
-case 0:		map_area->showTransporters(((const QCheckBox *) but)->isChecked());
+case 0:		map_area->showTransporters(but->isChecked());
 		break;
 
-case 1:		map_area->showSelectedTransporter(((const QCheckBox *) but)->isChecked());
+case 1:		map_area->showSelectedTransporter(but->isChecked());
 		break;
 	}
 

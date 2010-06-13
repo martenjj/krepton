@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <q3scrollview.h>
 #include <qpixmap.h>
 #include <qpainter.h>
@@ -40,10 +38,10 @@
 #include "mapgrid.h"
 
 
-MapGrid::MapGrid(QWidget *parent,const char *name)
-	: Q3ScrollView(parent,name,Qt::WResizeNoErase|Qt::WNoAutoErase)
+MapGrid::MapGrid(QWidget *parent)
+	: Q3ScrollView(parent)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	sprites = NULL;
 	map = NULL;
@@ -54,13 +52,13 @@ MapGrid::MapGrid(QWidget *parent,const char *name)
 
 	setHScrollBarMode(Q3ScrollView::AlwaysOn);
 	setVScrollBarMode(Q3ScrollView::AlwaysOn);
-	horizontalScrollBar()->setLineStep(Sprites::base_width);
-	verticalScrollBar()->setLineStep(Sprites::base_width);
+	horizontalScrollBar()->setSingleStep(Sprites::base_width);
+	verticalScrollBar()->setSingleStep(Sprites::base_width);
 
 	setResizePolicy(Q3ScrollView::Manual);
 	viewport()->setMouseTracking(true);
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
@@ -91,7 +89,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 		return;
 	}
 
-//	kdDebug(0) << k_funcinfo << "showtrans=" << showtrans << endl;
+//	kDebug() << "showtrans=" << showtrans;
 
 	const int mapwidth = map->getWidth();
 	const int mapheight = map->getHeight();
@@ -119,7 +117,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 		{
 			int ox,oy,dx,dy;
 			map->transporterGet(i,&ox,&oy,&dx,&dy);
-//			kdDebug(0) << k_funcinfo << "oxy=" << ox << "," << oy << " dxy=" << dx << "," << dy << endl;
+//			kDebug() << "oxy=" << ox << "," << oy << " dxy=" << dx << "," << dy;
 			ox = (ox*Sprites::base_width)-(Sprites::base_width/2);
 			oy = (oy*Sprites::base_height)-(Sprites::base_height/2);
 			dx = (dx*Sprites::base_width)-(Sprites::base_width/2);
@@ -138,7 +136,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 
 	if (showsel && xtrans>0 && ytrans>0)
 	{
-		kdDebug(0) << k_funcinfo << "xy=" << xtrans << "," << ytrans << endl;
+		kDebug() << "xy=" << xtrans << "," << ytrans;
 
 		int tx = (xtrans*Sprites::base_width)-(Sprites::base_width/2);
 		int ty = (ytrans*Sprites::base_height)-(Sprites::base_height/2);
@@ -166,7 +164,7 @@ void MapGrid::contentsMouseMoveEvent(QMouseEvent *e)
 	int x = e->x()/Sprites::base_width;
 	int y = e->y()/Sprites::base_height;
 
-	int b = e->state() & (Qt::LeftButton|Qt::RightButton);
+	int b = e->buttons() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x,y);
 }
@@ -181,19 +179,19 @@ void MapGrid::updatedCell(int x,int y)
 
 void MapGrid::showTransporters(bool state)
 {
-//	kdDebug(0) << k_funcinfo << "state=" << state << endl;
+//	kDebug() << "state=" << state;
 	showtrans = state;
 }
 
 void MapGrid::showSelectedTransporter(bool state)
 {
-//	kdDebug(0) << k_funcinfo << "state=" << state << endl;
+//	kDebug() << "state=" << state;
 	showsel = state;
 }
 
 void MapGrid::selectedTransporter(int item)
 {
-	kdDebug(0) << k_funcinfo << "item=" << item << endl;
+	kDebug() << "item=" << item;
 
 	int ox = 0;
 	int oy = 0;

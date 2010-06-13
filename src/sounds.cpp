@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
@@ -54,12 +52,12 @@ int Sound::lastPlayed = -1;
 void Sound::playSound(Sound::Type s)
 {
 	if (!enabled) return;
-	kdDebug(0) << k_funcinfo << "type=" << s << endl;
+	kDebug() << "type=" << s << endl;
 
 	if (sounddir.isNull())
 	{
 		sounddir = KGlobal::dirs()->findResourceDir("sound","die.wav");
-		kdDebug(0) << "sounds at " << sounddir << endl;
+		kDebug() << "sounds at " << sounddir << endl;
 	}
 
 	QString name;
@@ -79,7 +77,6 @@ case Sound::Broken_Egg:		name = "egg";		break;
 	QString fname = sounddir+name+".wav";
 
 #ifdef SND_PLAYOBJECT
-//	fname = "file://"+fname;
 	if (playObject!=NULL)				// have existing player
 	{
 		if (lastPlayed!=s)			// but not for this sound

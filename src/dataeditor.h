@@ -27,15 +27,11 @@
 
 #include <qwidget.h>
 //Added by qt3to4:
-#include <Q3GridLayout>
-#include <QLabel>
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
 
 class Q3VBoxLayout;
 class Q3HBoxLayout;
 class Q3GridLayout;
-class KListBox;
+class K3ListBox;
 class Q3ListBoxItem;
 class KPushButton;
 class QLabel;
@@ -47,10 +43,10 @@ class DataEditor : public QWidget
     Q_OBJECT
 
 public:
-    DataEditor(QWidget* parent = NULL,const char *name = NULL);
+    DataEditor(QWidget* parent = NULL);
 
-    KListBox* mapsListBox;
-    KListBox* transportListBox;
+    K3ListBox* mapsListBox;
+    K3ListBox* transportListBox;
 
     KPushButton* newlevelPushButton;
     KPushButton* removelevelPushButton;

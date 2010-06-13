@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <stdlib.h>
 #include <math.h>
 
@@ -46,7 +44,7 @@
 
 MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 {
-	kdDebug(0) << k_funcinfo << "pw='" << m.getPassword() << "'" << endl;
+	kDebug() << "pw='" << m.getPassword() << "'";
 
 	num_diamonds = 0;
 	have_key = have_crown = false;
@@ -54,17 +52,17 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	how_died = QString::null;
 	levelfinished = false;
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
 
 MapPlay::~MapPlay()
 {
-	kdDebug(0) << k_funcinfo << "pw='" << getPassword() << "'" << endl;
+	kDebug() << "pw='" << getPassword() << "'";
 	monsters.setAutoDelete(true);
 	monsters.clear();
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
@@ -100,14 +98,14 @@ const Transporter *MapPlay::findTransporter(int x,int y)
 		if (t->orig_x==x && t->orig_y==y) return (t);
 	}
 
-	kdDebug(0) << k_funcinfo << "Inconsistent map, no transporter at " << x << "," << y << endl;
+	kDebug() << "Inconsistent map, no transporter at " << x << "," << y;
 	return (NULL);
 }
 
 
 void MapPlay::prepareMap()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	findStart();
 	xpos = xstart; ypos = ystart;			// set start position
@@ -149,7 +147,7 @@ default:			;			// Avoid warning
 		else if (!isempty(x+1,y) && isempty(x,y+1)) m->orientation = Orientation::South;
 	}
 
-	kdDebug(0) << k_funcinfo << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds << endl;
+	kDebug() << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds;
 }
 
 
@@ -165,7 +163,7 @@ Monster *MapPlay::findMonster(int x,int y)
 
 void MapPlay::addMonster(int x, int y, Obj::Type type)
 {
-	kdDebug(0) << k_funcinfo << "xy=" <<x << "," << y << " type=" << type << endl;
+	kDebug() << "xy=" <<x << "," << y << " type=" << type;
 	monsters.append(new Monster(x,y,type));
 }
 
@@ -989,7 +987,7 @@ void MapPlay::cageBlip(Monster *m, int x, int y)
 
 void MapPlay::die(const QString &how)
 {
-	kdDebug(0) << k_funcinfo << "how='" << how << "'" << endl;
+	kDebug() << "how='" << how << "'";
 
 	how_died = how;
 	Sound::playSound(Sound::Die);
@@ -999,7 +997,7 @@ void MapPlay::die(const QString &how)
 
 void MapPlay::paintMap(QPainter *p,int width,int height,const Sprites *sprites)
 {
-//	kdDebug(0) << k_funcinfo << endl;
+//	kDebug();
 
 	for (int y = 0; y<=(height/Sprites::sprite_height); ++y)
 	{

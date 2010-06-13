@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <string.h>
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
@@ -41,7 +39,7 @@
 
 Map::Map(const QString &path)				// create from file
 {
-	kdDebug(0) << k_funcinfo << "path='" << path << "'" << endl;
+	kDebug() << "path='" << path << "'";
 
 	QFile f(path);
 	if (!f.open(QIODevice::ReadOnly))
@@ -82,7 +80,7 @@ Map::Map(const QString &path)				// create from file
 
 Map::Map(const Map &m)					// copy constructor
 {
-	kdDebug(0) << k_funcinfo << "pw='" << m.password << "'" << endl;
+	kDebug() << "pw='" << m.password << "'";
 
 	width = m.width; height = m.height;
 	password = m.password;
@@ -100,13 +98,13 @@ Map::Map(const Map &m)					// copy constructor
 	}
 
 //	transporters.setAutoDelete(true);
-//	kdDebug(0) << k_funcinfo << "done" << endl;
+//	kDebug() << "done";
 }
 
 
 Map::Map(int sx,int sy,const QString pw)		// create with size
 {
-	kdDebug(0) << k_funcinfo << "sx=" << sx << " sy=" << sy << endl;
+	kDebug() << "sx=" << sx << " sy=" << sy;
 
 	width = sx; height = sy;
 	password = pw;
@@ -117,13 +115,13 @@ Map::Map(int sx,int sy,const QString pw)		// create with size
 	for (int i = (width*height-1); i>=0; --i) data[i] = Obj::Empty;
 
 //	transporters.setAutoDelete(true);
-//	kdDebug(0) << k_funcinfo << "done" << endl;
+//	kDebug() << "done";
 }
 
 
 Map::~Map()
 {
-	kdDebug(0) << k_funcinfo << "pw='" << password << "'" << endl;
+	kDebug() << "pw='" << password << "'";
 
 	transporters.setAutoDelete(true);
 	transporters.clear();
@@ -134,12 +132,12 @@ Map::~Map()
 
 bool Map::save(const QString &path) const
 {
-	kdDebug(0) << k_funcinfo << "pw='" << password << "' to='" << path << "'" << endl;
+	kDebug() << "pw='" << password << "' to='" << path << "'";
 
 	QFile f(path);
 	if (!f.open(QIODevice::WriteOnly))
 	{
-		reportError("Cannot save map to '%1'",path);
+		reportError(ki18n("Cannot save map to '%1'"), path);
 		return (false);
 	}
 
@@ -160,7 +158,7 @@ bool Map::save(const QString &path) const
 	{
 		for (int x = 0; x<width; ++x)
 		{
-			t << (char) (((int) xy(x,y))+'A');
+			t << static_cast<char>(static_cast<int>(xy(x,y))+'A');
 		}
 		t << '\n';
 	}
@@ -172,7 +170,7 @@ bool Map::save(const QString &path) const
 
 inline void Map::addTransporter(int ox,int oy,int dx,int dy)
 {
-	kdDebug(0) << k_funcinfo << "oxy=" <<ox << "," << oy << " dxy=" << dx << "," << dy << endl;
+	kDebug() << "oxy=" <<ox << "," << oy << " dxy=" << dx << "," << dy;
 	transporters.append(new Transporter(ox,oy,dx,dy));
 }
 

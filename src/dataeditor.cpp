@@ -22,17 +22,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <qlayout.h>
 #include <q3groupbox.h>
 #include <qlabel.h>
 #include <qlayout.h>
 //Added by qt3to4:
-#include <Q3GridLayout>
+#include <qgridlayout.h>
 
 #include <kpushbutton.h>
-#include <klistbox.h>
+#include <k3listbox.h>
 #include <kdialog.h>
 #include <klineedit.h>
 #include <knuminput.h>
@@ -42,21 +40,21 @@
 #include "dataeditor.moc"
 
 
-DataEditor::DataEditor(QWidget* parent,const char* name)
-	: QWidget(parent,name)
+DataEditor::DataEditor(QWidget* parent)
+	: QWidget(parent)
 {
-    setCaption("Edit Episode");
+    setWindowTitle("Edit Episode");
 
     const int kmh = KDialog::marginHint();
     const int ksh = KDialog::spacingHint();
 
-    Q3GridLayout *l = new Q3GridLayout(this,16,8,kmh,ksh);
+    QGridLayout *l = new QGridLayout(this);
 
     QLabel *transportLabel = new QLabel("&Transporters:",this);
-    l->addMultiCellWidget(transportLabel,10,10,1,2,Qt::AlignLeft);
+    l->addWidget(transportLabel,10,1,1,2,Qt::AlignLeft);
 
-    transportListBox = new KListBox(this);
-    l->addMultiCellWidget(transportListBox,11,14,1,2);
+    transportListBox = new K3ListBox(this);
+    l->addWidget(transportListBox,11,1,4,2);
 
     removetransportPushButton = new KPushButton("Rem&ove",this);
     l->addWidget(removetransportPushButton,11,6);
@@ -68,27 +66,27 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     l->addWidget(newtransportPushButton,11,4);
 
     QLabel *levelsLabel = new QLabel("&Levels:",this);
-    l->addMultiCellWidget(levelsLabel,1,1,1,2,Qt::AlignLeft);
+    l->addWidget(levelsLabel,1,1,1,2,Qt::AlignLeft);
 
     passwordLineEdit = new KLineEdit(this);
     passwordLineEdit->setMaxLength(20);
-    l->addMultiCellWidget(passwordLineEdit,7,7,5,6,Qt::AlignLeft);
+    l->addWidget(passwordLineEdit,7,5,1,2,Qt::AlignLeft);
 
     QLabel *passwordLabel = new QLabel("&Password:",this);
-    passwordLabel->setAlignment( int( Qt::AlignVCenter | Qt::AlignRight ) );
+    passwordLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
     l->addWidget(passwordLabel,7,4,Qt::AlignRight);
 
-    mapsListBox = new KListBox(this);
-    l->addMultiCellWidget(mapsListBox,2,5,1,2);
+    mapsListBox = new K3ListBox(this);
+    l->addWidget(mapsListBox,2,1,3,2);
 
     timeSpinBox = new KIntSpinBox(this);
-    timeSpinBox->setMaxValue( 999 );
-    timeSpinBox->setMinValue( 30 );
-    timeSpinBox->setLineStep( 10 );
+    timeSpinBox->setMaximum( 999 );
+    timeSpinBox->setMinimum( 30 );
+    timeSpinBox->setSingleStep( 10 );
     l->addWidget(timeSpinBox,7,2,Qt::AlignLeft);
 
     QLabel *timeLabel = new QLabel("T&ime limit:",this);
-    timeLabel->setAlignment( int( Qt::AlignVCenter | Qt::AlignRight ) );
+    timeLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
     l->addWidget(timeLabel,7,1,Qt::AlignRight);
 
     leveldownPushButton = new KPushButton("Move Do&wn",this);
@@ -111,18 +109,18 @@ DataEditor::DataEditor(QWidget* parent,const char* name)
     l->setRowStretch(5,1);
     l->setRowStretch(14,1);
 
-    l->setColStretch(7,1);
+    l->setColumnStretch(7,1);
 
-    l->addRowSpacing(0,ksh);
-    l->addRowSpacing(3,ksh);
-    l->addRowSpacing(6,ksh);
-    l->addRowSpacing(8,ksh);
-    l->addRowSpacing(9,kmh);
-    l->addRowSpacing(10,ksh);
-    l->addRowSpacing(12,ksh);
-    l->addRowSpacing(15,ksh);
+    l->setRowMinimumHeight(0,ksh);
+    l->setRowMinimumHeight(3,ksh);
+    l->setRowMinimumHeight(6,ksh);
+    l->setRowMinimumHeight(8,ksh);
+    l->setRowMinimumHeight(9,kmh);
+    l->setRowMinimumHeight(10,ksh);
+    l->setRowMinimumHeight(12,ksh);
+    l->setRowMinimumHeight(15,ksh);
 
-    l->addColSpacing(0,ksh);
-    l->addColSpacing(3,ksh);
-    l->addColSpacing(5,ksh);
+    l->setColumnMinimumWidth(0,ksh);
+    l->setColumnMinimumWidth(3,ksh);
+    l->setColumnMinimumWidth(5,ksh);
 }

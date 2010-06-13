@@ -25,22 +25,25 @@
 #ifndef SCOREDIALOG_H
 #define SCOREDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
+#include <kconfiggroup.h>
+
 
 class KConfig;
-class KListView;
+class K3ListView;
 
-class ScoreDialog : public KDialogBase
+
+class ScoreDialog : public KDialog
 {
 public:
-	ScoreDialog(QWidget *parent=0,const char *name=0);
+	ScoreDialog(QWidget *parent = NULL);
 
 protected:
 	void slotUser1();
 
 private:
-	KListView *list;
-	KConfig *config;
+	K3ListView *list;
+	KConfigGroup configGrp;
 };
 
 #endif							// !SCOREDIALOG_H

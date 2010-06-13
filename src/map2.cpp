@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include "krepton.h"
 
 #include "map2.h"
@@ -33,18 +31,18 @@
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
 {
-	kdDebug(0) << k_funcinfo << "pw='" << getPassword() << "'" << endl;
+	kDebug() << "pw='" << getPassword() << "'";
 }
 
 MapEdit::MapEdit(int sx,int sy,const QString pw) : Map(sx,sy,pw)
 {
-	kdDebug(0) << k_funcinfo << "sx=" << sx << " sy=" << sy << endl;
+	kDebug() << "sx=" << sx << " sy=" << sy;
 }
 
 
 MapEdit::~MapEdit()
 {
-	kdDebug(0) << k_funcinfo << "pw='" << getPassword() << "'" << endl;
+	kDebug() << "pw='" << getPassword() << "'";
 }
 
 Q3PtrList<Transporter> MapEdit::getTransportersList()
@@ -92,7 +90,7 @@ void MapEdit::transporterChange(int item,int ox,int oy,int dx,int dy)
 void MapEdit::transporterRemove(int item)
 {
 	if (transporters.count()<1) return;		// shouldn't happen, GUI disables
-	if (item>=((int) transporters.count())) return;
+	if (item>=static_cast<int>(transporters.count())) return;
 
 	Transporter *t = transporters.at(item);
 	transporters.remove(item);
@@ -151,7 +149,7 @@ void MapEditList::mapMoveDown(int item)
 
 MapEditList::operator MapList()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	MapList ml;
 	MapEditListIterator mi(*this);
@@ -162,6 +160,6 @@ MapEditList::operator MapList()
 	}
 
 //	ml.setAutoDelete(true);
-	kdDebug(0) << k_funcinfo << "done count=" << ml.count() << endl;
+	kDebug() << "done count=" << ml.count();
 	return (ml);
 }

@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <klineedit.h>
 #include <knuminput.h>
 
@@ -34,20 +32,26 @@
 #include "newmapdialog.h"
 
 
-NewMapDialog::NewMapDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent,name,true,QString::null,KDialogBase::Ok|KDialogBase::Cancel)
+NewMapDialog::NewMapDialog(QWidget *parent)
+	: KDialog(parent)
 {
-	setCaption("New Level");
+	setObjectName("NewMapDialog");
+        setCaption(i18n("New Level"));
+        setButtons(KDialog::Ok|KDialog::Cancel);
+        setDefaultButton(KDialog::Ok);
+        setModal(true);
+        showButtonSeparator(true);
 
 	w = new NewMapWidget(this);
 	setMainWidget(w);
-	setFixedSize(calculateSize(w->size().width(),w->size().height()));
+        // TODO: port
+	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
 	adjustSize();
 
-	w->sizexSpinBox->setMinValue(10);
-	w->sizeySpinBox->setMinValue(10);
-	w->sizexSpinBox->setMaxValue(99);
-	w->sizeySpinBox->setMaxValue(99);
+	w->sizexSpinBox->setMinimum(10);
+	w->sizeySpinBox->setMinimum(10);
+	w->sizexSpinBox->setMaximum(99);
+	w->sizeySpinBox->setMaximum(99);
 
 	QString s;
 	s.setNum(rand() % 100000);
@@ -61,5 +65,5 @@ NewMapDialog::NewMapDialog(QWidget *parent, const char *name)
 
 void NewMapDialog::slotNameChanged(const QString &s)
 {
-	enableButtonOK(!s.isEmpty());
+	enableButtonOk(!s.isEmpty());
 }

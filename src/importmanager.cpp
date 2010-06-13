@@ -21,12 +21,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kwizard.h>
 #include <kdialog.h>
 #include <kurlrequester.h>
 #include <kactivelabel.h>
@@ -82,7 +79,7 @@ ImportManager::~ImportManager()
 
 void ImportManager::add(const ImportManager::formatInfo *inf)
 {
-	kdDebug(0) << k_funcinfo << "add '" << inf->key << "' = '" << inf->name << "'" << endl;
+	kDebug() << "add '" << inf->key << "' = '" << inf->name << "'";
 	formats->append(inf);
 }
 
@@ -94,7 +91,7 @@ void ImportManager::add(const ImportManager::formatInfo *inf)
 
 ImporterBase *ImportManager::createImporter(const QString &key)
 {
-	kdDebug(0) << k_funcinfo << "for '" << key << "'" << endl;
+	kDebug() << "for '" << key << "'";
 
 	const ImportManager::formatInfo *inf = ImportManager::findInfo(key);
 	if (inf==NULL) return (NULL);

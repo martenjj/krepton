@@ -118,7 +118,7 @@
         <property name="buttonSymbols">
             <enum>UpDownArrows</enum>
         </property>
-        <property name="minValue">
+        <property name="minimum">
             <number>1</number>
         </property>
     </widget>
@@ -137,7 +137,7 @@
         <property name="buttonSymbols">
             <enum>UpDownArrows</enum>
         </property>
-        <property name="minValue">
+        <property name="minimum">
             <number>1</number>
         </property>
     </widget>
@@ -156,7 +156,7 @@
         <property name="buttonSymbols">
             <enum>UpDownArrows</enum>
         </property>
-        <property name="minValue">
+        <property name="minimum">
             <number>1</number>
         </property>
     </widget>
@@ -175,7 +175,7 @@
         <property name="buttonSymbols">
             <enum>UpDownArrows</enum>
         </property>
-        <property name="minValue">
+        <property name="minimum">
             <number>1</number>
         </property>
     </widget>

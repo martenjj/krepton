@@ -25,15 +25,16 @@
 #ifndef OBJECTLISTBOX_H
 #define OBJECTLISTBOX_H
 
-#include <klistbox.h>
+#include <klistwidget.h>
 
 
-class ObjectListBox : public KListBox
+class ObjectListBox : public KListWidget
 {
 	Q_OBJECT
 
 public:
-	ObjectListBox(bool all,QWidget *parent = NULL,const char *name = NULL);
+	ObjectListBox(bool all, QWidget *parent = NULL);
 };
+
 
 #endif							// !OBJECTLISTBOX_H

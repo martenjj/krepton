@@ -26,7 +26,7 @@
 #define SELECTLEVELDIALOG_H
 
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <q3valuevector.h>
 //Added by qt3to4:
@@ -36,16 +36,17 @@
 
 
 class Q3ListBox;
+class Q3ListBoxItem;
 class QLineEdit;
 
 
-class SelectLevelDialog : public KDialogBase
+class SelectLevelDialog : public KDialog
 {
     Q_OBJECT
 
 public:
-    SelectLevelDialog(const QStringList &levels,const QString &msg,
-                      QWidget *parent = NULL, const char *name = NULL);
+    SelectLevelDialog(const QStringList &levels, const QString &msg,
+                      QWidget *parent = NULL);
 
     Q3CString selectedPassword();
 

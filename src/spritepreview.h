@@ -36,7 +36,7 @@ class SpritePreview : public QLabel
 	Q_OBJECT
 
 public:
-	SpritePreview(QWidget *parent = NULL,const char *name = NULL);
+	SpritePreview(QWidget *parent = NULL);
 	void setSprite(Sprites *ss,Obj::Type tt);// { sprites = ss; object = tt; }
 
 private:

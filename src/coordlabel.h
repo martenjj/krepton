@@ -32,7 +32,7 @@ class CoordLabel : public QLabel
 	Q_OBJECT
 
 public:
-	CoordLabel(QWidget *parent,const char *name = NULL);
+	CoordLabel(QWidget *parent);
 	void setXY(int x,int y);
 };
 

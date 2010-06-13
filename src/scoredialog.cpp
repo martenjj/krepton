@@ -22,17 +22,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kglobal.h>
 #include <kconfig.h>
-#include <klistview.h>
+#include <k3listview.h>
 #include <kmessagebox.h>
 
 #include <q3header.h>
 #include <qlayout.h>
 //Added by qt3to4:
-#include <Q3VBoxLayout>
+#include <Q3ListView>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -43,7 +41,7 @@
 const char *groupname = "High Score";
 
 
-class ScoreListItem : public KListViewItem
+class ScoreListItem : public K3ListViewItem
 {
 public:
 	ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3);
@@ -51,7 +49,7 @@ public:
 };
 
 ScoreListItem::ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3)
-	: KListViewItem(parent,col1,col2,col3)
+	: K3ListViewItem(parent,col1,col2,col3)
 {
 }
 
@@ -64,22 +62,20 @@ int ScoreListItem::compare(Q3ListViewItem *i,int col,bool ascending) const
 	return ((n1==n2) ? 0 : (n1<n2 ? -1 : +1));
 }
 
-ScoreDialog::ScoreDialog(QWidget *parent,const char *name)
-        : KDialogBase(parent,name,true,"High Scores",
-KDialogBase::Close|KDialogBase::User1,
-KDialogBase::Close,
-false,
-KGuiItem("C&lear")
-)
+ScoreDialog::ScoreDialog(QWidget *parent)
+        : KDialog(parent)
 {
-	config = KGlobal::config();
-	config->setGroup(groupname);
+        setObjectName("ScoreDialog");
+        setCaption(i18n("High Scores"));
+        setButtons(KDialog::Close|KDialog::User1);
+        setButtonText(KDialog::User1, i18n("Clear"));
+        setDefaultButton(KDialog::Close);
+        setModal(true);
+        showButtonSeparator(true);
 
-	QWidget *page = new QWidget(this);
-	Q3VBoxLayout *vl = new Q3VBoxLayout(page,0,spacingHint());
-	setMainWidget(page);
+	configGrp = KGlobal::config()->group(groupname);
 
-	list = new KListView(page);
+	list = new K3ListView(this);
 	list->setSelectionMode(Q3ListView::NoSelection);
 	list->setItemMargin(4);
 
@@ -89,34 +85,33 @@ KGuiItem("C&lear")
 
 	QString name1,score;
 	int h = list->header()->height()+list->itemMargin();
-	int minh = 6*h;
-	int maxh = 15*h;
+	//int minh = 6*h;
+	//int maxh = 15*h;
 
 	bool any = false;
 	EpisodeList *el = EpisodeList::list();
-//	QPtrList<Episode> l = EpisodeList::all();
 	for (const Episode *e = el->first(); e!=NULL; e = el->next())
 	{
 		const QString name = e->getName();
 		if (name=="---") continue;		// what does this do?
-		score = config->readEntry((name+"Score"),"");
+		score = configGrp.readEntry((name+"Score"), "");
 		if (score=="0") score = "";
 		if (score.isEmpty()) continue;
 
-		name1 = config->readEntry((name+"Name"),"");
+		name1 = configGrp.readEntry((name+"Name"), "");
 		ScoreListItem *i = new ScoreListItem(list,name,score,name1);
 		h += i->height();
 		any = true;
 	}
 
-	if (h<minh) h = minh;
-	if (h>maxh) h = maxh;
-	list->setFixedSize(list->columnWidth(0)+list->columnWidth(1)+
-			   list->columnWidth(2)+(3*2*list->itemMargin()),h);
-	vl->addWidget(list);
-	vl->addStretch(1);
+        // TODO: any sizing needed?
+	//if (h<minh) h = minh;
+	//if (h>maxh) h = maxh;
+	//list->setFixedSize(list->columnWidth(0)+list->columnWidth(1)+
+	//		   list->columnWidth(2)+(3*2*list->itemMargin()),h);
+	setMainWidget(list);
 
-	if (!any) enableButton(KDialogBase::User1,false);
+	if (!any) enableButton(KDialog::User1,false);
 	adjustSize();
 }
 
@@ -126,9 +121,8 @@ void ScoreDialog::slotUser1()
 		    this,"Do you really want to clear the high scores list?",
 		    QString::null,KGuiItem("C&lear"))!=KMessageBox::Continue) return;
 
-	config->deleteGroup(groupname);			// deep delete group
-	config->sync();
+	configGrp.config()->deleteGroup(groupname);	// deep delete group
 
 	list->clear();					// nothing now to display
-	enableButton(KDialogBase::User1,false);		// can't clear again
+	enableButton(KDialog::User1,false);		// can't clear again
 }

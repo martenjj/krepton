@@ -22,54 +22,66 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
+#include "newscoredialog.h"
+//#include "newscoredialog.moc"
 
 #include <stdlib.h>
 
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Q3VBoxLayout>
+//#include <qvboxlayout.h>
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
-#include "newscoredialog.h"
+#include "krepton.h"
 
-NewScoreDialog::NewScoreDialog(QWidget *parent, const char *name)
-	: KDialogBase(parent,name,true,"New High Score",
-		      KDialogBase::Ok|KDialogBase::Cancel,KDialogBase::Ok)
+
+NewScoreDialog::NewScoreDialog(QWidget *parent)
+    : KDialog(parent)
 {
+    setObjectName("NewScoreDialog");
+    setCaption(i18n("New High Score"));
+    setButtons(KDialog::Ok|KDialog::Cancel);
+    setDefaultButton(KDialog::Ok);
+    setModal(true);
+    showButtonSeparator(true);
+
 	const char *username = getenv("LOGNAME");
 	if (username==NULL) username = getenv("USER");
 	if (username==NULL) username = "";
 
 	QWidget *page = new QWidget(this);
 	setMainWidget(page);
-	Q3VBoxLayout *topLayout = new Q3VBoxLayout(page,0,spacingHint());
 
 	le = new QLineEdit(username,page);
 	le->setMinimumWidth(fontMetrics().maxWidth()*20);
 	connect(le,SIGNAL(textChanged(const QString &)),
 		this,SLOT(slotTextChanged(const QString &)));
 
-	QLabel *label = new QLabel(le,"Enter your &name",page);
+	QLabel *label = new QLabel(i18n("Enter your name:"), page);
+        label->setBuddy(le);
 
+	QVBoxLayout *topLayout = new QVBoxLayout;
 	topLayout->addWidget(label);
 	topLayout->addWidget(le);
 	topLayout->addStretch(10);
+
+        page->setLayout(topLayout);
 
 	slotTextChanged(username);
 	le->setFocus();
 }
 
-const char *NewScoreDialog::name()
+
+QString NewScoreDialog::name() const
 {
 	const QString &t = le->text();
 	return (!t.isEmpty() ? t : QString("Anonymous"));
 }
 
+
 void NewScoreDialog::slotTextChanged(const QString& text)
 {
-	enableButtonOK(text.length()>0);
+	enableButtonOk(!text.isEmpty());
 }

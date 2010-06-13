@@ -22,10 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-#include <kiconview.h>
-
+#include <q3iconview.h>
 #include <q3ptrlist.h>
 #include <qtimer.h>
 #include <q3vbox.h>
@@ -40,12 +37,18 @@
 #include "selectgamedialog.moc"
 
 
-SelectGameDialog::SelectGameDialog(const QString title,QWidget *parent, const char *name,bool useronly)
-	: KDialogBase(parent,name,true,title,KDialogBase::Ok|KDialogBase::Cancel)
+SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool useronly)
+	: KDialog(parent)
 {
-    setCaption("Select Game");
+    setObjectName("SelectGameDialog");
+    setCaption(title);
+    setButtons(KDialog::Ok|KDialog::Cancel);
+    setDefaultButton(KDialog::Ok);
+    setModal(true);
+    showButtonSeparator(true);
 
-    Q3VBox *vb = makeVBoxMainWidget();
+    Q3VBox *vb = new Q3VBox(this);
+    setMainWidget(vb);
     vb->setMargin(KDialog::marginHint());
     vb->setSpacing(KDialog::spacingHint());
 
@@ -76,6 +79,7 @@ SelectGameDialog::SelectGameDialog(const QString title,QWidget *parent, const ch
             this,SLOT(slotExecuted(Q3IconViewItem *)));
 
     nexticon = 0;
+    // TODO: icontimer is never deleted, do in destructor?
     icontimer = new QTimer(this);
     connect(icontimer,SIGNAL(timeout()),this,SLOT(timerTick()));
     icontimer->start(50);
@@ -102,7 +106,7 @@ int SelectGameDialog::exec()
 void SelectGameDialog::slotSelectionChanged()
 {
     const Q3IconViewItem *sel = wEpisodeIconView->currentItem();
-    enableButtonOK(sel!=NULL && sel->isSelected());
+    enableButtonOk(sel!=NULL && sel->isSelected());
 }
 
 
@@ -116,7 +120,8 @@ const Episode *SelectGameDialog::selectedItem()
 
 void SelectGameDialog::slotExecuted(Q3IconViewItem *item)
 {
-    slotOk();
+// TODO: port
+//    slotOk();
 }
 
 

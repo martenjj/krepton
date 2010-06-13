@@ -48,7 +48,7 @@ class GameEditor : public KMainWindow
 	Q_OBJECT
 
 public:
-	GameEditor(KXMLGUIClient *parent = NULL,const char *name = NULL);
+	GameEditor(QWidget *parent = NULL);
 	~GameEditor();
 
 	void startEdit(const QString name,const MapList ml,const Sprites *ss);
@@ -102,13 +102,15 @@ private:
 	QTabWidget *tabs;
 	KPushButton* checkPushButton;
 	KPushButton* closePushButton;
+        int dataIndex;
+        int mapIndex;
+        int spriteIndex;
 #endif
 
 	QString epname;
 	MapEditList maps;
 	Sprites *sprites;
 
-	QString caption;
 	bool modified;
 	bool align;
 

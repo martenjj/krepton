@@ -50,7 +50,7 @@ public:
 		Finished = 3
 	};
 
-	GamePlayer(QWidget *parent = NULL, const char *name = NULL);
+	explicit GamePlayer(QWidget *parent = NULL);
 	~GamePlayer();
 
 	const QString loadEpisode(const Episode *e);

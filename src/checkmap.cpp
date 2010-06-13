@@ -22,12 +22,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kmessagebox.h>
 
 #include <qstringlist.h>
-#include <q3strlist.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -52,8 +49,8 @@ void CheckMap::addItem(const QString msg)
 	msgs.append(msg);
 
 	CheckMap::Severity thissev = CheckMap::Fatal;
-	if (msg.find("(warning)")!=-1) thissev = CheckMap::Warning;
-	if (((int) thissev)>((int) severity)) severity = thissev;
+	if (msg.contains("(warning)")) thissev = CheckMap::Warning;
+	severity = qMax(severity, thissev);
 }
 
 
@@ -106,7 +103,7 @@ void CheckMap::strictCheckTransporters(const QString maploc,const Map *mm)
 
 CheckMap::CheckMap(const MapList maps)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	msgs.clear();
 	severity = CheckMap::Ok;
@@ -207,22 +204,20 @@ default:				;		// Avoid warnings
 	}
 
 	// Check for duplicated passwords
-	Q3StrList pwds(false);
+	QStringList pwds;
 
 	for (mi.toFirst(); (mm = mi.current())!=NULL; ++mi) pwds.append(mm->password);
 	for (mi.toFirst(),thismap = 1; (mm = mi.current())!=NULL; ++mi,++thismap)
 	{
-		for (const char *s = pwds.at(thismap); s!=NULL; s = pwds.next())
-		{
-			if (mm->password==s)
-			{
-				const QString pwloc = QString("Maps #%1 and #%2").arg(thismap).arg(pwds.at()+1);
-				addItem(pwloc,"have the same password");
-			}
-		}
+            int idx = pwds.indexOf(mm->password, Qt::CaseInsensitive);
+            if (idx>thismap)
+            {
+                    const QString pwloc = QString("Maps #%1 and #%2").arg(thismap).arg(idx);
+                    addItem(pwloc,"have the same password");
+            }
 	}
 
-	kdDebug(0) << k_funcinfo << "done sev=" << severity << endl;
+	kDebug() << "done sev=" << severity;
 }
 
 

@@ -3,7 +3,7 @@
 <MenuBar>
 
 	<Menu name="file" noMerge="1"><text>&amp;File</text>
-		<Action name="file_select"/>
+		<Action name="file_open"/>
 		<Separator lineSeparator="true"/>
 
 		<Action name="file_save"/>
@@ -28,8 +28,6 @@
 
 		<Action name="game_pause"/>
 		<Action name="game_suicide"/>
-<!--		<Separator lineSeparator="true"/>	-->
-<!--		<Action name="game_finish"/>		-->
 	</Menu>
 
 	<Menu name="editor" noMerge="1"><text>&amp;Editor</text>
@@ -58,4 +56,11 @@
 	</Menu>
 
 </MenuBar>
+
+
+<ToolBar name="mainToolBar" noMerge="1">
+    <text>Main Toolbar</text>
+</ToolBar>
+
+
 </kpartgui>

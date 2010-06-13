@@ -142,7 +142,7 @@ ImporterBBC::~ImporterBBC()
 
 bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *maplist,QString *results)
 {
-    kdDebug(0) << k_funcinfo << endl;
+    kDebug();
 
     QByteArray data = f.readAll();			// grab the complete file
     int ptr;						// data pointer into that
@@ -168,7 +168,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
                 break;					// no need to check any more
             }
         }
-	kdDebug() << "  same palette for level " << i << "? " << samepal[i] << endl;
+	kDebug() << "same palette for level " << i << "? " << samepal[i];
     }
 
     for (int i = 0; i<BBC_NUM_MAPS; ++i)
@@ -189,7 +189,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
         MapEdit *m = new MapEdit(BBC_MAP_WIDTH,BBC_MAP_HEIGHT,pw);
 
         ptr = 0x0040 + i*2;				// point to time limit
-        int t = ((int) data[ptr]) + ((int) data[ptr+1])*256;
+        int t = static_cast<int>(data[ptr]) + static_cast<int>(data[ptr+1])*256;
         m->changeTime(t);
 
         ptr = 0x0050 + i*2;				// point to edit code
@@ -245,7 +245,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
         ptr = 0x00E0 + i*4;				// point to colour palette
         for (int c = 0; c<BBC_NUM_COLOURS; ++c)
         {
-            palette[c] = BBCcolours[(int) data[ptr+c]];
+            palette[c] = BBCcolours[static_cast<int>(data[ptr+c])];
         }
 
         ptr = 0x0E20;					// point to sprite data

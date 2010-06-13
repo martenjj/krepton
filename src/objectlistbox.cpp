@@ -22,9 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-#include <klistbox.h>
+#include <klistwidget.h>
 
 #include "krepton.h"
 #include "objectlist.h"
@@ -32,14 +30,14 @@
 #include "objectlistbox.h"
 
 
-ObjectListBox::ObjectListBox(bool all,QWidget *parent,const char *name)
-	: KListBox(parent,name)
+ObjectListBox::ObjectListBox(bool all, QWidget *parent)
+	: KListWidget(parent)
 {
-	kdDebug(0) << k_funcinfo << "all=" << all << endl;
+        setObjectName("ObjectListBox");
+
+	kDebug() << "all" << all;
 
 	setFixedWidth(150);
-	setAutoUpdate(false);
-	if (all) insertStringList(ObjectList::allSpriteNames());
-	else insertStringList(ObjectList::allMapNames());
-	setAutoUpdate(true);
+	if (all) addItems(ObjectList::allSpriteNames());
+	else addItems(ObjectList::allMapNames());
 }

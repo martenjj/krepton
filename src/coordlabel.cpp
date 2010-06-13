@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <qstring.h>
 #include <qlabel.h>
 //Added by qt3to4:
@@ -33,12 +31,12 @@
 #include "coordlabel.moc"
 
 
-CoordLabel::CoordLabel(QWidget *parent,const char *name) : QLabel(parent,name)
+CoordLabel::CoordLabel(QWidget *parent) : QLabel(parent)
 {
 	setFrameStyle(Q3Frame::Panel|Q3Frame::Sunken);
-	setAutoResize(true);
+	//setAutoResize(true);
 	setText("X:999 Y:999");
-	setAutoResize(false);
+	//setAutoResize(false);
 	setFixedSize(size());
 	clear();
 }

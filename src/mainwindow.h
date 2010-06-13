@@ -25,7 +25,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 //Added by qt3to4:
 #include <QLabel>
 #include <QCloseEvent>
@@ -43,12 +43,12 @@ class QWidget;
 class QLabel;
 
 
-class MainWindow : public KMainWindow
+class MainWindow : public KXmlGuiWindow
 {
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = NULL,const char *name = NULL);
+	MainWindow(QWidget *parent = NULL);
 	~MainWindow();
 
 	void loadGame(const Episode *e);

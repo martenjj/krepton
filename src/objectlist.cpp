@@ -22,20 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-//#include <kapplication.h>
-//#include <kglobal.h>
-//#include <kstandarddirs.h>
-//#include <kmessagebox.h>
-//
-//#include <qdir.h>
-//#include <qfile.h>
-//#include <qtstream.h>
 #include <qstringlist.h>
-//#include <qpainter.h>
-//
-//
+
 #include "krepton.h"
 #include "objectlist.h"
 
@@ -105,13 +93,12 @@ static const QString objnames =				// display names of objects
 
 ObjectList::ObjectList(const QString &s)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
-	lSprites = QStringList::split(',',s);
-	lMaps = QStringList::split(',',s.section(",,",0,0));
+	lSprites = s.split(',', QString::SkipEmptyParts);
+	lMaps = s.section(",,",0,0).split(',');
 
-	kdDebug(0) << k_funcinfo << "done n1=" << lSprites.count() << 
-		" l2=" << lMaps.count() << endl;
+	kDebug() << "done, n1=" << lSprites.count() << "l2=" << lMaps.count();
 }
 
 

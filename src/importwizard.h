@@ -21,17 +21,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-
 #ifndef IMPORTWIZARD_H
 #define IMPORTWIZARD_H
 
-#include <kwizard.h>
+#include <k3wizard.h>
 
 #include "importmanager.h"
 //Added by qt3to4:
-#include <Q3GridLayout>
+//#include <Q3GridLayout>
 #include <QLabel>
 
 
@@ -41,11 +38,10 @@ class QLineEdit;
 class QLabel;
 class QCheckBox;
 class Q3GridLayout;
-class KURLRequester;
-class KActiveLabel;
+class KUrlRequester;
 class KTextEdit;
 
-class ImportWizard : public KWizard
+class ImportWizard : public K3Wizard
 {
 	Q_OBJECT
 
@@ -72,12 +68,12 @@ private:
 	void setupPage1();
 	QWidget *page1;
 	Q3ListBox *page1list;
-	KActiveLabel *page1info;
+	QLabel *page1info;
 
 	void setupPage2();
 	QWidget *page2;
 	QLabel *page2info;
-	KURLRequester *page2source;
+	KUrlRequester *page2source;
 
 	void setupPage3();
 	QWidget *page3;

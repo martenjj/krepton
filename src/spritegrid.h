@@ -44,7 +44,7 @@ signals:
 	void changedCoordinates(int x,int y);
 
 public:
-	SpriteGrid(QWidget *parent = NULL,const char *name = NULL);
+	SpriteGrid(QWidget *parent = NULL);
 	void setSprite(Sprites *ss,Obj::Type tt) { sprites = ss; object = tt; }
 
 protected:

@@ -22,9 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <knuminput.h>
 
 #include "krepton.h"
@@ -32,23 +30,30 @@
 #include "newtransporterdialog.h"
 
 
-NewTransporterDialog::NewTransporterDialog(const QString &title,QWidget *parent,const char *name)
-	: KDialogBase(parent,name,true,title,KDialogBase::Ok|KDialogBase::Cancel)
+NewTransporterDialog::NewTransporterDialog(const QString &title, QWidget *parent)
+	: KDialog(parent)
 {
+        setObjectName("NewTransporterDialog");
+        setCaption(title);
+        setButtons(KDialog::Ok|KDialog::Cancel);
+        setDefaultButton(KDialog::Ok);
+        setModal(true);
+        showButtonSeparator(true);
+
 	w = new NewTransporterWidget(this);
 	setMainWidget(w);
-	setFixedSize(calculateSize(w->size().width(),w->size().height()));
+	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
 	adjustSize();
 }
 
 
 void NewTransporterDialog::setLimits(int x,int y)
 {
-	w->origxSpinBox->setMaxValue(x);
-	w->destxSpinBox->setMaxValue(x);
+	w->origxSpinBox->setMaximum(x);
+	w->destxSpinBox->setMaximum(x);
 
-	w->origySpinBox->setMaxValue(y);
-	w->destySpinBox->setMaxValue(y);
+	w->origySpinBox->setMaximum(y);
+	w->destySpinBox->setMaximum(y);
 }
 
 

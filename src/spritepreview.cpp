@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <qlabel.h>
 #include <qpixmap.h>
 //Added by qt3to4:
@@ -35,7 +33,7 @@
 #include "spritepreview.h"
 
 
-SpritePreview::SpritePreview(QWidget *parent,const char *name) : QLabel(parent,name)
+SpritePreview::SpritePreview(QWidget *parent) : QLabel(parent)
 {
 	sprites = NULL;
 	object = Obj::Empty;
@@ -53,7 +51,7 @@ void SpritePreview::setSprite(Sprites *ss,Obj::Type tt)
 	sprites = ss;
 	object = tt;
 
-	if (object==((Obj::Type) -1)) setEnabled(false);
+	if (object==static_cast<Obj::Type>(-1)) setEnabled(false);
 	else
 	{
 		setEnabled(true);

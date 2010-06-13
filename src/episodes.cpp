@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
@@ -31,6 +29,7 @@
 #include <kapplication.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+#include <kmessagebox.h>
 
 #include <q3ptrlist.h>
 #include <qstringlist.h>
@@ -41,7 +40,6 @@
 #include <qregexp.h>
 //Added by qt3to4:
 #include <Q3TextStream>
-#include <Q3PtrCollection>
 
 #include "krepton.h"
 #include "map.h"
@@ -63,15 +61,16 @@ const QString Episode::loadMaps(MapList *maps) const
 	}
 
 	dir.setFilter(QDir::Files);			// enumerate map files
-	dir.setNameFilter("map*");
+	dir.setNameFilters(QStringList("map*"));
 	dir.setSorting(QDir::Name);
 
 	QString status = QString::null;
-	const QFileInfoList *list = dir.entryInfoList();
-	QFileInfoListIterator it(*list);
-	for (const QFileInfo *fi; (fi = it.current())!=NULL; ++it)
-	{
-		Map *m = new Map(path+"/"+fi->fileName());
+	const QFileInfoList list = dir.entryInfoList();
+        for (QFileInfoList::const_iterator it = list.constBegin();
+             it!=list.constEnd(); ++it)
+        {
+                QFileInfo fi = (*it);
+		Map *m = new Map(path+"/"+fi.fileName());
 		status = m->loadStatus();
 		if (!status.isNull()) break;
 		maps->append(m);
@@ -87,28 +86,29 @@ static void removeMapFiles(const QString& path)
 	if (!dir.exists()) return;			// equivalent to success
 
 	dir.setFilter(QDir::Files);
-	dir.setNameFilter("map*");
+	dir.setNameFilters(QStringList("map*"));
 	dir.setSorting(QDir::Name);
-	const QFileInfoList *list = dir.entryInfoList();
-	QFileInfoListIterator it(*list);
-	for (const QFileInfo *fi; (fi = it.current())!=NULL; ++it)
-	{
-		kdDebug(0) << k_funcinfo << "remove old " << fi->absFilePath() << endl;
-		dir.remove(fi->fileName());
+	const QFileInfoList list = dir.entryInfoList();
+        for (QFileInfoList::const_iterator it = list.constBegin();
+             it!=list.constEnd(); ++it)
+        {
+                QFileInfo fi = (*it);
+		kDebug() << "remove old " << fi.absoluteFilePath();
+		dir.remove(fi.fileName());
 	}
 }
 
 
 bool Episode::saveInfoAndMaps(const MapList *maps) const
 {
-	kdDebug(0) << k_funcinfo << "name='" << name << "'" << endl;
+	kDebug() << "name='" << name << "'";
 
 	QString path = getFilePath(QString::null);	// containing directory
 	if (!QDir(path).exists())
 	{
 		if (!KStandardDirs::makeDir(path))
 		{
-			reportError("Cannot create directory '%1'",path);
+			reportError(ki18n("Cannot create directory '%1'"), path);
 			return (false);
 		}
 	}
@@ -117,7 +117,7 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 	QFile f(path);
 	if (!f.open(QIODevice::WriteOnly))
 	{
-		reportError("Cannot write to file '%1'",path);
+		reportError(ki18n("Cannot write to file '%1'"), path);
 		return (false);
 	}
 
@@ -142,12 +142,12 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 
 bool Episode::removeFiles() const
 {
-	kdDebug(0) << k_funcinfo << "path='" << path << "'" << endl;
+	kDebug() << "path='" << path << "'";
 
 	QDir dir(path);
 	if (!dir.exists())
 	{
-		reportError("Directory '%1' does not exist");
+		reportError(ki18n("Directory '%1' does not exist"), path);
 		return (true);				// equivalent to success
 	}
 
@@ -155,13 +155,14 @@ bool Episode::removeFiles() const
 	dir.setFilter(QDir::Files);
 	dir.setSorting(QDir::Name);
 
-	const QFileInfoList *list = dir.entryInfoList();
-	QFileInfoListIterator it(*list);
-	for (const QFileInfo *fi; (fi = it.current())!=NULL; ++it)
-	{
-		if (!dir.remove(fi->fileName()))
+	const QFileInfoList list = dir.entryInfoList();
+        for (QFileInfoList::const_iterator it = list.constBegin();
+             it!=list.constEnd(); ++it)
+        {
+                QFileInfo fi = (*it);
+		if (!dir.remove(fi.fileName()))
 		{
-			reportError("Cannot delete file '%1'",dir.absFilePath(fi->fileName()));
+			reportError(ki18n("Cannot delete file '%1'"), dir.absoluteFilePath(fi.fileName()));
 			break;
 		}
 	}
@@ -169,7 +170,7 @@ bool Episode::removeFiles() const
 	dir.cdUp();
 	if (!dir.rmdir(path))
 	{
-		reportError("Cannot delete directory '%1'",path);
+		reportError(ki18n("Cannot delete directory '%1'"), path);
 		return (false);
 	}
 
@@ -179,14 +180,14 @@ bool Episode::removeFiles() const
 
 QString Episode::sanitisedName(const QString &name)
 {
-	QString s1 = name.simplifyWhiteSpace();
+	QString s1 = name.simplified();
 	QString t = "";
 
-	QChar ch;
-	for (int i = 0; !((ch = s1.at(i)).isNull()); ++i)
+	for (int i = 0; i<s1.length(); ++i)
 	{
-		if (ch.latin1()==0 || !ch.isLetterOrNumber()) ch = '_';
-		t += ch.lower();
+                QChar ch = s1.at(i);
+		if (ch.toLatin1()==0 || !ch.isLetterOrNumber()) ch = '_';
+		t += ch.toLower();
 	}
 
         return (t);
@@ -223,53 +224,54 @@ QString Episode::savePath(const QString &name)
 EpisodeList::EpisodeList() : Q3PtrList<Episode>()
 {
 	const QString localdir = QDir(KGlobal::dirs()->localkdedir()).canonicalPath()+"/";
-	kdDebug(0) << k_funcinfo << "local='" << localdir << "'" << endl;
+	kDebug() << "local='" << localdir << "'";
 
 	QStringList dirs = KGlobal::dirs()->findDirs("episodes","");
 	for (QStringList::Iterator di = dirs.begin(); di!=dirs.end(); ++di)
 	{
 		QString di1 = *di;
 
-		kdDebug(0) << k_funcinfo << "dir='" << di1 << "'" << endl;
+		kDebug() << "dir='" << di1 << "'";
 		if (di1==QString::null) continue;
 		di1 = QDir(di1).canonicalPath();
 
 		QDir dir(di1);
 		if (!dir.exists())
 		{
-			reportError("Episode directory '%1' not found",di1);
+			reportError(ki18n("Episode directory '%1' not found"), di1);
 			continue;
 		}
  
 		dir.setFilter(QDir::Dirs);
 		dir.setSorting(QDir::Name);
-		const QFileInfoList *list = dir.entryInfoList();
-		QFileInfoListIterator it(*list);
-		for (const QFileInfo *fi; (fi = it.current())!=NULL; ++it)
+		const QFileInfoList list = dir.entryInfoList();
+		for (QFileInfoList::const_iterator it = list.constBegin();
+                     it!=list.constEnd(); ++it)
 		{
-			if (fi->fileName().startsWith(".")) continue;
+                        QFileInfo fi = (*it);
+			if (fi.fileName().startsWith(".")) continue;
 
-			if (!dir.cd(fi->fileName()))
+			if (!dir.cd(fi.fileName()))
 			{
-				reportError("Cannot access directory '%1'",
-				      dir.absFilePath(fi->fileName()));
+				reportError(ki18n("Cannot access directory '%1'"),
+				      dir.absoluteFilePath(fi.fileName()));
 				continue;
 			}
 
-			QString dirname = dir.absPath();
+			QString dirname = dir.absolutePath();
 			QString filename = dirname+"/info";
 			QFile f(filename);
 			dir.cdUp();
 
 			if (!f.open(QIODevice::ReadOnly))
 			{
-				reportError("Cannot read information file '%1'",filename);
+				reportError(ki18n("Cannot read information file '%1'"), filename);
 				continue;
 			}
 
 			Q3TextStream t(&f);
 			QString name;
-			name = t.readLine().stripWhiteSpace();
+			name = t.readLine().trimmed();
 			f.close();
 
 			bool global = !di1.startsWith(localdir);
@@ -279,28 +281,27 @@ EpisodeList::EpisodeList() : Q3PtrList<Episode>()
 
 	if (isEmpty())
 	{
-		QString msg;
 		QStringList dirs = KGlobal::dirs()->findDirs("episodes","");
+                if (dirs.isEmpty()) dirs = QStringList(i18n("(none)"));
 
+                // Not proper I18N here, but then the user should never see this message
+		QString msg = "<qt>";
 		msg = "No episodes could be found in any of these locations:";
-		msg += "<br><ul><li>"+dirs.join("</li><li>")+"</li></ul>";
+		msg += "<br><br>&nbsp;&nbsp;<filename>"+dirs.join("</filename><br>&nbsp;&nbsp;<filename>")+"</filename><br><br>";
 		msg += "Is the application properly installed?";
 
-		reportError(msg,QString::null,false);
+                KMessageBox::error(NULL, msg);
 	}
 
 	setAutoDelete(true);
 	sort();
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
 
 EpisodeList *EpisodeList::list()
 {
-
-//	if (episodelist==NULL) episodelist = new EpisodeList();
-//	return (episodelist);
 	static EpisodeList *el = new EpisodeList();
 	return (el);
 }
@@ -308,10 +309,10 @@ EpisodeList *EpisodeList::list()
 
 const Episode *EpisodeList::find(const QString &name)
 {
-	kdDebug(0) << k_funcinfo << "name='" << name << "'" << endl;
+	kDebug() << "name='" << name << "'";
 	for (const Episode *e = first(); e!=NULL; e = next())
 	{
-		if (name.lower()==e->getName().lower()) return (e);
+		if (QString::compare(name, e->getName(), Qt::CaseInsensitive)==0) return (e);
 	}
 
 	return (NULL);
@@ -319,14 +320,14 @@ const Episode *EpisodeList::find(const QString &name)
 
 void EpisodeList::add(const Episode *e)
 {
-	kdDebug(0) << k_funcinfo << "name='" << e->getName() << "'" << endl;
+	kDebug() << "name='" << e->getName() << "'";
 	if (findRef(e)==-1) inSort(e);
 }
 
 
 void EpisodeList::remove(const Episode *e,bool noDelete)
 {
-	kdDebug(0) << k_funcinfo << "name='" << e->getName() << "'" << endl;
+	kDebug() << "name='" << e->getName() << "'";
 
         bool deleteState = autoDelete();
         setAutoDelete(!noDelete);
@@ -352,11 +353,11 @@ bool EpisodeList::any() const
 
 int EpisodeList::compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2)
 {
-	const QString n1 = ((const Episode *) item1)->getName();
-	const QString n2 = ((const Episode *) item2)->getName();
-//	kdDebug(0) << k_funcinfo << "1='" << n1 << "' 2='" << n2 << "'" << endl;
+	const QString n1 = static_cast<const Episode *>(item1)->getName();
+	const QString n2 = static_cast<const Episode *>(item2)->getName();
+//	kDebug() << "1='" << n1 << "' 2='" << n2 << "'";
 
 	if (n1=="blank") return (+1);			// always force to end
 	if (n2=="blank") return (-1);
-	return (n1.lower().compare(n2.lower()));
+	return (QString::compare(n1, n2, Qt::CaseInsensitive));
 }

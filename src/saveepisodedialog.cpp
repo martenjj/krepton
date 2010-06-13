@@ -22,10 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
-#include <kdialogbase.h>
-#include <kstdguiitem.h>
+#include <kdialog.h>
+#include <kstandardguiitem.h>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -33,22 +31,29 @@
 #include "saveepisodedialog.h"
 
 
-SaveEpisodeDialog::SaveEpisodeDialog(const QString &title,QWidget *parent,const char *name)
-	: KDialogBase(parent,name,true,title,KDialogBase::Ok|KDialogBase::Cancel)
+SaveEpisodeDialog::SaveEpisodeDialog(const QString &title, QWidget *parent)
+	: KDialog(parent)
 {
+	setObjectName("SaveEpisodeDialog");
+        setCaption(title);
+        setButtons(KDialog::Ok|KDialog::Cancel);
+        setDefaultButton(KDialog::Ok);
+        setModal(true);
+        showButtonSeparator(true);
+
 	w = new SaveEpisodeWidget(this);
 	setMainWidget(w);
-	setFixedSize(calculateSize(w->size().width(),w->size().height()));
+	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
 	adjustSize();
 
-	setButtonOK(KStdGuiItem::save());
+	setButtonGuiItem(KDialog::Ok, KStandardGuiItem::save());
 
         connect(w->nameLineEdit,SIGNAL(textChanged(const QString&)),
                 this,SLOT(slotNameChanged(const QString&)));
 
 	w->nameLineEdit->clear();
 	slotNameChanged("");
-	enableButtonOK(false);
+	enableButtonOk(false);
         w->nameLineEdit->setFocus();
 }
 
@@ -60,5 +65,5 @@ void SaveEpisodeDialog::slotNameChanged(const QString &s)
 	w->pathSqueezedTextLabel->setText(fullpath);
 
 	w->pathSqueezedTextLabel->setEnabled(!s.isEmpty());
-	enableButtonOK(!s.isEmpty());
+	enableButtonOk(!s.isEmpty());
 }

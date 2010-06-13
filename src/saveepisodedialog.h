@@ -25,18 +25,18 @@
 #ifndef SAVEEPISODEDIALOG_H
 #define SAVEEPISODEDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <klineedit.h>
 #include <ksqueezedtextlabel.h>
 
 #include "saveepisodewidgetui.h"
 
-class SaveEpisodeDialog : public KDialogBase
+class SaveEpisodeDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
-	SaveEpisodeDialog(const QString &title,QWidget *parent = NULL,const char *name = NULL);
+	SaveEpisodeDialog(const QString &title,QWidget *parent = NULL);
 	const QString name() { return (w->nameLineEdit->text()); }
 	const QString path() { return (fullpath); }
 

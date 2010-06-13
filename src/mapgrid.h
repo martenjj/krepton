@@ -39,7 +39,7 @@ class MapGrid : public Q3ScrollView
 	Q_OBJECT
 
 public:
-	MapGrid(QWidget *parent = NULL,const char *name = NULL);
+	MapGrid(QWidget *parent = NULL);
 	void setSprite(Sprites *ss,Obj::Type tt) { sprites = ss; object = tt; }
 	void setMap(MapEdit *mm);
 	void updatedCell(int x,int y);

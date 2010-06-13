@@ -21,13 +21,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
-#include <kwizard.h>
-#include <kdialog.h>
+#include <k3wizard.h>
+#include <kconfiggroup.h>
 #include <kurlrequester.h>
 #include <kfiledialog.h>
 #include <kactivelabel.h>
@@ -42,9 +40,8 @@
 #include <qfileinfo.h>
 #include <qcheckbox.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <Q3HBoxLayout>
-#include <Q3VBoxLayout>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 #include "episodes.h"
 #include "importmanager.h"
@@ -79,7 +76,7 @@ static const QString page5caption = i18n("Finished");
 static const QString page1text = i18n("<qt><p>Repton games in a variety of formats can be imported. \
 An imported game will be saved and can be selected to play or edit in the same way as any other.");
 
-static const QString page2text = i18n("<qt><p>Importing a %1 data file.\
+static const KLocalizedString page2text = ki18n("<qt><p>Importing a %1 data file.\
 <p>\
 Specify the file to be imported.");
 
@@ -96,15 +93,15 @@ static const QString page5text = i18n("<qt><p>Use <b>Finish</b> to exit the wiza
 //////////////////////////////////////////////////////////////////////////
 
 ImportWizard::ImportWizard(const QString &title,QWidget *parent)
-	: KWizard(parent)
+	: K3Wizard(parent)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
         format = NULL;					// none selected yet
         manager = ImportManager::self();		// we'll use this a lot
         importedOk = false;
 
-	setCaption(title);
+	setWindowTitle(title);
 	setupPage1();
 	setupPage2();
 	setupPage3();
@@ -120,7 +117,7 @@ ImportWizard::ImportWizard(const QString &title,QWidget *parent)
 
 void ImportWizard::showPage(QWidget *page)
 {
-	KWizard::showPage(page);
+	K3Wizard::showPage(page);
 
 	if (page==page1)
 	{
@@ -133,7 +130,7 @@ void ImportWizard::showPage(QWidget *page)
 	{
         	if (format!=NULL)
 		{
-			page2info->setText(page2text.arg(format->name));
+			page2info->setText(page2text.subs(format->name).toString());
 		}
 #ifdef TESTING
 		page2source->setURL(TEST_SOURCE);
@@ -144,7 +141,7 @@ void ImportWizard::showPage(QWidget *page)
 	{
 		if (format!=NULL)
                 {
-			const KURL u = page2source->url();
+			const KUrl u = page2source->url();
 			if (!u.isEmpty() && page3name->text().isEmpty())
 			{
 				QString f = u.fileName().section('.',0,0);
@@ -162,9 +159,9 @@ void ImportWizard::showPage(QWidget *page)
 		if (format!=NULL)
                 {
 			QString t = "<qt><dl>";
-			t += i18n("<dt>Format:<dd><b>%1</b>").arg(format->name);
-			t += i18n("<dt>Source file:<dd><b>%1</b>").arg(page2source->url());
-			t += i18n("<dt>New episode name:<dd><b>%1</b>").arg(page3name->text());
+			t += i18n("<dt>Format:<dd><b>%1</b>", format->name);
+			t += i18n("<dt>Source file:<dd><b>%1</b>", page2source->url().prettyUrl());
+			t += i18n("<dt>New episode name:<dd><b>%1</b>", page3name->text());
                         t += "</dl>";
                         page4disp->setText(t);
                 }
@@ -176,7 +173,7 @@ void ImportWizard::showPage(QWidget *page)
 		ImporterBase *importer = ImportManager::self()->createImporter(format->key);
 		if (importer==NULL)
 		{
-			reportError(i18n("Cannot create importer for '%1'"),format->key,false);
+			reportError(ki18n("Cannot create importer for '%1'"),format->key,false);
 			finishButton()->setEnabled(false);
 			page5disp->setText(i18n("Error while importing"));
 		}
@@ -184,7 +181,7 @@ void ImportWizard::showPage(QWidget *page)
 		{
 			QString status;
                         episodeName = page3name->text();
-                        if (!importer->import(page2source->url(),episodeName,&status))
+                        if (!importer->import(page2source->url().url(), episodeName,&status))
                         {
 				if (status.isEmpty()) status = i18n("Import failed");
 				finishButton()->setEnabled(false);
@@ -209,28 +206,27 @@ void ImportWizard::next()
 
 	if (currentPage()==page2)
 	{
-		const QString src = page2source->url();
+		const QString src = page2source->url().prettyUrl();
 		ok = (!src.isEmpty());
 		if (ok)
 		{
 			QFileInfo fi(src);
 			if (!fi.exists())
 			{
-				reportError(i18n("The file <b>%1</b><br>does not exist."),fi.absFilePath(),false);
+				reportError(ki18n("The file <b>%1</b><br>does not exist."),fi.absoluteFilePath(),false);
 				ok = false;
 			}
 
 			if (ok && fi.isRelative())
 			{
-				fi.convertToAbs();
-				page2source->setURL(fi.filePath());
+				fi.makeAbsolute();
+				page2source->setUrl(fi.filePath());
 			}
 
 			if (ok)
 			{
-				KConfig *conf = KGlobal::config();
-				conf->setGroup("Importer");
-				conf->writePathEntry("LastLocation",page2source->fileDialog()->baseURL().url());
+				KConfigGroup grp = KGlobal::config()->group("Importer");
+				grp.writeEntry("LastLocation", page2source->fileDialog()->baseUrl());
                         }
 		}
 	}
@@ -245,19 +241,19 @@ void ImportWizard::next()
                         {
 				if (e->isGlobal())
                                 {
-					reportError(i18n("A global episode named <b>%1</b> already exists."),name,false);
+					reportError(ki18n("A global episode named <b>%1</b> already exists."),name,false);
                                         ok = false;
                                 }
                                 else if (!page3over->isChecked())
                                 {
-					reportError(i18n("A user episode named <b>%1</b> already exists.<br>Select the \"Overwrite\" check box if required."),name,false);
+					reportError(ki18n("A user episode named <b>%1</b> already exists.<br>Select the \"Overwrite\" check box if required."),name,false);
                                         ok = false;
                                 }
 			}
                 }
 	}
 
-	if (ok) KWizard::next();
+	if (ok) K3Wizard::next();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -270,7 +266,7 @@ void ImportWizard::setupPage1()
 {
 	page1 = new QWidget(this);
 
-	Q3HBoxLayout *l = new Q3HBoxLayout(page1,KDialog::marginHint(),KDialog::spacingHint());
+	QHBoxLayout *l = new QHBoxLayout(page1);
 
 	page1list = new Q3ListBox(page1);
 	page1list->setSelectionMode(Q3ListBox::Single);
@@ -288,8 +284,10 @@ void ImportWizard::setupPage1()
 
 	page1list->setMinimumWidth(page1list->maxItemWidth()+page1list->verticalScrollBar()->width()+20);
 
-	page1info = new KActiveLabel(page1text+"<p>"+i18n("Select a format for more information about it."),page1);
-	l->addWidget(page1info,1);
+	page1info = new QLabel(page1text+"<p>"+i18n("Select a format for more information about it."),page1);
+        page1info->setWordWrap(true);
+        page1info->setOpenExternalLinks(true);
+	l->addWidget(page1info,1, Qt::AlignTop);
 
 	page1->setMinimumHeight(240);
 	addPage(page1,page1caption);
@@ -310,7 +308,7 @@ void ImportWizard::slotPage1FormatSelected()
         t += "<p><hr>";
         if (!format->url.isNull())
         {
-            t += "<p>"+i18n("See <a href=\"%1\">%2</a> for more information on this format.").arg(format->url,format->url);
+            t += "<p>"+i18n("See <a href=\"%1\">%2</a> for more information on this format.", format->url, format->url);
         }
 
         if (!format->notes.isNull())
@@ -339,20 +337,20 @@ void ImportWizard::slotPage1FormatSelected()
 void ImportWizard::setupPage2()
 {
 	page2 = new QWidget(this);
-	Q3VBoxLayout *l = new Q3VBoxLayout(page2,KDialog::marginHint(),KDialog::spacingHint());
+	QVBoxLayout *l = new QVBoxLayout(page2);
 
-	page2info = new QLabel(page2text.arg(""),page2);
+	page2info = new QLabel(page2text.subs("").toString(),page2);
+        page2info->setWordWrap(true);
 	l->addWidget(page2info,1,Qt::AlignTop);
 
-	page2source = new KURLRequester(page2);
-	page2source->setMode(KFile::File+KFile::ExistingOnly+KFile::LocalOnly);
+	page2source = new KUrlRequester(page2);
+	page2source->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
 
 	page2source->fileDialog()->setCaption(page2caption);
 
-        KConfig *conf = KGlobal::config();
-        conf->setGroup("Importer");
-	QString lastloc = conf->readPathEntry("LastLocation");
-	if (!lastloc.isNull()) page2source->fileDialog()->setURL(lastloc);
+        KConfigGroup grp = KGlobal::config()->group("Importer");
+	KUrl lastloc = grp.readEntry("LastLocation", KUrl());
+	if (lastloc.isValid()) page2source->fileDialog()->setUrl(lastloc);
 
 	connect(page2source,SIGNAL(textChanged(const QString &)),this,SLOT(slotPage2SourceSelected()));
 
@@ -369,7 +367,7 @@ void ImportWizard::setupPage2()
 
 void ImportWizard::slotPage2SourceSelected()
 {
-	kdDebug(0) << k_funcinfo << " url=" << page2source->url() << endl;
+	kDebug() << " url=" << page2source->url();
 	setNextEnabled(page2,!page2source->url().isEmpty());
 }
 
@@ -382,9 +380,11 @@ void ImportWizard::slotPage2SourceSelected()
 void ImportWizard::setupPage3()
 {
 	page3 = new QWidget(this);
-	Q3VBoxLayout *l = new Q3VBoxLayout(page3,KDialog::marginHint(),KDialog::spacingHint());
+	QVBoxLayout *l = new QVBoxLayout(page3);
 
-	KActiveLabel *info = new KActiveLabel(page3text,page3);
+	QLabel *info = new QLabel(page3text,page3);
+        info->setWordWrap(true);
+        info->setOpenExternalLinks(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
 	page3name = new QLineEdit(page3);
@@ -420,9 +420,10 @@ void ImportWizard::slotPage3NameChanged()
 void ImportWizard::setupPage4()
 {
 	page4 = new QWidget(this);
-	Q3VBoxLayout *l = new Q3VBoxLayout(page4,KDialog::marginHint(),KDialog::spacingHint());
+	QVBoxLayout *l = new QVBoxLayout(page4);
 
 	QLabel *info = new QLabel(page4text,page4);
+        info->setWordWrap(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
         page4disp = new KTextEdit(page4);
@@ -443,9 +444,10 @@ void ImportWizard::setupPage4()
 void ImportWizard::setupPage5()
 {
 	page5 = new QWidget(this);
-	Q3VBoxLayout *l = new Q3VBoxLayout(page5,KDialog::marginHint(),KDialog::spacingHint());
+	QVBoxLayout *l = new QVBoxLayout(page5);
 
 	QLabel *info = new QLabel(page5text,page5);
+        info->setWordWrap(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
         page5load = new QCheckBox(i18n("Load the new episode"),page5);

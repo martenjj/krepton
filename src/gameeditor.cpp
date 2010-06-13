@@ -22,13 +22,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <q3groupbox.h>
 //Added by qt3to4:
 #include <QMoveEvent>
 #include <QCloseEvent>
-#include <Q3GridLayout>
 #include <Q3PtrList>
 
 #include <kmainwindow.h>
@@ -37,14 +34,14 @@
 #include <kstdaction.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <klistbox.h>
+#include <k3listbox.h>
 #include <klineedit.h>
 #include <knuminput.h>
 #include <kpushbutton.h>
 #include <kmenubar.h>
 
 #ifndef EDITOR_3_WINDOWS
-#include <qlayout.h>
+#include <qgridlayout.h>
 #include <qtabwidget.h>
 #include <kdialog.h>
 #endif
@@ -52,7 +49,6 @@
 #include "krepton.h"
 
 #include "map2.h"
-//#include "editorwidgetui.h"
 #include "dataeditor.h"
 #include "spriteeditor.h"
 #include "mapeditor.h"
@@ -65,56 +61,57 @@
 #include "gameeditor.moc"
 
 
-GameEditor::GameEditor(KXMLGUIClient *parent,const char *name)
-	: KMainWindow(NULL,name,Qt::WType_TopLevel)
+GameEditor::GameEditor(QWidget *parent)
+	: KMainWindow(parent)
 {
-	kdDebug(0) << k_funcinfo << "name='" << name << "'" << endl;
+	kDebug();
+
+        setObjectName("GameEditor");
+        setAttribute(Qt::WA_DeleteOnClose, false);	// we persist once opened
 
 	modified = true;				// force update first time
-	caption = name;
 	align = false;
 
 	sprites = NULL;
 	spritewin = NULL;
 	mapwin = NULL;
 
-	if (parent!=NULL) (void) new ParentActionMapper(parent,actionCollection());
+        // TODO: needs to be replaced?
+	//if (parent!=NULL) (void) new ParentActionMapper(parent,actionCollection());
 
-	toolBar("mainToolBar")->hide();
+	//toolBar("mainToolBar")->hide();
 	menuBar()->hide();
 
 #ifdef EDITOR_3_WINDOWS
 	view = new DataEditor(this);
 	setCentralWidget(view);
 #else
-	const int kmh = KDialog::marginHint();
-	const int ksh = KDialog::spacingHint();
-
 	QWidget *mw = new QWidget(this);
-	Q3GridLayout *l = new Q3GridLayout(mw,3,5,kmh,ksh);
+	QGridLayout *l = new QGridLayout(mw);
 
 	tabs = new QTabWidget(mw);
-	l->addMultiCellWidget(tabs,0,0,0,4);
+	l->addWidget(tabs,0,0,1,4);
 
 	view = new DataEditor(this);
-	tabs->addTab(view,"Episo&de");
+	dataIndex = tabs->addTab(view,"Episode");
 	showSpriteEditor(false);
 	showLevelEditor(false);
 
-	checkPushButton = new KPushButton("Check Consistenc&y",mw);
+	checkPushButton = new KPushButton("Check Consistency",mw);
 	l->addWidget(checkPushButton,2,1,Qt::AlignCenter);
-	closePushButton = new KPushButton("&Close",mw);
+        // TODO: use standard GUI item
+	closePushButton = new KPushButton("Close",mw);
 	l->addWidget(closePushButton,2,3,Qt::AlignCenter);
 
 	l->setRowStretch(0,1);
-	l->setColStretch(2,1);
+	l->setColumnStretch(2,1);
 
-	l->addRowSpacing(1,ksh);
-	l->addColSpacing(0,ksh);
-	l->addColSpacing(4,ksh);
+	l->setRowMinimumHeight(1, KDialog::spacingHint());
+	l->setColumnMinimumWidth(0, KDialog::spacingHint());
+	l->setColumnMinimumWidth(4, KDialog::spacingHint());
 
 	setCentralWidget(mw);
-	tabs->showPage(view);
+	tabs->setCurrentIndex(dataIndex);
 #endif
 	connect(view->mapsListBox,SIGNAL(selectionChanged()),
 		this,SLOT(selectedMap()));
@@ -154,7 +151,7 @@ GameEditor::GameEditor(KXMLGUIClient *parent,const char *name)
 	setModified(false);
 	updateMapsList();
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
@@ -178,13 +175,13 @@ GameEditor::~GameEditor()
 	maps.setAutoDelete(true);
 	maps.clear();
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
 void GameEditor::updateMapsList()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	view->mapsListBox->setAutoUpdate(false);
 	view->mapsListBox->clear();
@@ -197,7 +194,7 @@ void GameEditor::updateMapsList()
 void GameEditor::updateTransportersList(int item)
 {
 	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
-	kdDebug(0) << k_funcinfo << "level=" << level << " item=" << item << endl;
+	kDebug() << "level=" << level << " item=" << item;
 	if (level<0) return;
 	MapEdit *map = maps.at(level);
 
@@ -229,7 +226,7 @@ void GameEditor::updateTransportersList(int item)
 void GameEditor::selectedTransporter()
 {
 	int item = view->transportListBox->index(view->transportListBox->selectedItem());
-	kdDebug(0) << k_funcinfo << "item=" << item << endl;
+	kDebug() << "item=" << item;
 
 	view->removetransportPushButton->setEnabled(item>=0);
 	view->changetransportPushButton->setEnabled(item>=0);
@@ -240,7 +237,7 @@ void GameEditor::selectedTransporter()
 
 void GameEditor::selectLevel(int level)
 {
-	kdDebug(0) << k_funcinfo << "level=" << level << endl;
+	kDebug() << "level=" << level;
 
 	if (level<0)					// no selection
 	{
@@ -261,7 +258,7 @@ void GameEditor::selectLevel(int level)
 		{
 			mapwin->setMap(NULL);
 #ifndef EDITOR_3_WINDOWS
-			tabs->setTabEnabled(mapwin,false);
+			tabs->setTabEnabled(mapIndex, false);
 #endif
 		}
 		return;
@@ -272,7 +269,7 @@ void GameEditor::selectLevel(int level)
 	{
 		mapwin->setMap(map);
 #ifndef EDITOR_3_WINDOWS
-		tabs->setTabEnabled(mapwin,true);
+		tabs->setTabEnabled(mapIndex, true);
 #endif
 	}
 
@@ -292,7 +289,7 @@ void GameEditor::selectLevel(int level)
 #endif
 	view->removelevelPushButton->setEnabled(maps.count()>1);
 	view->levelupPushButton->setEnabled(level>0);
-	view->leveldownPushButton->setEnabled(level<((int) (maps.count())-1));
+	view->leveldownPushButton->setEnabled(level<static_cast<int>(maps.count()-1));
 	view->passwordLineEdit->setEnabled(true);
 	view->timeSpinBox->setEnabled(true);
 
@@ -325,7 +322,7 @@ void GameEditor::alignWindows()
 
 void GameEditor::mapInsert()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	NewMapDialog d(this);
 
@@ -360,7 +357,7 @@ void GameEditor::mapInsert()
 
 void GameEditor::mapRemove()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	if (maps.count()==1)				// shouldn't happen, GUI disables
 	{
@@ -387,7 +384,7 @@ void GameEditor::mapRemove()
 
 void GameEditor::mapMoveUp()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
 	if (item<=0)					// shouldn't happen, GUI disables
@@ -406,7 +403,7 @@ void GameEditor::mapMoveUp()
 
 void GameEditor::mapMoveDown()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
 	int last_item = maps.count()-1;
@@ -426,7 +423,7 @@ void GameEditor::mapMoveDown()
 
 void GameEditor::transporterInsert()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
 	if (selm<0) return;				// shouldn't happen, GUI disables
@@ -447,7 +444,7 @@ void GameEditor::transporterInsert()
 
 void GameEditor::transporterChange()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	int item = view->transportListBox->index(view->transportListBox->selectedItem());
 	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
@@ -471,7 +468,7 @@ void GameEditor::transporterChange()
 
 void GameEditor::transporterRemove()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
 	if (selm<0) return;				// shouldn't happen, GUI disables
@@ -531,7 +528,7 @@ void GameEditor::changedTime(int i)
 
 void GameEditor::changedSprite()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 	if (spritewin!=NULL) spritewin->updateChilds();
 	if (mapwin!=NULL) mapwin->updateChilds();
 	setModified();
@@ -547,7 +544,7 @@ void GameEditor::menuStrictCheck()
 
 void GameEditor::showSpriteEditor(bool show)
 {
-	kdDebug(0) << k_funcinfo << "spritewin=" <<((void*)spritewin) << endl;
+	kDebug() << "spritewin=" << spritewin;
 
 	if (spritewin==NULL)
 	{
@@ -559,7 +556,7 @@ void GameEditor::showSpriteEditor(bool show)
 		spritewin->setEnabled(this->isEnabled());
 
 #ifndef EDITOR_3_WINDOWS
-		tabs->addTab(spritewin,"&Sprites");
+		spriteIndex = tabs->addTab(spritewin,"Sprites");
 #endif
 	}
 
@@ -573,14 +570,14 @@ void GameEditor::showSpriteEditor(bool show)
 
 	updateWindowStates();
 #else
-	if (show) tabs->showPage(spritewin);
+	if (show) tabs->setCurrentIndex(spriteIndex);
 #endif
 }
 
 
 void GameEditor::showLevelEditor(bool show)
 {
-	kdDebug(0) << k_funcinfo << "mapwin=" <<((void*)mapwin) << endl;
+	kDebug() << "mapwin=" << mapwin;
 
 	if (mapwin==NULL)
 	{
@@ -592,12 +589,12 @@ void GameEditor::showLevelEditor(bool show)
 		mapwin->setEnabled(this->isEnabled());
 
 #ifndef EDITOR_3_WINDOWS
-		tabs->addTab(mapwin,"&Map");
+		mapIndex = tabs->addTab(mapwin,"Map");
 #endif
 	}
 
 	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
-	kdDebug(0) << k_funcinfo << "sel=" << item << endl;
+	kDebug() << "sel=" << item;
 	mapwin->setMap(item<0 ? NULL : maps.at(item));
 
 #ifdef EDITOR_3_WINDOWS
@@ -610,7 +607,7 @@ void GameEditor::showLevelEditor(bool show)
 
 	updateWindowStates();
 #else
-	if (show) tabs->showPage(mapwin);
+	if (show) tabs->setCurrentIndex(mapIndex);
 #endif
 }
 
@@ -618,7 +615,7 @@ void GameEditor::showLevelEditor(bool show)
 void GameEditor::showDataEditor(bool show)
 {
 #ifndef EDITOR_3_WINDOWS
-	if (show) tabs->showPage(view);
+	if (show) tabs->setCurrentIndex(dataIndex);
 #endif
 }
 
@@ -638,7 +635,7 @@ void GameEditor::moveEvent(QMoveEvent *e)
 
 void GameEditor::setModified(bool mod)
 {
-	kdDebug(0) << k_funcinfo << "mod=" << mod << endl;
+	kDebug() << "mod=" << mod;
 
 	if (modified==mod) return;			// no change
 
@@ -650,20 +647,20 @@ void GameEditor::setModified(bool mod)
 
 void GameEditor::updateCaption()
 {
-	setCaption(QString("%1 '%2'").arg(caption).arg(epname),modified);
+	setCaption(i18n("Editor '%1'", epname), modified);
 }
 
 
 void GameEditor::updateWindowStates()
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 	emit editWindowChange();
 }
 
 
 void GameEditor::closeEvent(QCloseEvent *e)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	if (spritewin!=NULL) spritewin->hide();
 	if (mapwin!=NULL) mapwin->hide();
@@ -678,7 +675,7 @@ void GameEditor::closeEvent(QCloseEvent *e)
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
 {
-	kdDebug(0) << k_funcinfo << "name='" << name << "'" << endl;
+	kDebug() << "name='" << name << "'";
 
 	epname = name;
 
@@ -704,7 +701,7 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	if (spritewin!=NULL) spritewin->updateChilds();
 	if (mapwin!=NULL) mapwin->updateChilds();
 
-	kdDebug(0) << k_funcinfo << "done" << endl;
+	kDebug() << "done";
 }
 
 
@@ -720,7 +717,7 @@ bool GameEditor::mapVisible() const
 
 void GameEditor::setEnabled(bool enable)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 #ifdef EDITOR_3_WINDOWS
 	if (spritewin!=NULL) spritewin->setEnabled(enable);

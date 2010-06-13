@@ -25,18 +25,18 @@
 #ifndef NEWMAPDIALOG_H
 #define NEWMAPDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <knuminput.h>
 #include <klineedit.h>
 
 #include "newmapwidgetui.h"
 
-class NewMapDialog : public KDialogBase
+class NewMapDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
-	NewMapDialog(QWidget *parent = 0, const char *name = 0);
+	NewMapDialog(QWidget *parent = NULL);
 	int mapWidth() { return (w->sizexSpinBox->value()); }
 	int mapHeight() { return (w->sizeySpinBox->value()); }
 	QString mapPassword() { return (w->nameLineEdit->text()); }

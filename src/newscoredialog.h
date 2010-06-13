@@ -25,23 +25,26 @@
 #ifndef NEWSCOREDIALOG_H
 #define NEWSCOREDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
+
 
 class QLineEdit;
 
-class NewScoreDialog : public KDialogBase
+
+class NewScoreDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
-	NewScoreDialog(QWidget *parent=0,const char *name=0);
-	const char *name();
+	NewScoreDialog(QWidget *parent = NULL);
+	QString name() const;
 
 protected slots:
-	void slotTextChanged(const QString& text);
+	void slotTextChanged(const QString &text);
 
 private:
 	QLineEdit *le;
 };
 
-#endif // !NEWSCOREDIALOG_H
+
+#endif							// !NEWSCOREDIALOG_H

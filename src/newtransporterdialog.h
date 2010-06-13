@@ -25,17 +25,17 @@
 #ifndef NEWTRANSPORTERDIALOG_H
 #define NEWTRANSPORTERDIALOG_H
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 #include <knuminput.h>
 
 #include "newtransporterwidgetui.h"
 
-class NewTransporterDialog : public KDialogBase
+class NewTransporterDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
-	NewTransporterDialog(const QString &title,QWidget *parent = NULL,const char *name = NULL);
+	NewTransporterDialog(const QString &title, QWidget *parent = NULL);
 	void setValues(int ox,int oy,int dx,int dy);
 	void setLimits(int x,int y);
 

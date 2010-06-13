@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <q3frame.h>
 #include <qpixmap.h>
 #include <qpainter.h>
@@ -40,7 +38,7 @@
 static const int previewscale = 8;
 
 
-SpriteGrid::SpriteGrid(QWidget *parent,const char *name) : Q3Frame(parent,name)
+SpriteGrid::SpriteGrid(QWidget *parent) : Q3Frame(parent)
 {
 	sprites = NULL;
 	object = Obj::Empty;
@@ -61,7 +59,7 @@ void SpriteGrid::drawContents(QPainter *p)
 {
 	if (sprites==NULL || object>=Obj::num_sprites) return;
 
-	QImage img = sprites->getRaw(object).convertToImage();
+	QImage img = sprites->getRaw(object).toImage();
 	for (int y = 0; y<Sprites::base_height; ++y)
 	{
 		for (int x = 0; x<Sprites::base_width; ++x)
@@ -96,7 +94,7 @@ void SpriteGrid::mouseMoveEvent(QMouseEvent *e)
 	int x = (e->x()-border)/previewscale;
 	int y = (e->y()-border)/previewscale;
 
-	int b = e->state() & (Qt::LeftButton|Qt::RightButton);
+	int b = e->buttons() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x, y);
 }

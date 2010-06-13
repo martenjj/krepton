@@ -26,7 +26,7 @@
 #define SELECTGAMEDIALOG_H
 
 
-#include <kdialogbase.h>
+#include <kdialog.h>
 
 #include <q3ptrlist.h>
 
@@ -37,12 +37,12 @@ class Q3IconView;
 class Q3IconViewItem;
 
 
-class SelectGameDialog : public KDialogBase
+class SelectGameDialog : public KDialog
 {
     Q_OBJECT
 
 public:
-    SelectGameDialog(const QString title,QWidget *parent = NULL,const char *name = NULL,bool useronly = false);
+    SelectGameDialog(const QString title, QWidget *parent = NULL, bool useronly = false);
     ~SelectGameDialog();
 
     const Episode *selectedItem();

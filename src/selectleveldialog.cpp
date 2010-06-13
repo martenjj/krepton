@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <klocale.h>
 
 #include <q3listbox.h>
@@ -46,12 +44,18 @@
 
 
 SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &msg,
-                                     QWidget *parent, const char *name)
-    : KDialogBase(parent,name,true,QString::null,KDialogBase::Ok|KDialogBase::Cancel)
+                                     QWidget *parent)
+    : KDialog(parent)
 {
-    setCaption("Select Level");
+    setObjectName("SelectLevelDialog");
+    setCaption(i18n("Select Level"));
+    setButtons(KDialog::Ok|KDialog::Cancel);
+    setDefaultButton(KDialog::Ok);
+    setModal(true);
+    showButtonSeparator(true);
 
-    Q3VBox *vb = makeVBoxMainWidget();
+    Q3VBox *vb = new Q3VBox(this);
+    setMainWidget(vb);
     vb->setMargin(KDialog::marginHint());
     vb->setSpacing(KDialog::spacingHint());
 
@@ -78,7 +82,7 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
     int toSelect = -1;
     for (QStringList::const_iterator it = levels.begin(); it!=levels.end(); ++it)
     {
-        QStringList fields = QStringList::split(" ",(*it));
+        QStringList fields = (*it).split(" ");
         GamePlayer::State state = static_cast<GamePlayer::State>(fields[0].toInt());
         int level = fields[1].toInt();
 
@@ -117,7 +121,7 @@ default:			pix = Pixmaps::Unknown;						break;
     Pixmaps::find(Pixmaps::Started,true);
     Pixmaps::find(Pixmaps::Unplayed,true);
 
-    QToolTip::add(wListBox,i18n("<qt>\
+    wListBox->setToolTip(i18n("<qt>\
 <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\
 <tr><td><img src=\"pixmap_unplayed\"></td><td>First level, start here</td></tr>\
 <tr><td><img src=\"pixmap_playing\"></td><td>Level that was last played</td></tr>\
@@ -132,7 +136,7 @@ default:			pix = Pixmaps::Unknown;						break;
 
 void SelectLevelDialog::checkButtonOk()
 {
-    enableButtonOK(wListBox->selectedItem()!=NULL &&
+    enableButtonOk(wListBox->selectedItem()!=NULL &&
                    (!wPasswdEdit->isEnabled() || wPasswdEdit->text().length()>0));
 }
 
@@ -165,7 +169,7 @@ Q3CString SelectLevelDialog::selectedPassword()
     Q3ListBoxItem *cur = wListBox->selectedItem();
     if (cur==NULL) return (NULL);
 
-    Q3CString pass = cur->text().section(": ",1).local8Bit();
-    if (pass.isEmpty()) pass = wPasswdEdit->text().local8Bit();
+    Q3CString pass = cur->text().section(": ",1).toLocal8Bit();
+    if (pass.isEmpty()) pass = wPasswdEdit->text().toLocal8Bit();
     return (pass);
 }

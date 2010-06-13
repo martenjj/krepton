@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "config.h"
-
 #include <qwidget.h>
 #include <qlabel.h>
 #include <qtooltip.h>
@@ -31,10 +29,10 @@
 #include <qcolor.h>
 #include <qlayout.h>
 //Added by qt3to4:
-#include <Q3GridLayout>
+#include <qgridlayout.h>
 #include <QCloseEvent>
 
-#include <kcolorbtn.h>
+#include <kcolorbutton.h>
 #include <kdialog.h>
 #ifdef EDITOR_3_WINDOWS
 #include <kpushbutton.h>
@@ -51,65 +49,65 @@
 
 
 SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
-	: QWidget(parent,QString::null,Qt::WType_TopLevel)
+	: QWidget(parent)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
-	setCaption("Sprite Editor");
+        setObjectName("SpriteEditor");
+	setWindowTitle(i18n("Sprite Editor"));
 //	setFixedSize(525, 305);
 
 	sprites = ss;
 	current_sprite = Obj::Empty;
 
-	Q3GridLayout *gl = new Q3GridLayout(this,8,9,KDialog::marginHint(),KDialog::spacingHint());
+	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(5,5);
-	gl->setColStretch(8,5);
-	gl->addColSpacing(1,KDialog::spacingHint());
-	gl->addColSpacing(3,KDialog::spacingHint());
-	gl->addColSpacing(5,KDialog::spacingHint());
-	gl->addRowSpacing(2,KDialog::spacingHint());
-	gl->addRowSpacing(5,KDialog::spacingHint());
-	gl->addRowSpacing(6,KDialog::marginHint());
+	gl->setColumnStretch(8,5);
+	gl->setColumnMinimumWidth(1,KDialog::spacingHint());
+	gl->setColumnMinimumWidth(3,KDialog::spacingHint());
+	gl->setColumnMinimumWidth(5,KDialog::spacingHint());
+	gl->setRowMinimumHeight(2,KDialog::spacingHint());
+	gl->setRowMinimumHeight(5,KDialog::spacingHint());
+	gl->setRowMinimumHeight(6,KDialog::marginHint());
 
 	sprite_list = new ObjectListBox(true,this);
-	QToolTip::add(sprite_list, "The list of available sprites to edit");
-	connect(sprite_list, SIGNAL(highlighted(int)),
-		this, SLOT(selectedSprite(int)));
-	gl->addMultiCellWidget(sprite_list,1,5,0,0);
+	sprite_list->setToolTip(i18n("The list of available sprites to edit"));
+	connect(sprite_list, SIGNAL(currentRowChanged(int)), SLOT(selectedSprite(int)));
+	gl->addWidget(sprite_list,1,0,5,1);
 
 	QLabel *label = new QLabel("Sprite &list:",this);
 	label->setBuddy(sprite_list);
 	gl->addWidget(label,0,0,Qt::AlignLeft);
 
 	preview_sprite = new SpritePreview(this);
-	QToolTip::add(preview_sprite, "The sprite currently being edited");
-	gl->addMultiCellWidget(preview_sprite,1,1,2,4,Qt::AlignLeft);
+	preview_sprite->setToolTip(i18n("The sprite currently being edited"));
+	gl->addWidget(preview_sprite,1,2,1,3,Qt::AlignLeft);
 
 	label = new QLabel("Preview:", this);
-	gl->addMultiCellWidget(label,0,0,2,4,Qt::AlignLeft);
+	gl->addWidget(label,0,2,1,3,Qt::AlignLeft);
 
 	left_color = new KColorButton(this);
 	left_color->setFixedSize(40,30);
 	left_color->setColor(Qt::white);
-	QToolTip::add(left_color, "The color placed by the left mouse button");
+	left_color->setToolTip(i18n("The color placed by the left mouse button"));
 	gl->addWidget(left_color,4,2,Qt::AlignLeft|Qt::AlignTop);
 
-	label = new QLabel(left_color, "L&eft:", this);
+	label = new QLabel(i18n("Left:"), this);
 	label->setBuddy(left_color);
 	gl->addWidget(label,3,2,Qt::AlignLeft);
 
 	right_color = new KColorButton(this);
 	right_color->setFixedSize(40,30);
 	right_color->setColor(Qt::black);
-	QToolTip::add(right_color, "The color placed by the right mouse button");
+	right_color->setToolTip(i18n("The color placed by the right mouse button"));
 	gl->addWidget(right_color,4,4,Qt::AlignLeft|Qt::AlignTop);
 
-	label = new QLabel(right_color, "&Right:", this);
+	label = new QLabel(i18n("Right:"), this);
 	label->setBuddy(right_color);
 	gl->addWidget(label,3,4,Qt::AlignLeft);
 
 	grid_sprite = new SpriteGrid(this);
-	gl->addMultiCellWidget(grid_sprite,1,5,6,7,Qt::AlignLeft|Qt::AlignTop);
+	gl->addWidget(grid_sprite,1,6,5,2,Qt::AlignLeft|Qt::AlignTop);
 
 	label = new QLabel("S&prite:",this);
 	label->setBuddy(grid_sprite);
@@ -138,7 +136,7 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 
 void SpriteEditor::selectedSprite(int i)
 {
-	current_sprite = (Obj::Type) i;
+	current_sprite = static_cast<Obj::Type>(i);
 	updateChilds();
 }
 
@@ -165,13 +163,13 @@ void SpriteEditor::updateChilds()
 {
 	preview_sprite->setSprite(*sprites,current_sprite);
 	grid_sprite->setSprite(*sprites,current_sprite);
-	grid_sprite->repaint(false);	
+	grid_sprite->repaint();	
 }
 
 
 void SpriteEditor::closeEvent(QCloseEvent *e)
 {
-	kdDebug(0) << k_funcinfo << endl;
+	kDebug();
 
 	QWidget::closeEvent(e);
 	hide();

@@ -56,33 +56,35 @@ ImporterBase::~ImporterBase()
 
 bool ImporterBase::import(const QString &source,const QString &newName,QString *results)
 {
-    kdDebug(0) << k_funcinfo << "src=" << source << " name=" << newName << endl;
+    kDebug() << "src=" << source << " name=" << newName;
 
     QFile f(source);
     QFileInfo fi(f);
 
     if (!fi.exists())
     {
-        *results = i18n("Source file <b>%1</b> does not exist").arg(fi.absFilePath());
+        *results = i18n("Source file <b>%1</b> does not exist", fi.absoluteFilePath());
         return (false);
     }
     if (!fi.isReadable())
     {
-        *results = i18n("Source file <b>%1</b> is not readable").arg(fi.absFilePath());
+        *results = i18n("Source file <b>%1</b> is not readable", fi.absoluteFilePath());
         return (false);
     }
 
     unsigned int expectSize = formatInfo()->filesize;
     if (expectSize>0 && fi.size()!=expectSize)
     {
-        *results = i18n("Source file <b>%3</b> is not the expected size.<br>File size is %1 bytes, expected %2 bytes.")
-            .arg(fi.size()).arg(expectSize).arg(fi.absFilePath());
+        *results = i18n("Source file <b>%3</b> is not the expected size.<br>File size is %1 bytes, expected %2 bytes.",
+                        fi.size(),
+                        expectSize,
+                        fi.absoluteFilePath());
         return (false);
     }
 
     if (!f.open(QIODevice::ReadOnly))
     {
-        *results = i18n("Cannot open file <b>%1</b>").arg(source);
+        *results = i18n("Cannot open file <b>%1</b>", source);
         return (false);
     }
 
@@ -107,17 +109,17 @@ case CheckMap::Ok:
     break;
 
 case CheckMap::Warning:
-    *results += i18n("Import completed, but with consistency check warnings:<p><ul>%1</ul>").arg(cm.detail());
+    *results += i18n("Import completed, but with consistency check warnings:<p><ul>%1</ul>", cm.detail());
     break;
 
 case CheckMap::Fatal:
-    *results += i18n("Import completed, but with consistency check errors:<p><ul>%1</ul>").arg(cm.detail());
+    *results += i18n("Import completed, but with consistency check errors:<p><ul>%1</ul>", cm.detail());
     break;
     }
 
     if (!episode->saveInfoAndMaps(&maplist) || !sprites->save(episode))
     {							// save the new episode
-        *results = i18n("Saving new episode <b>%1</b> failed").arg(newName);
+        *results = i18n("Saving new episode <b>%1</b> failed", newName);
         return (false);
     }
 
