@@ -30,22 +30,19 @@
 #include "krepton.h"
 
 
-//class Map;
-//typedef QPtrList<Map> MapList;
-//typedef QPtrListIterator<Map> MapListIterator;
-
-
 struct Monster
 {
 	int xpos,ypos;					// current position
 	Obj::Type type;
 	Obj::Type sprite;
 	Orientation::Type orientation;
+        int hold;					// stand still after birth
 
 	Monster(int x, int y, Obj::Type t)
 		: xpos(x), ypos(y),
 		  type(t), sprite(t),
-		  orientation(Orientation::West) {}
+		  orientation(Orientation::West),
+                  hold(0)				{}
 };
 
 struct Transporter
