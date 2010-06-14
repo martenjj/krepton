@@ -39,6 +39,12 @@
 #define CHANCE_PLANT_REPRODUCE		10		// plant will reproduce (3s tick)
 #define CHANCE_MONSTER_PURSUE		1		// monster avoids obstacle (0.3s tick)
 
+//  These are the number of ticks (with their respective times above)
+//  that the monster is not hostile after its birth (monster) or the
+//  start of the level (plant).
+#define BEGIN_MONSTER_GRACE		2		// monster still after birth
+#define BEGIN_PLANT_GRACE		5		// no plant reproduce at start
+
 #define chance(c)			((rand() % 100)<(c))
 
 
@@ -51,6 +57,7 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	currentRepton = Obj::Repton;
 	how_died = QString::null;
 	levelfinished = false;
+        plant_inhibit = BEGIN_PLANT_GRACE;
 
 	kDebug() << "done";
 }
@@ -164,7 +171,10 @@ Monster *MapPlay::findMonster(int x,int y)
 void MapPlay::addMonster(int x, int y, Obj::Type type)
 {
 	kDebug() << "xy=" <<x << "," << y << " type=" << type;
-	monsters.append(new Monster(x,y,type));
+
+	Monster *m = new Monster(x,y,type);
+        if (type==Obj::Monster) m->hold = BEGIN_MONSTER_GRACE;
+	monsters.append(m);
 }
 
 
@@ -403,6 +413,10 @@ bool MapPlay::updateMonster(Monster *m)
 	int yd = 0;
 	double i,len;
 
+        if (m->hold>0) --m->hold;			// just count down, don't move
+        else						// monster ready to move
+        {
+
 	len = sqrt(pow(m->xpos-xpos,2) + pow(m->ypos-ypos,2));
 
 	if ((i = monsterTryDirection(m, 0, -1))<len)
@@ -441,6 +455,9 @@ bool MapPlay::updateMonster(Monster *m)
 
 	m->xpos += xd;
 	m->ypos += yd;
+        }
+
+
 	m->sprite = (m->sprite==Obj::Monster) ? Obj::Monster2 : Obj::Monster;
 	return (true);					// because of animation
 }
@@ -562,6 +579,8 @@ bool MapPlay::updatePlant(Monster *m)
 // Reproduce the plants
 bool MapPlay::updatePlants()
 {
+        if (plant_inhibit-->0) return (false);		// grace time at start
+
 	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
 	{
 		if (m->type==Obj::Plant)

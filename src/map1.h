@@ -73,6 +73,7 @@ private:
 	bool have_key,have_crown;
 	bool levelfinished;
 	QString how_died;
+        int plant_inhibit;
 
 	int xpos,ypos;					// current Repton position
 	Obj::Type currentRepton;			// sprite shown for him
