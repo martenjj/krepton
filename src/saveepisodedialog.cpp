@@ -22,13 +22,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "saveepisodedialog.h"
+#include "saveepisodedialog.moc"
+
+#include <qlineedit.h>
+#include <qformlayout.h>
+
 #include <kdialog.h>
 #include <kstandardguiitem.h>
+#include <ksqueezedtextlabel.h>
 
 #include "krepton.h"
 #include "episodes.h"
-
-#include "saveepisodedialog.h"
 
 
 SaveEpisodeDialog::SaveEpisodeDialog(const QString &title, QWidget *parent)
@@ -41,29 +46,36 @@ SaveEpisodeDialog::SaveEpisodeDialog(const QString &title, QWidget *parent)
         setModal(true);
         showButtonSeparator(true);
 
-	w = new SaveEpisodeWidget(this);
+        QWidget *w = new QWidget(this);
+        QFormLayout *fl = new QFormLayout;
+
+        mNameEdit = new QLineEdit(w);
+        connect(mNameEdit, SIGNAL(textChanged(const QString &)), SLOT(slotNameChanged(const QString &)));
+        fl->addRow(i18n("Epsiode name:"), mNameEdit);
+
+        mSaveLocation = new KSqueezedTextLabel(w);
+        mSaveLocation->setTextElideMode(Qt::ElideMiddle); 
+        fl->addRow(i18n("Save location:"), mSaveLocation);
+
+        w->setLayout(fl);
 	setMainWidget(w);
-	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
-	adjustSize();
+	setMinimumSize(420, 120);
 
 	setButtonGuiItem(KDialog::Ok, KStandardGuiItem::save());
 
-        connect(w->nameLineEdit,SIGNAL(textChanged(const QString&)),
-                this,SLOT(slotNameChanged(const QString&)));
-
-	w->nameLineEdit->clear();
+	mNameEdit->clear();
 	slotNameChanged("");
 	enableButtonOk(false);
-        w->nameLineEdit->setFocus();
+        mNameEdit->setFocus();
 }
 
 
 void SaveEpisodeDialog::slotNameChanged(const QString &s)
 {
-	if (s.isNull()) fullpath = s;
-	else fullpath = Episode::savePath(s);
-	w->pathSqueezedTextLabel->setText(fullpath);
+        QString path = s;
+        if (!path.isEmpty()) path = Episode::savePath(s);
+        mSaveLocation->setText(path);
 
-	w->pathSqueezedTextLabel->setEnabled(!s.isEmpty());
-	enableButtonOk(!s.isEmpty());
+        mSaveLocation->setEnabled(!s.isEmpty());
+        enableButtonOk(!s.isEmpty());
 }

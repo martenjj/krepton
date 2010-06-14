@@ -25,27 +25,28 @@
 #ifndef SAVEEPISODEDIALOG_H
 #define SAVEEPISODEDIALOG_H
 
+#include <qlineedit.h>
+
 #include <kdialog.h>
-#include <klineedit.h>
 #include <ksqueezedtextlabel.h>
 
-#include "saveepisodewidgetui.h"
 
 class SaveEpisodeDialog : public KDialog
 {
 	Q_OBJECT
 
 public:
-	SaveEpisodeDialog(const QString &title,QWidget *parent = NULL);
-	const QString name() { return (w->nameLineEdit->text()); }
-	const QString path() { return (fullpath); }
+	SaveEpisodeDialog(const QString &title, QWidget *parent = NULL);
+
+	const QString name() const { return (mNameEdit->text()); }
+	const QString path() const { return (mSaveLocation->fullText()); }
 
 protected slots:
 	void slotNameChanged(const QString &s);
 
 private:
-	SaveEpisodeWidget *w;
-	QString fullpath;
+        QLineEdit *mNameEdit;
+	KSqueezedTextLabel *mSaveLocation;
 };
 
 #endif							// !SAVEEPISODEDIALOG_H

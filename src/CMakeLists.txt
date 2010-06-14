@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		13-Jun-10					#
+#  Edit:		14-Jun-10					#
 #########################################################################
 
 project(krepton)
@@ -109,7 +109,6 @@ set(krepton_SRCS
 )
 
 kde4_add_ui3_files(krepton_SRCS
-  saveepisodewidgetui.ui
   newtransporterwidgetui.ui
   newmapwidgetui.ui
 )
