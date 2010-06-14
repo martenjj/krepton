@@ -22,12 +22,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "newtransporterdialog.h"
+#include "newtransporterdialog.moc"
+
+#include <qgridlayout.h>
+#include <qlabel.h>
+
 #include <kdialog.h>
-#include <knuminput.h>
 
 #include "krepton.h"
-
-#include "newtransporterdialog.h"
 
 
 NewTransporterDialog::NewTransporterDialog(const QString &title, QWidget *parent)
@@ -40,28 +43,54 @@ NewTransporterDialog::NewTransporterDialog(const QString &title, QWidget *parent
         setModal(true);
         showButtonSeparator(true);
 
-	w = new NewTransporterWidget(this);
+	QWidget *w = new QWidget(this);
+        QGridLayout *gl = new QGridLayout;
+
+        mOrigXBox = new QSpinBox(w);
+        mOrigYBox = new QSpinBox(w);
+        QLabel *l = new QLabel(i18n("Origin:"), w);
+        l->setBuddy(mOrigXBox);
+
+        gl->addWidget(l, 0, 0, Qt::AlignRight);
+        gl->addWidget(mOrigXBox, 0, 1, Qt::AlignLeft);
+        gl->addWidget(new QLabel(i18n(","), w), 0, 2, Qt::AlignLeft);
+        gl->addWidget(mOrigYBox, 0, 3, Qt::AlignLeft);
+
+        mDestXBox = new QSpinBox(w);
+        mDestYBox = new QSpinBox(w);
+        l = new QLabel(i18n("Destination:"), w);
+        l->setBuddy(mDestXBox);
+
+        gl->addWidget(l, 2, 0, Qt::AlignRight);
+        gl->addWidget(mDestXBox, 2, 1, Qt::AlignLeft);
+        gl->addWidget(new QLabel(i18n(","), w), 2, 2, Qt::AlignLeft);
+        gl->addWidget(mDestYBox, 2, 3, Qt::AlignLeft);
+
+        gl->setColumnStretch(4, 1);
+        gl->setRowMinimumHeight(1, KDialog::spacingHint());
+        gl->setRowStretch(3, 1);
+
+        w->setLayout(gl);
+	w->setMinimumSize(250, 70);
 	setMainWidget(w);
-	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
-	adjustSize();
 }
 
 
 void NewTransporterDialog::setLimits(int x,int y)
 {
-	w->origxSpinBox->setMaximum(x);
-	w->destxSpinBox->setMaximum(x);
+	mOrigXBox->setMaximum(x);
+	mDestXBox->setMaximum(x);
 
-	w->origySpinBox->setMaximum(y);
-	w->destySpinBox->setMaximum(y);
+	mOrigYBox->setMaximum(y);
+	mDestYBox->setMaximum(y);
 }
 
 
 void NewTransporterDialog::setValues(int ox,int oy,int dx,int dy)
 {
-	w->origxSpinBox->setValue(ox);
-	w->destxSpinBox->setValue(dx);
+	mOrigXBox->setValue(ox);
+	mDestXBox->setValue(dx);
 
-	w->origySpinBox->setValue(oy);
-	w->destySpinBox->setValue(dy);
+	mOrigYBox->setValue(oy);
+	mDestYBox->setValue(dy);
 }

@@ -108,10 +108,6 @@ set(krepton_SRCS
 #  parentactionmapper.cpp
 )
 
-kde4_add_ui3_files(krepton_SRCS
-  newtransporterwidgetui.ui
-)
-
 kde4_add_executable(krepton ${krepton_SRCS})
 target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS}
   ${KDE4_KDE3SUPPORT_LIBS} ${QT_QT3SUPPORT_LIBRARY})

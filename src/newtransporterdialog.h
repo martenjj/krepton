@@ -25,10 +25,10 @@
 #ifndef NEWTRANSPORTERDIALOG_H
 #define NEWTRANSPORTERDIALOG_H
 
-#include <kdialog.h>
-#include <knuminput.h>
+#include <qspinbox.h>
 
-#include "newtransporterwidgetui.h"
+#include <kdialog.h>
+
 
 class NewTransporterDialog : public KDialog
 {
@@ -39,13 +39,16 @@ public:
 	void setValues(int ox,int oy,int dx,int dy);
 	void setLimits(int x,int y);
 
-	int xorig() { return (w->origxSpinBox->value()); }
-	int yorig() { return (w->origySpinBox->value()); }
-	int xdest() { return (w->destxSpinBox->value()); }
-	int ydest() { return (w->destySpinBox->value()); }
+	int xorig() const	{ return (mOrigXBox->value()); }
+	int yorig() const	{ return (mOrigYBox->value()); }
+	int xdest() const	{ return (mDestXBox->value()); }
+	int ydest() const	{ return (mDestYBox->value()); }
 
 private:
-	NewTransporterWidget *w;
+        QSpinBox *mOrigXBox;
+        QSpinBox *mOrigYBox;
+        QSpinBox *mDestXBox;
+        QSpinBox *mDestYBox;
 };
 
 #endif							// !NEWTRANSPORTERDIALOG_H
