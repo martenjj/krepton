@@ -110,7 +110,6 @@ set(krepton_SRCS
 
 kde4_add_ui3_files(krepton_SRCS
   newtransporterwidgetui.ui
-  newmapwidgetui.ui
 )
 
 kde4_add_executable(krepton ${krepton_SRCS})

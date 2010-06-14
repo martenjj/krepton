@@ -22,14 +22,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <klineedit.h>
-#include <knuminput.h>
+#include "newmapdialog.h"
+#include "newmapdialog.moc"
 
 #include <stdlib.h>
 
-#include "krepton.h"
+#include <qlabel.h>
+#include <qlayout.h>
 
-#include "newmapdialog.h"
+#include "krepton.h"
 
 
 NewMapDialog::NewMapDialog(QWidget *parent)
@@ -42,24 +43,55 @@ NewMapDialog::NewMapDialog(QWidget *parent)
         setModal(true);
         showButtonSeparator(true);
 
-	w = new NewMapWidget(this);
+        QWidget *w = new QWidget(this);
+
+        QVBoxLayout *vb = new QVBoxLayout;
+
+        QHBoxLayout *hb1 = new QHBoxLayout;
+
+        QLabel *l = new QLabel(i18n("Name/Password:"), w);
+        hb1->addWidget(l, 0, Qt::AlignRight);
+
+        mNameEdit = new QLineEdit(w);
+        connect(mNameEdit, SIGNAL(textChanged(const QString &)), SLOT(slotNameChanged(const QString &)));
+        hb1->addWidget(mNameEdit, 1);
+        l->setBuddy(mNameEdit);
+
+        vb->addLayout(hb1);
+        vb->addSpacing(KDialog::spacingHint());
+
+        QHBoxLayout *hb2 = new QHBoxLayout;
+
+        l = new QLabel(i18n("Width:"), w);
+        hb2->addWidget(l, 0, Qt::AlignLeft);
+
+        mSizeXBox = new QSpinBox(w);
+        mSizeXBox->setMinimum(10);
+        mSizeXBox->setMaximum(99);
+        hb2->addWidget(mSizeXBox, 0, Qt::AlignLeft);
+        l->setBuddy(mSizeXBox);
+
+        hb2->addSpacing(KDialog::spacingHint());
+        hb2->addStretch(1);
+
+        l = new QLabel(i18n("Height:"), w);
+        hb2->addWidget(l, 0, Qt::AlignRight);
+
+        mSizeYBox = new QSpinBox(w);
+        mSizeYBox->setMinimum(10);
+        mSizeYBox->setMaximum(99);
+        hb2->addWidget(mSizeYBox, 0, Qt::AlignRight);
+        l->setBuddy(mSizeYBox);
+
+        vb->addLayout(hb2);
+        vb->addStretch(1);
+
+        w->setLayout(vb);
+	w->setMinimumSize(270, 70);
 	setMainWidget(w);
-        // TODO: port
-	//setFixedSize(calculateSize(w->size().width(),w->size().height()));
-	adjustSize();
 
-	w->sizexSpinBox->setMinimum(10);
-	w->sizeySpinBox->setMinimum(10);
-	w->sizexSpinBox->setMaximum(99);
-	w->sizeySpinBox->setMaximum(99);
-
-	QString s;
-	s.setNum(rand() % 100000);
-	w->nameLineEdit->setText(s);
-
-	connect(w->nameLineEdit,SIGNAL(textChanged(const QString&)),
-		this,SLOT(slotNameChanged(const QString&)));
-	w->nameLineEdit->setFocus();
+	mNameEdit->setText(QString::number(rand() % 100000));
+	mNameEdit->setFocus();
 }
 
 

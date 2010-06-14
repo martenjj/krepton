@@ -25,11 +25,11 @@
 #ifndef NEWMAPDIALOG_H
 #define NEWMAPDIALOG_H
 
-#include <kdialog.h>
-#include <knuminput.h>
-#include <klineedit.h>
+#include <qlineedit.h>
+#include <qspinbox.h>
 
-#include "newmapwidgetui.h"
+#include <kdialog.h>
+
 
 class NewMapDialog : public KDialog
 {
@@ -37,15 +37,18 @@ class NewMapDialog : public KDialog
 
 public:
 	NewMapDialog(QWidget *parent = NULL);
-	int mapWidth() { return (w->sizexSpinBox->value()); }
-	int mapHeight() { return (w->sizeySpinBox->value()); }
-	QString mapPassword() { return (w->nameLineEdit->text()); }
+
+	int mapWidth() const		{ return (mSizeXBox->value()); }
+	int mapHeight() const		{ return (mSizeYBox->value()); }
+	QString mapPassword() const	{ return (mNameEdit->text()); }
 
 protected slots:
 	void slotNameChanged(const QString &s);
 
 private:
-	NewMapWidget *w;
+        QLineEdit *mNameEdit;
+        QSpinBox *mSizeXBox;
+        QSpinBox *mSizeYBox;
 };
 
 #endif							// !NEWMAPDIALOG_H
