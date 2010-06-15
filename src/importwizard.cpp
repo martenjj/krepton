@@ -107,6 +107,8 @@ ImportWizard::ImportWizard(const QString &title,QWidget *parent)
 	setupPage3();
 	setupPage4();
 	setupPage5();
+
+        setMinimumSize(550, 300);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -181,7 +183,7 @@ void ImportWizard::showPage(QWidget *page)
 		{
 			QString status;
                         episodeName = page3name->text();
-                        if (!importer->import(page2source->url().url(), episodeName,&status))
+                        if (!importer->import(page2source->url().path(), episodeName,&status))
                         {
 				if (status.isEmpty()) status = i18n("Import failed");
 				finishButton()->setEnabled(false);
@@ -206,27 +208,36 @@ void ImportWizard::next()
 
 	if (currentPage()==page2)
 	{
-		const QString src = page2source->url().prettyUrl();
-		ok = (!src.isEmpty());
+		KUrl src = page2source->url();
+		ok = src.isValid();
 		if (ok)
 		{
-			QFileInfo fi(src);
-			if (!fi.exists())
-			{
-				reportError(ki18n("The file <b>%1</b><br>does not exist."),fi.absoluteFilePath(),false);
+                        if (src.isLocalFile())
+                        {
+                                QFileInfo fi(src.path());
+                                if (!fi.exists())
+                                {
+                                        reportError(ki18n("The file <b>%1</b><br>does not exist."),fi.absoluteFilePath(),false);
+                                        ok = false;
+                                }
+
+                                if (ok && fi.isRelative())
+                                {
+                                        fi.makeAbsolute();
+                                        src.setPath(fi.filePath());
+                                        page2source->setUrl(src);
+                                }
+
+                                if (ok)
+                                {
+                                        KConfigGroup grp = KGlobal::config()->group("Importer");
+                                        grp.writeEntry("LastLocation", page2source->fileDialog()->baseUrl());
+                                }
+                        }
+                        else
+                        {
+				reportError(ki18n("Can only import from local files"), QString::null, false);
 				ok = false;
-			}
-
-			if (ok && fi.isRelative())
-			{
-				fi.makeAbsolute();
-				page2source->setUrl(fi.filePath());
-			}
-
-			if (ok)
-			{
-				KConfigGroup grp = KGlobal::config()->group("Importer");
-				grp.writeEntry("LastLocation", page2source->fileDialog()->baseUrl());
                         }
 		}
 	}
@@ -350,7 +361,7 @@ void ImportWizard::setupPage2()
 
         KConfigGroup grp = KGlobal::config()->group("Importer");
 	KUrl lastloc = grp.readEntry("LastLocation", KUrl());
-	if (lastloc.isValid()) page2source->fileDialog()->setUrl(lastloc);
+	if (lastloc.isValid()) page2source->setStartDir(lastloc);
 
 	connect(page2source,SIGNAL(textChanged(const QString &)),this,SLOT(slotPage2SourceSelected()));
 
