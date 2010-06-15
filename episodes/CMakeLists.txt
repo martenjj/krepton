@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		13-Jun-10					#
+#  Edit:		15-Jun-10					#
 #########################################################################
 #									#
 #									#
@@ -10,46 +10,17 @@ project(krepton)
 
 #########################################################################
 
-set(krepton_EPISODES
-  blank
-  simple
-
-  prelude
-  toccata
-  finale
-
-  america
-  oceans
-  arctic
-  africa
-  orient
-
-  baby
-  school
-  teens
-  work
-  oap
-
-  prehistory
-  egypt
-  victoria
-  now
-  future
-
-  pirate
-  preludee
-  babyj
-)
-
 message(STATUS "Finding episodes in ${CMAKE_CURRENT_SOURCE_DIR}...")
-foreach (subdir ${krepton_EPISODES})
+file(GLOB infofiles */info)
+foreach (infofile ${infofiles})
 
-  execute_process(COMMAND "sh" "-c" "ls -1 ${subdir}/* | tr '\\n' ' '"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    OUTPUT_VARIABLE files)
-  message(STATUS "Episode '${subdir}' files: ${files}")
+  string(REGEX REPLACE "//*info$" "" subdir ${infofile})
+  string(REGEX REPLACE "^.*/" "" subdir ${subdir})
+  message(STATUS "  Episode '${subdir}'")
+
+  file(GLOB files ${subdir}/*)
+  string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/" " " files ${files})
   separate_arguments(files)
-
   install(FILES ${files} DESTINATION ${DATA_INSTALL_DIR}/krepton/episodes/${subdir})
 
-endforeach (subdir)
+endforeach (infofile)
