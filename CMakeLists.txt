@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		12-Jun-10					#
+#  Edit:		15-Jun-10					#
 #########################################################################
 #									#
 #									#
@@ -33,6 +33,19 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 #########################################################################
 
 option(SOUND_TYPE "specify how sound is to be played (kaudioplayer,kdeplayobject,artsplay,soxplay,alsaplay,none)" OFF)
+
+#########################################################################
+#									#
+#  VCS version tracking							#
+#									#
+#########################################################################
+
+add_custom_target(vcsversion
+  ALL
+  COMMENT "Checking VCS type and version"
+  VERBATIM
+  COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/genversion.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${VERSION}
+)
 
 #########################################################################
 #									#

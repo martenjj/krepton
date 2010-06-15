@@ -40,6 +40,7 @@
 
 #include "krepton.h"
 #include "mainwindow.h"
+#include "version.h"
 
 
 int main(int argc,char *argv[])
@@ -47,7 +48,11 @@ int main(int argc,char *argv[])
     KAboutData aboutData("krepton",				// appName
                          NULL,					// catalogName
                          ki18n("KRepton"),			// programName
+#ifdef VCS_HAVE_VERSION
+                         ( VERSION " (" VCS_TYPE_STRING " " VCS_REVISION_STRING ")" ),
+#else
                          VERSION,				// version
+#endif
                          ki18n("The Repton game for KDE"),
                          KAboutData::License_GPL,
                          ki18n("Copyright (C) 1998 Sandro Sigala, 2003-2010 Jonathan Marten"),
