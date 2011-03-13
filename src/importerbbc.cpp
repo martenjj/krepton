@@ -25,7 +25,7 @@
 
 #include <qcolor.h>
 #include <qfile.h>
-#include <q3cstring.h>
+#include <qbytearray.h>
 
 #include "map2.h"
 #include "sprites.h"
@@ -174,7 +174,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
     for (int i = 0; i<BBC_NUM_MAPS; ++i)
     {
         ptr = 0x0000 + i*8;				// point to password
-        Q3CString pw;
+        QByteArray pw;
         int l = 0;
         while (l<=BBC_PW_MAXLEN)
         {
@@ -184,7 +184,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
             ++ptr;
             ++l;
         }
-        if (pw.length()<1) pw.sprintf("%c",i+'A');	// substitute blank passwords
+        if (pw.length()<1) pw = QByteArray(1,i+'A');	// substitute blank passwords
 
         MapEdit *m = new MapEdit(BBC_MAP_WIDTH,BBC_MAP_HEIGHT,pw);
 

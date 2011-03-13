@@ -91,7 +91,6 @@ bool ImporterBase::import(const QString &source,const QString &newName,QString *
     Episode *episode = new Episode(newName,false,Episode::savePath(newName));
     Sprites *sprites = new Sprites;
     MapList maplist;
-    maplist.setAutoDelete(true);
 
     bool status = doImport(f,episode,sprites,&maplist,results);
 
@@ -123,6 +122,7 @@ case CheckMap::Fatal:
         return (false);
     }
 
+    qDeleteAll(maplist);
     EpisodeList::list()->add(episode);			// add to episode list
     return (true);					// import done
 }

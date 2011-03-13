@@ -32,7 +32,6 @@
 class QFile;
 class Episode;
 class Sprites;
-class MapList;
 
 
 class ImporterBase					// abstract

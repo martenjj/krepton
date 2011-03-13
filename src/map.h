@@ -25,7 +25,8 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include <q3ptrlist.h>
+#include <qlist.h>
+#include <qbytearray.h>
 
 #include "krepton.h"
 
@@ -45,6 +46,9 @@ struct Monster
                   hold(0)				{}
 };
 
+typedef QList<Monster *> MonsterList;
+
+
 struct Transporter
 {
 	int orig_x,orig_y;
@@ -55,6 +59,9 @@ struct Transporter
 		  dest_x(dx), dest_y(dy) {}
 };
 
+typedef QList<Transporter *> TransporterList;
+
+
 class Map
 {
 	friend class CheckMap;
@@ -62,7 +69,7 @@ class Map
 public:
 	Map(const QString &path);			// create from file
 	Map(const Map &m);				// copy constructor
-	Map(int sx,int sy,const QString pw);		// create with size
+	Map(int sx,int sy,const QByteArray &pw);	// create with size
 	~Map();
 	const QString loadStatus() const { return (status); }
 
@@ -72,10 +79,10 @@ public:
 
 protected:
 	int num_secs;
-	QString password;
+	QByteArray password;
 	int xstart,ystart;				// last appear/transport
 	int width,height;				// map overall size
-	Q3PtrList<Transporter> transporters;
+	TransporterList transporters;
 
 	void findStart();
 	void addTransporter(int ox,int oy,int dx,int dy);
@@ -96,13 +103,7 @@ private:
 	QString status;
 };
 
-
-class MapList : public Q3PtrList<Map>
-{
-};
-
-typedef Q3PtrListIterator<Map> MapListIterator;
-
+typedef QList<Map *> MapList;
 
 
 #endif							// !MAP_H

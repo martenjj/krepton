@@ -30,7 +30,7 @@
 #include <qfile.h>
 #include <qtextstream.h>
 //Added by qt3to4:
-#include <Q3TextStream>
+#include <QTextStream>
 
 #include "krepton.h"
 
@@ -48,7 +48,7 @@ Map::Map(const QString &path)				// create from file
 		return;
 	}
 
-	Q3TextStream t(&f);
+	QTextStream t(&f);
 	int num_transporters;
 	t >> width >> height >> num_transporters >> num_secs;
 	t >> password;
@@ -60,11 +60,13 @@ Map::Map(const QString &path)				// create from file
 		addTransporter(ox,oy,dx,dy);
 	}
 
+        t.skipWhiteSpace();				// lose newline
 	data = new Obj::Type[width*height];
 	for (int y = 0; y<height; ++y)
 	{
 		for (int x = 0; x<width; ++x)
 		{
+			t.skipWhiteSpace();		// lose newline
 			char c;
 			t >> c;
 			ref(x,y) = Obj::Type(c-'A');
@@ -91,18 +93,15 @@ Map::Map(const Map &m)					// copy constructor
 	memcpy(data,m.data,width*height*sizeof(Obj::Type));
 	findStart();
 
-	Q3PtrListIterator<Transporter> ti(m.transporters);
-	for (const Transporter *tt; (tt = ti.current())!=NULL; ++ti)
+        for (TransporterList::const_iterator it = m.transporters.constBegin();
+		it!=m.transporters.constEnd(); ++it)
 	{
-		transporters.append(new Transporter(*tt));
+		transporters.append(new Transporter(**it));
 	}
-
-//	transporters.setAutoDelete(true);
-//	kDebug() << "done";
 }
 
 
-Map::Map(int sx,int sy,const QString pw)		// create with size
+Map::Map(int sx,int sy,const QByteArray &pw)		// create with size
 {
 	kDebug() << "sx=" << sx << " sy=" << sy;
 
@@ -113,9 +112,6 @@ Map::Map(int sx,int sy,const QString pw)		// create with size
 
 	data = new Obj::Type[width*height];
 	for (int i = (width*height-1); i>=0; --i) data[i] = Obj::Empty;
-
-//	transporters.setAutoDelete(true);
-//	kDebug() << "done";
 }
 
 
@@ -123,7 +119,7 @@ Map::~Map()
 {
 	kDebug() << "pw='" << password << "'";
 
-	transporters.setAutoDelete(true);
+	qDeleteAll(transporters);
 	transporters.clear();
 	delete[] data;
 }
@@ -141,17 +137,16 @@ bool Map::save(const QString &path) const
 		return (false);
 	}
 
-	Q3TextStream t(&f);
+	QTextStream t(&f);
 	t << width << ' ' << height << ' ' << transporters.count() << ' ' << num_secs << '\n';
 	t << password << '\n';
 
-	Q3PtrListIterator<Transporter> ti(transporters);
-	const Transporter *tr;
-	while ((tr = ti.current())!=NULL)
+        for (TransporterList::const_iterator it = transporters.constBegin();
+		it!=transporters.constEnd(); ++it)
 	{
+		const Transporter *tr = (*it);
 		t << tr->orig_x << ' ' << tr->orig_y << ' '
 		  << tr->dest_x << ' ' << tr->dest_y << '\n';
-		++ti;
 	}
 
 	for (int y = 0; y<height; ++y)

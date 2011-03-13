@@ -25,7 +25,7 @@
 #ifndef MAPPLAY_H
 #define MAPPLAY_H
 
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -78,7 +78,7 @@ private:
 	int xpos,ypos;					// current Repton position
 	Obj::Type currentRepton;			// sprite shown for him
 
-	Q3PtrList<Monster> monsters;
+	MonsterList monsters;
 
 	Monster *findMonster(int x,int y);
 	const Transporter *findTransporter(int x,int y);

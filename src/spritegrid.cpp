@@ -22,12 +22,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <q3frame.h>
-#include <qpixmap.h>
 #include <qpainter.h>
 #include <qimage.h>
-//Added by qt3to4:
-#include <QMouseEvent>
+#include <qevent.h>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -38,35 +35,34 @@
 static const int previewscale = 8;
 
 
-SpriteGrid::SpriteGrid(QWidget *parent) : Q3Frame(parent)
+SpriteGrid::SpriteGrid(QWidget *parent) : QFrame(parent)
 {
 	sprites = NULL;
 	object = Obj::Empty;
 
-	setFrameStyle(Q3Frame::Box|Q3Frame::Raised);
+	setFrameStyle(QFrame::Box|QFrame::Raised);
 	setLineWidth(2);
 	setMidLineWidth(1);
 	border = lineWidth() * 2 + midLineWidth();
-//	resize(Sprites::base_width*previewscale+border*2-1,
-//	       Sprites::base_height*previewscale+border*2-1);
 	setFixedSize(Sprites::base_width*previewscale+border*2-1,
 	       Sprites::base_height*previewscale+border*2-1);
 	setMouseTracking(true);
 }
 
 
-void SpriteGrid::drawContents(QPainter *p)
+void SpriteGrid::paintEvent(QPaintEvent *ev)
 {
 	if (sprites==NULL || object>=Obj::num_sprites) return;
-
 	QImage img = sprites->getRaw(object).toImage();
+
+	QPainter p(this);
 	for (int y = 0; y<Sprites::base_height; ++y)
 	{
 		for (int x = 0; x<Sprites::base_width; ++x)
 		{
 			QColor c = img.pixel(x,y);
-			p->fillRect(border+x*previewscale,border+y*previewscale,
-				    (previewscale-1),(previewscale-1),c);
+			p.fillRect(border+x*previewscale,border+y*previewscale,
+				   (previewscale-1),(previewscale-1),c);
 		}
 	}
 }

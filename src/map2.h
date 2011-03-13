@@ -25,7 +25,8 @@
 #ifndef MAPEDIT_H
 #define MAPEDIT_H
 
-#include <q3ptrlist.h>
+#include <qlist.h>
+#include <qbytearray.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -35,7 +36,7 @@ class MapEdit : public Map
 {
 public:
 	MapEdit(const Map &m);				// copy constructor
-	MapEdit(int sx,int sy,const QString pw);	// create with size
+	MapEdit(int sx,int sy,const QByteArray &pw);	// create with size
 	~MapEdit();
 
 	int getWidth() const { return (width); }
@@ -54,28 +55,26 @@ public:
 		return (xy(x,y));
 	}
 
-	Q3PtrList<Transporter> getTransportersList();
+	TransporterList getTransportersList();
 	void transporterInsert(int ox,int oy,int dx,int dy);
 	void transporterGet(int item,int *ox,int *oy,int *dx = NULL,int *dy = NULL);
 	void transporterChange(int item,int ox,int oy,int dx,int dy);
 	void transporterRemove(int item);
-	void changePassword(const QString &pw);
+	void changePassword(const QByteArray &pw);
 	void changeTime(int t);
 };
 
 
-class MapEditList : public Q3PtrList<MapEdit>
+class MapEditList : public QList<MapEdit *>
 {
 public:
-	void mapInsert(int sx,int sy,const QString password);
+	void mapInsert(int sx,int sy,const QByteArray &password);
 	void mapRemove(int item);
 	void mapMoveUp(int item);
 	void mapMoveDown(int item);
 
 	operator MapList();
 };
-
-typedef Q3PtrListIterator<MapEdit> MapEditListIterator;
 
 
 #endif							// !MAPEDIT_H

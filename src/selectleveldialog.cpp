@@ -31,8 +31,6 @@
 #include <qlayout.h>
 #include <q3hbox.h>
 #include <qtooltip.h>
-//Added by qt3to4:
-#include <Q3CString>
 
 #include "krepton.h"
 
@@ -164,12 +162,12 @@ void SelectLevelDialog::slotPasswdChanged()
 }
 
 
-Q3CString SelectLevelDialog::selectedPassword()
+QByteArray SelectLevelDialog::selectedPassword()
 {
     Q3ListBoxItem *cur = wListBox->selectedItem();
     if (cur==NULL) return (NULL);
 
-    Q3CString pass = cur->text().section(": ",1).toLocal8Bit();
+    QByteArray pass = cur->text().section(": ",1).toLocal8Bit();
     if (pass.isEmpty()) pass = wPasswdEdit->text().toLocal8Bit();
     return (pass);
 }

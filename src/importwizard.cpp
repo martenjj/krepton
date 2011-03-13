@@ -287,9 +287,13 @@ void ImportWizard::setupPage1()
 	connect(page1list,SIGNAL(selectionChanged()),this,SLOT(slotPage1FormatSelected()));
 	l->addWidget(page1list);
 
-	for (const ImportManager::formatInfo *it = manager->firstInfo(); it!=NULL; it = manager->nextInfo())
+        const ImportManager::FormatList *fmts = manager->allInfo();
+
+	for (ImportManager::FormatList::const_iterator it = fmts->constBegin();
+		it!=fmts->constEnd(); ++it)
 	{
-		QString s = it->name;
+		const ImportManager::formatInfo *fmt = (*it);
+		QString s = fmt->name;
 		page1list->insertItem(s);
 	}
 

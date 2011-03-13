@@ -26,11 +26,7 @@
 #define GAMEPLAYER_H
 
 #include <qwidget.h>
-#include <q3ptrlist.h>
-//Added by qt3to4:
-#include <QTimerEvent>
-#include <QKeyEvent>
-#include <QPaintEvent>
+#include <qevent.h>
 
 #include "map1.h"
 

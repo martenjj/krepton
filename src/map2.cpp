@@ -25,8 +25,6 @@
 #include "krepton.h"
 
 #include "map2.h"
-//Added by qt3to4:
-#include <Q3PtrList>
 
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
@@ -34,7 +32,7 @@ MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
 	kDebug() << "pw='" << getPassword() << "'";
 }
 
-MapEdit::MapEdit(int sx,int sy,const QString pw) : Map(sx,sy,pw)
+MapEdit::MapEdit(int sx,int sy,const QByteArray &pw) : Map(sx,sy,pw)
 {
 	kDebug() << "sx=" << sx << " sy=" << sy;
 }
@@ -45,7 +43,7 @@ MapEdit::~MapEdit()
 	kDebug() << "pw='" << getPassword() << "'";
 }
 
-Q3PtrList<Transporter> MapEdit::getTransportersList()
+TransporterList MapEdit::getTransportersList()
 {
 	return (transporters);
 }
@@ -93,12 +91,12 @@ void MapEdit::transporterRemove(int item)
 	if (item>=static_cast<int>(transporters.count())) return;
 
 	Transporter *t = transporters.at(item);
-	transporters.remove(item);
+	transporters.removeAt(item);
 	delete t;
 }
 
 
-void MapEdit::changePassword(const QString &pw)
+void MapEdit::changePassword(const QByteArray &pw)
 {
 	password = pw;
 }
@@ -111,7 +109,7 @@ void MapEdit::changeTime(int t)
 
 
 
-void MapEditList::mapInsert(int sx,int sy,const QString password)
+void MapEditList::mapInsert(int sx,int sy,const QByteArray &password)
 {
 	MapEdit *m = new MapEdit(sx,sy,password);
 	append(m);
@@ -121,7 +119,7 @@ void MapEditList::mapInsert(int sx,int sy,const QString password)
 void MapEditList::mapRemove(int item)
 {
 	MapEdit *m = at(item);
-	remove(item);
+	removeAt(item);
 	delete m;
 }
 
@@ -131,7 +129,7 @@ void MapEditList::mapMoveUp(int item)
 	if (item<=0) return;				// shouldn't happen, GUI disables
 
 	MapEdit *m = at(item);
-	remove(item);
+	removeAt(item);
 	insert(item-1,m);
 }
 
@@ -142,7 +140,7 @@ void MapEditList::mapMoveDown(int item)
 	if (item>=last_item) return;			// shouldn't happen, GUI disables
 
 	MapEdit *m = at(item);
-	remove(item);
+	removeAt(item);
 	insert(item+1,m);
 }
 
@@ -152,14 +150,13 @@ MapEditList::operator MapList()
 	kDebug();
 
 	MapList ml;
-	MapEditListIterator mi(*this);
-	for (const Map *mm; (mm = mi.current())!=NULL; ++mi)
+	for (MapEditList::const_iterator it = constBegin();
+		it!=constEnd(); ++it)
 	{
-//		ml.append(new Map(*mm));
-		ml.append(dynamic_cast<const Map *>(mm));
+		const Map *mm = (*it);
+		ml.append(const_cast<Map *>(mm));
 	}
 
-//	ml.setAutoDelete(true);
 	kDebug() << "done count=" << ml.count();
 	return (ml);
 }

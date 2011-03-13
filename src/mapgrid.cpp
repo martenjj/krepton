@@ -25,11 +25,9 @@
 #include <q3scrollview.h>
 #include <qpixmap.h>
 #include <qpainter.h>
-#include <q3ptrlist.h>
 #include <qpen.h>
 #include <qcolor.h>
-//Added by qt3to4:
-#include <QMouseEvent>
+#include <qevent.h>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -112,7 +110,7 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 
 	if (showtrans)
 	{
-		const Q3PtrList<Transporter> tl = map->getTransportersList();
+		const TransporterList tl = map->getTransportersList();
 		for (unsigned int i = 0; i<tl.count(); ++i)
 		{
 			int ox,oy,dx,dy;

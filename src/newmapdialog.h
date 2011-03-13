@@ -40,7 +40,7 @@ public:
 
 	int mapWidth() const		{ return (mSizeXBox->value()); }
 	int mapHeight() const		{ return (mSizeYBox->value()); }
-	QString mapPassword() const	{ return (mNameEdit->text()); }
+	QByteArray mapPassword() const	{ return (mNameEdit->text().toLocal8Bit()); }
 
 protected slots:
 	void slotNameChanged(const QString &s);

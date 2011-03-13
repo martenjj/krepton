@@ -153,14 +153,14 @@ void GamePlayer::setMaps(const MapList ml)
 {
 	kDebug() << "count=" << ml.count();
 
-	maps.setAutoDelete(true);
+        qDeleteAll(maps);
 	maps.clear();
-	maps.setAutoDelete(false);
 
-	MapListIterator mi(ml);
-	for (const Map *mm; (mm = mi.current())!=NULL; ++mi)
-	{
-		maps.append(new Map(*mm));
+        for (MapList::const_iterator it = ml.constBegin();
+             it!=ml.constEnd(); ++it)
+        {
+            const Map *mm = (*it);
+            maps.append(new Map(*mm));
 	}
 
 // check how many levels now, may need to trim 'lastlevel'
@@ -251,11 +251,12 @@ QStringList GamePlayer::listLevels(const Episode *e)
 
 void GamePlayer::startGamePassword(const Episode *e,const QString& password)
 {
-	for (const Map *mm = maps.first(); mm!=NULL; mm = maps.next())
-	{
+	for (int i = 0; i<maps.count(); ++i)
+        {
+		const Map *mm = maps[i];
 		if (QString::compare(mm->getPassword(), password, Qt::CaseInsensitive)==0)
 		{
-			startGame(e,maps.at());
+			startGame(e,i);
 			return;
 		}
 	}

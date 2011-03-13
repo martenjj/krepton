@@ -57,10 +57,10 @@ void CheckMap::addItem(const QString msg)
 void CheckMap::strictCheckTransporter(const QString maploc,const Map *mm,int x,int y)
 {
 	int found = 0;
-
-	Q3PtrListIterator<Transporter> ti(mm->transporters);
-	for (const Transporter *tt; (tt = ti.current())!=NULL; ++ti)
+        for (TransporterList::const_iterator it = mm->transporters.constBegin();
+             it!=mm->transporters.constEnd(); ++it)
 	{
+		const Transporter *tt = (*it);
 		if (tt->orig_x==x && tt->orig_y==y) ++found;
 	}
 
@@ -74,11 +74,11 @@ void CheckMap::strictCheckTransporter(const QString maploc,const Map *mm,int x,i
 
 void CheckMap::strictCheckTransporters(const QString maploc,const Map *mm)
 {
-	Q3PtrListIterator<Transporter> ti(mm->transporters);
-	const Transporter *tt;
-	for (int thistrans = 1; (tt = ti.current())!=NULL; ++ti,++thistrans)
+        for (int i = 0; i<mm->transporters.count(); ++i)
 	{
+		int thistrans = i+1;
 		const QString transloc = QString("%1 transporter #%2").arg(maploc).arg(thistrans);
+		const Transporter *tt = mm->transporters[i];
 
 		if (tt->orig_x<0 || tt->orig_x>=mm->width || tt->orig_y<0 || tt->orig_y>=mm->height)
 		{					// Avoid out-of-range
@@ -114,13 +114,12 @@ CheckMap::CheckMap(const MapList maps)
 		return;
 	}
 
-	Q3PtrListIterator<Map> mi(maps);
-	const Map *mm;
-	int thismap;
 
-	for (thismap = 1; (mm = mi.current())!=NULL; ++mi,++thismap)
+	for (int i = 0; i<maps.count(); ++i)
 	{
+		int thismap = i+1;
 		const QString maploc = QString("Map #%1").arg(thismap);
+		const Map *mm = maps[i];
 
 		if (mm->password=="")
 			addItem(maploc,"no password specified");
@@ -201,20 +200,17 @@ default:				;		// Avoid warnings
 			addItem(maploc,QString("has %1 eggs but no rocks").arg(num_eggs),true);
 
 		strictCheckTransporters(maploc,mm);
-	}
 
-	// Check for duplicated passwords
-	QStringList pwds;
-
-	for (mi.toFirst(); (mm = mi.current())!=NULL; ++mi) pwds.append(mm->password);
-	for (mi.toFirst(),thismap = 1; (mm = mi.current())!=NULL; ++mi,++thismap)
-	{
-            int idx = pwds.indexOf(mm->password, Qt::CaseInsensitive);
-            if (idx>thismap)
-            {
-                    const QString pwloc = QString("Maps #%1 and #%2").arg(thismap).arg(idx);
-                    addItem(pwloc,"have the same password");
-            }
+		// Check for duplicated passwords
+		for (int j = i+1; j<maps.count(); ++j)
+		{
+			const Map *mj = maps[j];
+			if (QString::compare(mm->password,mj->password,Qt::CaseInsensitive)==0)
+			{
+				const QString pwloc = QString("Maps #%1 and #%2").arg(thismap).arg(j+1);
+				addItem(pwloc,"have the same password");
+	                }
+		}
 	}
 
 	kDebug() << "done sev=" << severity;

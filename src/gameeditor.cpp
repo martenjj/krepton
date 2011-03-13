@@ -172,7 +172,7 @@ GameEditor::~GameEditor()
 	}
 
 	if (sprites!=NULL) delete sprites;
-	maps.setAutoDelete(true);
+	qDeleteAll(maps);
 	maps.clear();
 
 	kDebug() << "done";
@@ -185,8 +185,13 @@ void GameEditor::updateMapsList()
 
 	view->mapsListBox->setAutoUpdate(false);
 	view->mapsListBox->clear();
-	for (const MapEdit *m = maps.first(); m!=NULL; m = maps.next())
+
+	for (MapEditList::const_iterator it = maps.constBegin();
+		it!=maps.constEnd(); ++it)
+	{
+		const MapEdit *m = (*it);
 		view->mapsListBox->insertItem(m->getPassword());
+        }
 	view->mapsListBox->setAutoUpdate(true);
 }
 
@@ -201,12 +206,14 @@ void GameEditor::updateTransportersList(int item)
 	view->transportListBox->setAutoUpdate(false);
 	view->transportListBox->clear();
 
-	Q3PtrList<Transporter> tl = map->getTransportersList();
-	for (const Transporter *t = tl.first(); t!=NULL; t = tl.next())
+	TransporterList tl = map->getTransportersList();
+        for (TransporterList::const_iterator it = tl.constBegin();
+		it!=tl.constEnd(); ++it)
 	{
+		const Transporter *tr = (*it);
 		QString s;
 		s.sprintf("%d,%d -> %d,%d",
-			  t->orig_x+1,t->orig_y+1,t->dest_x+1,t->dest_y+1);
+			  tr->orig_x+1,tr->orig_y+1,tr->dest_x+1,tr->dest_y+1);
 		view->transportListBox->insertItem(s);
 	}
 
@@ -506,7 +513,7 @@ void GameEditor::changedPassword(const QString &s)
 	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
 	if (level<0) return;
 
-	maps.at(level)->changePassword(s);
+	maps.at(level)->changePassword(s.toLocal8Bit());
 	setModified();
 
 	view->mapsListBox->setAutoUpdate(false);
@@ -682,13 +689,13 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	if (sprites!=NULL) delete sprites;
 	sprites = new Sprites(*ss);
 
-	maps.setAutoDelete(true);
+        qDeleteAll(maps);
 	maps.clear();
-	maps.setAutoDelete(false);
 
-	MapListIterator mi(ml);
-	for (const Map *mm; (mm = mi.current())!=NULL; ++mi)
+        for (MapList::const_iterator mi = ml.constBegin();
+		mi!=ml.constEnd(); ++mi)
 	{
+		const Map *mm = (*mi);
 		maps.append(new MapEdit(*mm));
 	}
 

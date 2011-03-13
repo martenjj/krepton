@@ -28,8 +28,6 @@
 
 #include <kdialog.h>
 
-#include <q3ptrlist.h>
-
 #include "episodes.h"
 
 

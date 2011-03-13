@@ -25,9 +25,7 @@
 #ifndef EPISODES_H
 #define EPISODES_H
 
-#include <q3ptrlist.h>
-//Added by qt3to4:
-#include <Q3PtrCollection>
+#include <qlist.h>
 
 #include "map.h"
 
@@ -53,7 +51,7 @@ private:
 };
 
 
-class EpisodeList : public Q3PtrList<Episode>
+class EpisodeList : public QList<const Episode *>
 {
 public:
 	static EpisodeList *list();
@@ -62,9 +60,6 @@ public:
 	void remove(const Episode *e,bool noDelete = false);
 	bool any() const;
 	bool anyUser() const;
-
-protected:
-	int compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2);
 
 private:
 	EpisodeList();

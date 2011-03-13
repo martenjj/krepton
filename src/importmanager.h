@@ -25,7 +25,7 @@
 #define IMPORTMANAGER_H
 
 #include <qstring.h>
-#include <q3ptrlist.h>
+#include <qlist.h>
 
 
 class ImporterBase;
@@ -49,20 +49,21 @@ public:
         ImportManager::createFunction create;
     };
 
+    typedef QList<const ImportManager::formatInfo *> FormatList;
+
     ImporterBase *createImporter(const QString &key);
 
     void add(const ImportManager::formatInfo *info);
 
     const ImportManager::formatInfo *findNamed(const QString &name) const;
     const ImportManager::formatInfo *findInfo(const QString &key) const;
-    const ImportManager::formatInfo *firstInfo() const;
-    const ImportManager::formatInfo *nextInfo() const;
+    const FormatList *allInfo() const;
 
 private:
     ImportManager();
     ~ImportManager();
 
-    Q3PtrList<ImportManager::formatInfo> *formats;
+    FormatList *formats;
 };
 
 

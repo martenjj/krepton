@@ -31,15 +31,12 @@
 #include <kstandarddirs.h>
 #include <kmessagebox.h>
 
-#include <q3ptrlist.h>
 #include <qstringlist.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qregexp.h>
-//Added by qt3to4:
-#include <Q3TextStream>
 
 #include "krepton.h"
 #include "map.h"
@@ -49,9 +46,8 @@
 
 const QString Episode::loadMaps(MapList *maps) const
 {
-	maps->setAutoDelete(true);
-	maps->clear();					// clear existing maps
-	maps->setAutoDelete(false);
+	qDeleteAll(*maps);				// clear existing maps
+	maps->clear();
 
 	QString path = getFilePath(QString::null);	// containing directory
 	QDir dir(path);					// just for safety
@@ -121,19 +117,20 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 		return (false);
 	}
 
-	Q3TextStream t(&f);
+	QTextStream t(&f);
 	t << name << '\n';
 	t << maps->count() << '\n';
 	f.close();
 
 	removeMapFiles(path);				// clean up old maps
-	MapListIterator mi(*maps);
-	const Map *mm;
-	for (int i = 1; (mm = mi.current())!=NULL; ++mi,++i)
+        int i = 0;
+        for (MapList::const_iterator it = maps->constBegin();
+		it!=maps->constEnd(); ++it, ++i)
 	{						// save all maps
-		const QString p1 = getFilePath(QString("map%1").arg(i));
+		const Map *mm = (*it);
+                const QString p1 = getFilePath(QString("map%1").arg(i));
 		if (!mm->save(p1)) return (false);
-	}
+        }
 
 	return (true);
 }
@@ -221,7 +218,7 @@ QString Episode::savePath(const QString &name)
 
 
 
-EpisodeList::EpisodeList() : Q3PtrList<Episode>()
+EpisodeList::EpisodeList()
 {
 	const QString localdir = QDir(KGlobal::dirs()->localkdedir()).canonicalPath()+"/";
 	kDebug() << "local='" << localdir << "'";
@@ -269,7 +266,7 @@ EpisodeList::EpisodeList() : Q3PtrList<Episode>()
 				continue;
 			}
 
-			Q3TextStream t(&f);
+			QTextStream t(&f);
 			QString name;
 			name = t.readLine().trimmed();
 			f.close();
@@ -293,8 +290,9 @@ EpisodeList::EpisodeList() : Q3PtrList<Episode>()
                 KMessageBox::error(NULL, msg);
 	}
 
-	setAutoDelete(true);
-	sort();
+// TODO: data type needs to have a comparison operator,
+// see http://doc.trolltech.com/4.7/qtalgorithms.html#qSort
+//	qSort(begin(),end());
 	kDebug() << "done";
 }
 
@@ -310,8 +308,11 @@ EpisodeList *EpisodeList::list()
 const Episode *EpisodeList::find(const QString &name)
 {
 	kDebug() << "name='" << name << "'";
-	for (const Episode *e = first(); e!=NULL; e = next())
+
+        for (EpisodeList::const_iterator it = constBegin();
+		it!=constEnd(); ++it)
 	{
+		const Episode *e = (*it);
 		if (QString::compare(name, e->getName(), Qt::CaseInsensitive)==0) return (e);
 	}
 
@@ -321,26 +322,26 @@ const Episode *EpisodeList::find(const QString &name)
 void EpisodeList::add(const Episode *e)
 {
 	kDebug() << "name='" << e->getName() << "'";
-	if (findRef(e)==-1) inSort(e);
+// TODO: insert in sorted order
+//	if (findRef(e)==-1) inSort(e);
+        append(e);
 }
 
 
 void EpisodeList::remove(const Episode *e,bool noDelete)
 {
 	kDebug() << "name='" << e->getName() << "'";
-
-        bool deleteState = autoDelete();
-        setAutoDelete(!noDelete);
-	removeRef(e);
-        setAutoDelete(deleteState);
+        if (!noDelete) delete e;
+	removeOne(e);
 }
 
 
 bool EpisodeList::anyUser() const
 {
-	Q3PtrListIterator<Episode> ei(*this);
-	for (const Episode *e; (e = ei.current())!=NULL; ++ei)
+        for (EpisodeList::const_iterator it = constBegin();
+		it!=constEnd(); ++it)
 	{
+		const Episode *e = (*it);
 		if (!e->isGlobal()) return (true);
 	}
 	return (false);
@@ -351,13 +352,15 @@ bool EpisodeList::any() const
 	return (count()>0);
 }
 
-int EpisodeList::compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2)
-{
-	const QString n1 = static_cast<const Episode *>(item1)->getName();
-	const QString n2 = static_cast<const Episode *>(item2)->getName();
-//	kDebug() << "1='" << n1 << "' 2='" << n2 << "'";
 
-	if (n1=="blank") return (+1);			// always force to end
-	if (n2=="blank") return (-1);
-	return (QString::compare(n1, n2, Qt::CaseInsensitive));
-}
+// TODO: see constructor
+//int EpisodeList::compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2)
+//{
+//	const QString n1 = static_cast<const Episode *>(item1)->getName();
+//	const QString n2 = static_cast<const Episode *>(item2)->getName();
+////	kDebug() << "1='" << n1 << "' 2='" << n2 << "'";
+//
+//	if (n1=="blank") return (+1);			// always force to end
+//	if (n2=="blank") return (-1);
+//	return (QString::compare(n1, n2, Qt::CaseInsensitive));
+//}

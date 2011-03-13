@@ -35,8 +35,6 @@
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qpushbutton.h>
-//Added by qt3to4:
-#include <Q3PtrList>
 
 #include "importmanager.h"
 
@@ -62,7 +60,7 @@ ImportManager *ImportManager::self()
 
 ImportManager::ImportManager()
 {
-	formats = new Q3PtrList<ImportManager::formatInfo>;
+	formats = new FormatList;
 }
 
 
@@ -104,23 +102,19 @@ ImporterBase *ImportManager::createImporter(const QString &key)
 //									//
 //////////////////////////////////////////////////////////////////////////
 
-const ImportManager::formatInfo *ImportManager::firstInfo() const
+const ImportManager::FormatList *ImportManager::allInfo() const
 {
-	return (formats->first());
-}
-
-
-const ImportManager::formatInfo *ImportManager::nextInfo() const
-{
-	return (formats->next());
+	return (formats);
 }
 
 
 const ImportManager::formatInfo *ImportManager::findInfo(const QString &key) const
 {
-	for (const ImportManager::formatInfo *it = formats->first(); it!=NULL; it = formats->next())
+	for (FormatList::const_iterator it = formats->constBegin();
+		it!=formats->constEnd(); ++it)
 	{
-		if (key==it->key) return (it);
+		const ImportManager::formatInfo *fi = (*it);
+		if (key==fi->key) return (fi);
 	}
 	return (NULL);
 }
@@ -128,9 +122,11 @@ const ImportManager::formatInfo *ImportManager::findInfo(const QString &key) con
 
 const ImportManager::formatInfo *ImportManager::findNamed(const QString &name) const
 {
-	for (const ImportManager::formatInfo *it = formats->first(); it!=NULL; it = formats->next())
+	for (FormatList::const_iterator it = formats->constBegin();
+		it!=formats->constEnd(); ++it)
 	{
-		if (name==it->name) return (it);
+		const ImportManager::formatInfo *fi = (*it);
+		if (name==fi->name) return (fi);
 	}
 	return (NULL);
 }

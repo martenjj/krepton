@@ -36,8 +36,7 @@
 #include <qcolor.h>
 #include <qregexp.h>
 #include <qdir.h>
-//Added by qt3to4:
-#include <Q3ValueList>
+#include <qlist.h>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -226,8 +225,8 @@ bool Sprites::save(const Episode *e)
 	}
 	else
 	{
-	    Q3ValueList<int> levels = files.keys();
-	    for (Q3ValueList<int>::const_iterator it = levels.constBegin();
+	    QList<int> levels = files.keys();
+	    for (QList<int>::const_iterator it = levels.constBegin();
 		 it!=levels.constEnd(); ++it)
 	    {
 		int level = (*it);

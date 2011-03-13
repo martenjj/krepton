@@ -23,10 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include <q3iconview.h>
-#include <q3ptrlist.h>
 #include <qtimer.h>
 #include <q3vbox.h>
-//Added by qt3to4:
 #include <QPixmap>
 
 #include "krepton.h"
@@ -66,9 +64,10 @@ SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool us
     wEpisodeIconView->setMinimumSize(200,140);
 
     episodes = EpisodeList::list();
-    Q3PtrListIterator<Episode> ei(*episodes);
-    for (const Episode *e; (e = ei.current())!=NULL; ++ei)
+    for (EpisodeList::const_iterator it = episodes->constBegin();
+         it!=episodes->constEnd(); ++it)
     {
+        const Episode *e = (*it);
         Q3IconViewItem *ic = new Q3IconViewItem(wEpisodeIconView,e->getName());
         if (useronly && e->isGlobal()) ic->setSelectable(false);
     }

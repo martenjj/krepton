@@ -89,9 +89,11 @@ ScoreDialog::ScoreDialog(QWidget *parent)
 	//int maxh = 15*h;
 
 	bool any = false;
-	EpisodeList *el = EpisodeList::list();
-	for (const Episode *e = el->first(); e!=NULL; e = el->next())
+	const EpisodeList *el = EpisodeList::list();
+	for (EpisodeList::const_iterator it = el->constBegin();
+         it!=el->constEnd(); ++it)
 	{
+	        const Episode *e = (*it);
 		const QString name = e->getName();
 		if (name=="---") continue;		// what does this do?
 		score = configGrp.readEntry((name+"Score"), "");

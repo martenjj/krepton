@@ -45,7 +45,7 @@
 #include <qcursor.h>
 //Added by qt3to4:
 #include <QLabel>
-#include <Q3CString>
+#include <qbytearray.h>
 #include <QPixmap>
 #include <QCloseEvent>
 
@@ -373,7 +373,6 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		else if (diamonds>50) ds = i18n("Plenty!");
 		else ds.setNum(diamonds);
 		ds = i18n("Diamonds: %1", ds);
-                kDebug() << ds;
 	}
 	status->changeItem(ds, 1);
 
@@ -383,7 +382,6 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		const int min = secs / 60;
 		const int sec = secs % 60;
                 ts = i18n("Time: %1:%2", min, QString("%1").arg(sec, 2, 10, QChar('0')));
-                kDebug() << ts;
 	}
 	status->changeItem(ts, 2);
 
@@ -509,7 +507,7 @@ void MainWindow::slotContinueGame()
 
 	QStringList levels = game->listLevels(currentepisode);
 
-	Q3CString pwd = NULL;
+	QByteArray pwd;
 	QString msg = i18n("<qt>Continuing episode <b>%1</b>", currentepisode->getName());
 	if (levels.count()>0)
 	{

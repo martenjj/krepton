@@ -28,9 +28,8 @@
 
 #include <kdialog.h>
 
-#include <q3valuevector.h>
-//Added by qt3to4:
-#include <Q3CString>
+#include <qvector.h>
+#include <qbytearray.h>
 
 #include "gameplayer.h"
 
@@ -48,7 +47,7 @@ public:
     SelectLevelDialog(const QStringList &levels, const QString &msg,
                       QWidget *parent = NULL);
 
-    Q3CString selectedPassword();
+    QByteArray selectedPassword();
 
 protected slots:
     void slotItemSelected(Q3ListBoxItem *item);
@@ -60,7 +59,7 @@ private:
     Q3ListBox *wListBox;
     QLineEdit *wPasswdEdit;
 
-    Q3ValueVector<GamePlayer::State> mLevelStates;
+    QVector<GamePlayer::State> mLevelStates;
 };
 
 

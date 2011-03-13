@@ -67,7 +67,7 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 MapPlay::~MapPlay()
 {
 	kDebug() << "pw='" << getPassword() << "'";
-	monsters.setAutoDelete(true);
+	qDeleteAll(monsters);
 	monsters.clear();
 	kDebug() << "done";
 }
@@ -100,9 +100,11 @@ void MapPlay::restartGame()
 
 const Transporter *MapPlay::findTransporter(int x,int y)
 {
-	for (const Transporter *t = transporters.first(); t!=0; t = transporters.next())
+        for (TransporterList::const_iterator it = transporters.constBegin();
+		it!=transporters.constEnd(); ++it)
 	{
-		if (t->orig_x==x && t->orig_y==y) return (t);
+		const Transporter *tr = (*it);
+		if (tr->orig_x==x && tr->orig_y==y) return (tr);
 	}
 
 	kDebug() << "Inconsistent map, no transporter at " << x << "," << y;
@@ -141,8 +143,11 @@ default:			;			// Avoid warning
 		}
 	}
 
-	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
+        for (MonsterList::iterator it = monsters.begin();
+		it!=monsters.end(); ++it)
 	{
+		Monster *m = (*it);
+                if (m==NULL) continue;
 		if (m->type!=Obj::Blip) continue;
 
 		const int x = m->xpos;
@@ -160,8 +165,11 @@ default:			;			// Avoid warning
 
 Monster *MapPlay::findMonster(int x,int y)
 {
-	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
+        for (MonsterList::iterator it = monsters.begin();
+		it!=monsters.end(); ++it)
 	{
+		Monster *m = (*it);
+                if (m==NULL) continue;
 		if (m->xpos==x && m->ypos==y) return (m);
 	}
 	return (NULL);
@@ -581,8 +589,11 @@ bool MapPlay::updatePlants()
 {
         if (plant_inhibit-->0) return (false);		// grace time at start
 
-	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
+        for (MonsterList::iterator it = monsters.begin();
+		it!=monsters.end(); ++it)
 	{
+		Monster *m = (*it);
+                if (m==NULL) continue;
 		if (m->type==Obj::Plant)
 		{
 			if (updatePlant(m)) return (true);
@@ -597,8 +608,11 @@ bool MapPlay::updateMonsters()
 {
 	bool done = false;
 
-	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
+        for (MonsterList::iterator it = monsters.begin();
+		it!=monsters.end(); ++it)
 	{
+		Monster *m = (*it);
+                if (m==NULL) continue;
 		switch (m->type)
 		{
 case Obj::Blip:		if (updateBlip(m)) done = true;
@@ -992,7 +1006,7 @@ default:	return (false);				// unable to move
 void MapPlay::killMonster(Monster *mp)
 {
 	num_points += 500;
-	monsters.remove(mp);
+	monsters[monsters.indexOf(mp)] = NULL;
 	delete mp;
 }
 
