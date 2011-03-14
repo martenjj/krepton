@@ -26,16 +26,15 @@
 #define MAPEDITOR_H
 
 #include <qwidget.h>
-//Added by qt3to4:
-#include <QCloseEvent>
 
 #include "krepton.h"
+
+class QCloseEvent;
 
 class SpritePreview;
 class MapGrid;
 class CoordLabel;
 class ObjectListBox;
-class Q3ButtonGroup;
 class MapEdit;
 class Sprites;
 
@@ -62,7 +61,8 @@ protected slots:
 	void selectedSprite(int i);
 	void pressedButton(int button,int x,int y);
 	void updateCoordinates(int x,int y);
-	void optionButton(int id);
+	void optionShowTransporterRoutes(bool checked);
+	void optionShowTransporterSelected(bool checked);
 
 private:
 	ObjectListBox *sprite_list;
@@ -70,7 +70,6 @@ private:
 	MapGrid *map_area;
 	Sprites **sprites;
 	Obj::Type current_sprite;
-	Q3ButtonGroup *optiongroup;
 	CoordLabel *coord;
 	MapEdit *map;
 

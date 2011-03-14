@@ -27,10 +27,8 @@
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qcheckbox.h>
-#include <q3buttongroup.h>
-//Added by qt3to4:
+#include <qgroupbox.h>
 #include <qgridlayout.h>
-#include <QCloseEvent>
 
 #include <kdialog.h>
 #ifdef EDITOR_3_WINDOWS
@@ -88,12 +86,20 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	label = new QLabel("Object:", this);
 	gl->addWidget(label,0,2,Qt::AlignLeft);
 
-	optiongroup = new Q3ButtonGroup(1,Qt::Horizontal,"D&isplay",this);
-	connect(optiongroup,SIGNAL(clicked(int)),this,SLOT(optionButton(int)));
-	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
+        // TODO: persistent settings of these options
+	QGroupBox *optiongroup = new QGroupBox("Display",this);
+        QVBoxLayout *vl = new QVBoxLayout;
 
-	(void) new QCheckBox("&Transporter routes",optiongroup);	// ID 0
-	(void) new QCheckBox("S&elected transporter",optiongroup);	// ID 1
+	QCheckBox *cb = new QCheckBox("Transporter routes",optiongroup);
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterRoutes(bool)));
+        vl->addWidget(cb);
+
+	cb = new QCheckBox("Selected transporter",optiongroup);
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterSelected(bool)));
+        vl->addWidget(cb);
+
+        optiongroup->setLayout(vl);
+	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
 
 	map_area = new MapGrid(this);
 	connect(map_area,SIGNAL(pressedButton(int,int,int)),
@@ -119,8 +125,6 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 
         sprite_list->setFocus();
 	selectedSprite(-1);
-	optionButton(0);
-	optionButton(1);
 
 	kDebug() << "done";
 }
@@ -173,18 +177,16 @@ void MapEditor::updateChilds()
 }
 
 
-void MapEditor::optionButton(int id)
+void MapEditor::optionShowTransporterRoutes(bool checked)
 {
-	const QCheckBox *but = static_cast<const QCheckBox *>(optiongroup->find(id));
-	switch (id)
-	{
-case 0:		map_area->showTransporters(but->isChecked());
-		break;
+	map_area->showTransporters(checked);
+	updateChilds();
+}
 
-case 1:		map_area->showSelectedTransporter(but->isChecked());
-		break;
-	}
 
+void MapEditor::optionShowTransporterSelected(bool checked)
+{
+	map_area->showSelectedTransporter(checked);
 	updateChilds();
 }
 

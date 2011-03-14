@@ -22,11 +22,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <q3groupbox.h>
 //Added by qt3to4:
 #include <QMoveEvent>
 #include <QCloseEvent>
-#include <Q3PtrList>
 
 #include <kmainwindow.h>
 #include <kmessagebox.h>
