@@ -24,8 +24,7 @@
 
 #include <qlabel.h>
 #include <qpixmap.h>
-//Added by qt3to4:
-#include <Q3Frame>
+#include <qframe.h>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -38,11 +37,10 @@ SpritePreview::SpritePreview(QWidget *parent) : QLabel(parent)
 	sprites = NULL;
 	object = Obj::Empty;
 
-	setFrameStyle(Q3Frame::Box|Q3Frame::Sunken);
+	setFrameStyle(QFrame::Box|QFrame::Sunken);
 	setLineWidth(1);
 	setMidLineWidth(2);
-	int border = lineWidth()*2+midLineWidth();
-	setFixedSize(Sprites::base_width+border*2,Sprites::base_height+border*2);
+	setFixedSize(Sprites::base_width,Sprites::base_height);
 }
 
 
