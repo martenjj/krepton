@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include <qlabel.h>
-#include <q3scrollview.h>
 #include <qtooltip.h>
 #include <qlayout.h>
 #include <qcheckbox.h>
@@ -145,7 +144,7 @@ void MapEditor::selectedSprite(int i)
 
 	current_sprite = static_cast<Obj::Type>(i);
 	preview_sprite->setSprite(*sprites,current_sprite);
-	map_area->setSprite(*sprites,current_sprite);
+	map_area->setSprites(*sprites);
 }
 
 
@@ -173,7 +172,7 @@ void MapEditor::updateCoordinates(int x,int y)
 
 void MapEditor::updateChilds()
 {
-	map_area->repaintContents(false);
+	map_area->update();
 }
 
 

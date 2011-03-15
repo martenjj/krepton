@@ -22,12 +22,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <q3scrollview.h>
 #include <qpixmap.h>
 #include <qpainter.h>
 #include <qpen.h>
 #include <qcolor.h>
 #include <qevent.h>
+#include <qscrollbar.h>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -37,33 +37,50 @@
 
 
 MapGrid::MapGrid(QWidget *parent)
-	: Q3ScrollView(parent)
+	: QScrollArea(parent)
 {
 	kDebug();
 
-	sprites = NULL;
-	map = NULL;
-	object = Obj::Empty;
-	showtrans = false;
-	showsel = false;
-	xtrans = ytrans = 0;
+        mWidget = new MapGridWidget(this);
+	mWidget->setMouseTracking(true);
+	setMouseTracking(true);
+        setWidget(mWidget);
 
-	setHScrollBarMode(Q3ScrollView::AlwaysOn);
-	setVScrollBarMode(Q3ScrollView::AlwaysOn);
+	connect(mWidget,SIGNAL(pressedButton(int,int,int)),SIGNAL(pressedButton(int,int,int)));
+	connect(mWidget,SIGNAL(changedCoordinates(int,int)),SIGNAL(changedCoordinates(int,int)));
+
+	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	horizontalScrollBar()->setSingleStep(Sprites::base_width);
 	verticalScrollBar()->setSingleStep(Sprites::base_width);
-
-	setResizePolicy(Q3ScrollView::Manual);
-	viewport()->setMouseTracking(true);
 
 	kDebug() << "done";
 }
 
 
+MapGridWidget::MapGridWidget(QWidget *parent)
+	: QWidget(parent)
+{
+	kDebug();
+
+	sprites = NULL;
+	map = NULL;
+	showtrans = false;
+	showsel = false;
+	xtrans = ytrans = 0;
+}
+
+
 void MapGrid::setMap(MapEdit *mm)
 {
+	mWidget->setMap(mm);
+}
+
+
+void MapGridWidget::setMap(MapEdit *mm)
+{
 	map = mm;
-	updateContents();
+        update();
 
 	if (map==NULL)
 	{
@@ -73,17 +90,19 @@ void MapGrid::setMap(MapEdit *mm)
 
 	const int cwidth = map->getWidth()*Sprites::base_width;
 	const int cheight = map->getHeight()*Sprites::base_height;
-	resizeContents(cwidth,cheight);
-	viewport()->setMaximumSize(cwidth,cheight);
+	resize(cwidth,cheight);
+	setMaximumSize(cwidth,cheight);
 	setEnabled(true);
 }
 
 
-void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
+void MapGridWidget::paintEvent(QPaintEvent *ev)
 {
+	QPainter p(this);
+
 	if (map==NULL || sprites==NULL)			// no contents to draw
 	{						// but we must do this
-		p->eraseRect(p->window());		// because of WRepaintNoErase
+		p.eraseRect(p.window());		// because of WRepaintNoErase
 		return;
 	}
 
@@ -95,16 +114,16 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 	for (int y = 0; y<mapheight; ++y)
 	{
 		int aty = y*Sprites::base_height;
-		if (aty>(clipy+cliph)) break;
-		if ((aty+Sprites::base_height)<clipy) continue;
+		//if (aty>(clipy+cliph)) break;
+		//if ((aty+Sprites::base_height)<clipy) continue;
 
 		for (int x = 0; x<mapwidth; ++x)
 		{
 			int atx = x*Sprites::base_width;
-			if (atx>(clipx+clipw)) break;
-			if ((atx+Sprites::base_width)<clipx) continue;
+			//if (atx>(clipx+clipw)) break;
+			//if ((atx+Sprites::base_width)<clipx) continue;
 
-			p->drawPixmap(atx,aty,sprites->getRaw(map->getCell(x,y)));
+			p.drawPixmap(atx,aty,sprites->getRaw(map->getCell(x,y)));
 		}
 	}
 
@@ -115,39 +134,36 @@ void MapGrid::drawContents(QPainter *p,int clipx,int clipy,int clipw,int cliph)
 		{
 			int ox,oy,dx,dy;
 			map->transporterGet(i,&ox,&oy,&dx,&dy);
-//			kDebug() << "oxy=" << ox << "," << oy << " dxy=" << dx << "," << dy;
 			ox = (ox*Sprites::base_width)-(Sprites::base_width/2);
 			oy = (oy*Sprites::base_height)-(Sprites::base_height/2);
 			dx = (dx*Sprites::base_width)-(Sprites::base_width/2);
 			dy = (dy*Sprites::base_height)-(Sprites::base_height/2);
 
 			QPen pen(Qt::white,3);
-			p->setPen(pen);
-			p->drawLine(ox,oy,dx,dy);
+			p.setPen(pen);
+			p.drawLine(ox,oy,dx,dy);
 
 			pen.setWidth(0);
-			p->setPen(pen);
-			p->setBrush(Qt::white);
-			p->drawEllipse(dx-4,dy-4,9,9);
+			p.setPen(pen);
+			p.setBrush(Qt::white);
+			p.drawEllipse(dx-4,dy-4,9,9);
 		}
 	}
 
 	if (showsel && xtrans>0 && ytrans>0)
 	{
-		kDebug() << "xy=" << xtrans << "," << ytrans;
-
 		int tx = (xtrans*Sprites::base_width)-(Sprites::base_width/2);
 		int ty = (ytrans*Sprites::base_height)-(Sprites::base_height/2);
 
 		QPen pen(Qt::white,3);
-		p->setPen(pen);
-		p->drawLine(tx-9,ty-9,tx+9,ty+9);
-		p->drawLine(tx-9,ty+9,tx+9,ty-9);
+		p.setPen(pen);
+		p.drawLine(tx-9,ty-9,tx+9,ty+9);
+		p.drawLine(tx-9,ty+9,tx+9,ty-9);
 	}
 }
 
 
-void MapGrid::contentsMousePressEvent(QMouseEvent *e)
+void MapGridWidget::mousePressEvent(QMouseEvent *e)
 {
 	if (!(e->button()==Qt::LeftButton || e->button()==Qt::RightButton)) return;
 
@@ -157,7 +173,7 @@ void MapGrid::contentsMousePressEvent(QMouseEvent *e)
 }
 
 
-void MapGrid::contentsMouseMoveEvent(QMouseEvent *e)
+void MapGridWidget::mouseMoveEvent(QMouseEvent *e)
 {
 	int x = e->x()/Sprites::base_width;
 	int y = e->y()/Sprites::base_height;
@@ -170,24 +186,42 @@ void MapGrid::contentsMouseMoveEvent(QMouseEvent *e)
 
 void MapGrid::updatedCell(int x,int y)
 {
-	repaintContents(x*Sprites::base_width,y*Sprites::base_height,
-			Sprites::base_width,Sprites::base_height,false);
+	mWidget->repaint(x*Sprites::base_width,y*Sprites::base_height,
+	                 Sprites::base_width,Sprites::base_height,false);
 }
 
 
 void MapGrid::showTransporters(bool state)
 {
-//	kDebug() << "state=" << state;
+	mWidget->showTransporters(state);
+}
+
+
+void MapGridWidget::showTransporters(bool state)
+{
 	showtrans = state;
 }
 
+
 void MapGrid::showSelectedTransporter(bool state)
 {
-//	kDebug() << "state=" << state;
+	mWidget->showSelectedTransporter(state);
+}
+
+
+void MapGridWidget::showSelectedTransporter(bool state)
+{
 	showsel = state;
 }
 
+
 void MapGrid::selectedTransporter(int item)
+{
+	mWidget->selectedTransporter(item);
+}
+
+
+void MapGridWidget::selectedTransporter(int item)
 {
 	kDebug() << "item=" << item;
 
@@ -197,4 +231,16 @@ void MapGrid::selectedTransporter(int item)
 	if (item>=0) map->transporterGet(item,&ox,&oy);
 	xtrans = ox;
 	ytrans = oy;
+}
+
+
+void MapGrid::setSprites(Sprites *ss)
+{
+	mWidget->setSprites(ss);
+}
+
+
+void MapGridWidget::setSprites(Sprites *ss)
+{
+	sprites = ss;
 }

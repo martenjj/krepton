@@ -25,22 +25,51 @@
 #ifndef MAPGRID_H
 #define MAPGRID_H
 
-#include <q3scrollview.h>
-//Added by qt3to4:
-#include <QMouseEvent>
+#include <qscrollarea.h>
 
 #include "krepton.h"
 
 class MapEdit;
 class Sprites;
 
-class MapGrid : public Q3ScrollView
+
+class MapGridWidget : public QWidget
+{
+	Q_OBJECT
+
+public:
+	MapGridWidget(QWidget *parent = NULL);
+	void setSprites(Sprites *ss);
+	void setMap(MapEdit *mm);
+	void showTransporters(bool state);
+	void showSelectedTransporter(bool state);
+	void selectedTransporter(int i = -1);
+
+signals:
+	void pressedButton(int,int,int);
+	void changedCoordinates(int,int);
+
+protected:
+	void mousePressEvent(QMouseEvent *e);
+	void mouseMoveEvent(QMouseEvent *e);
+	void paintEvent(QPaintEvent *ev);
+
+private:
+	MapEdit *map;
+	Sprites *sprites;
+	bool showtrans;
+	bool showsel;
+	int xtrans,ytrans;
+};
+
+
+class MapGrid : public QScrollArea
 {
 	Q_OBJECT
 
 public:
 	MapGrid(QWidget *parent = NULL);
-	void setSprite(Sprites *ss,Obj::Type tt) { sprites = ss; object = tt; }
+	void setSprites(Sprites *ss);
 	void setMap(MapEdit *mm);
 	void updatedCell(int x,int y);
 	void showTransporters(bool state);
@@ -51,18 +80,8 @@ signals:
 	void pressedButton(int,int,int);
 	void changedCoordinates(int,int);
 
-protected:
-	void drawContents(QPainter *p,int,int,int,int);
-	void contentsMousePressEvent(QMouseEvent *e);
-	void contentsMouseMoveEvent(QMouseEvent *e);
-
 private:
-	MapEdit *map;
-	Sprites *sprites;
-	Obj::Type object;
-	bool showtrans;
-	bool showsel;
-	int xtrans,ytrans;
+	MapGridWidget *mWidget;
 };
 
 #endif							// !MAPGRID_H
