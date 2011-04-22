@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		14-Jun-10					#
+#  Edit:		22-Apr-11					#
 #########################################################################
 
 project(krepton)
@@ -111,6 +111,7 @@ set(krepton_SRCS
 kde4_add_executable(krepton ${krepton_SRCS})
 target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS}
   ${KDE4_KDE3SUPPORT_LIBS} ${QT_QT3SUPPORT_LIBRARY})
+add_dependencies(krepton vcsversion)
 
 #########################################################################
 #									#
