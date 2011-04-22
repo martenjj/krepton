@@ -120,10 +120,10 @@ default:			pix = Pixmaps::Unknown;						break;
     Pixmaps::find(Pixmaps::Unplayed,true);
 
     wListBox->setToolTip(i18n("<qt>\
-<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\
+<table border=\"0\" cellspacing=\"4\" cellpadding=\"1\">\
 <tr><td><img src=\"pixmap_unplayed\"></td><td>First level, start here</td></tr>\
 <tr><td><img src=\"pixmap_playing\"></td><td>Level that was last played</td></tr>\
-<tr><td><img src=\"pixmap_started\"></td><td>A level that has been started, but not yet finished</td></tr>\
+<tr><td><img src=\"pixmap_started\"></td><td>Level that has been started, but not yet completed</td></tr>\
 <tr><td><img src=\"pixmap_finished\"></td><td>Level successfully completed</td></tr>\
 <tr><td><img src=\"pixmap_password\"></td><td>Level not started, a password is needed to play it</td></tr>\
 </table>"));
