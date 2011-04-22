@@ -22,14 +22,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <qlayout.h>
 #include <qlabel.h>
-#include <qlayout.h>
-//Added by qt3to4:
 #include <qgridlayout.h>
+#include <qlistwidget.h>
 
 #include <kpushbutton.h>
-#include <k3listbox.h>
 #include <kdialog.h>
 #include <klineedit.h>
 #include <knuminput.h>
@@ -44,55 +41,15 @@ DataEditor::DataEditor(QWidget* parent)
 {
     setWindowTitle("Edit Episode");
 
-    const int kmh = KDialog::marginHint();
-    const int ksh = KDialog::spacingHint();
-
     QGridLayout *l = new QGridLayout(this);
-
-    QLabel *transportLabel = new QLabel("&Transporters:",this);
-    l->addWidget(transportLabel,10,1,1,2,Qt::AlignLeft);
-
-    transportListBox = new K3ListBox(this);
-    l->addWidget(transportListBox,11,1,4,2);
-
-    removetransportPushButton = new KPushButton("Rem&ove",this);
-    l->addWidget(removetransportPushButton,11,6);
-
-    changetransportPushButton = new KPushButton("C&hange...",this);
-    l->addWidget(changetransportPushButton,13,4);
-
-    newtransportPushButton = new KPushButton("N&ew...",this);
-    l->addWidget(newtransportPushButton,11,4);
 
     QLabel *levelsLabel = new QLabel("&Levels:",this);
     l->addWidget(levelsLabel,1,1,1,2,Qt::AlignLeft);
 
-    passwordLineEdit = new KLineEdit(this);
-    passwordLineEdit->setMaxLength(20);
-    l->addWidget(passwordLineEdit,7,5,1,2,Qt::AlignLeft);
-
-    QLabel *passwordLabel = new QLabel("&Password:",this);
-    passwordLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-    l->addWidget(passwordLabel,7,4,Qt::AlignRight);
-
-    mapsListBox = new K3ListBox(this);
-    l->addWidget(mapsListBox,2,1,3,2);
-
-    timeSpinBox = new KIntSpinBox(this);
-    timeSpinBox->setMaximum( 999 );
-    timeSpinBox->setMinimum( 30 );
-    timeSpinBox->setSingleStep( 10 );
-    l->addWidget(timeSpinBox,7,2,Qt::AlignLeft);
-
-    QLabel *timeLabel = new QLabel("T&ime limit:",this);
-    timeLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
-    l->addWidget(timeLabel,7,1,Qt::AlignRight);
-
-    leveldownPushButton = new KPushButton("Move Do&wn",this);
-    l->addWidget(leveldownPushButton,4,6);
-
-    levelupPushButton = new KPushButton("Move &Up",this);
-    l->addWidget(levelupPushButton,4,4);
+    mapsListBox = new QListWidget(this);
+    mapsListBox->setSelectionMode(QAbstractItemView::SingleSelection);
+    levelsLabel->setBuddy(mapsListBox);
+    l->addWidget(mapsListBox,2,1,6,2);
 
     newlevelPushButton = new KPushButton("&New...",this);
     l->addWidget(newlevelPushButton,2,4);
@@ -100,26 +57,54 @@ DataEditor::DataEditor(QWidget* parent)
     removelevelPushButton = new KPushButton("&Remove",this);
     l->addWidget(removelevelPushButton,2,6);
 
-    levelsLabel->setBuddy(mapsListBox);
-    transportLabel->setBuddy(transportListBox);
-    passwordLabel->setBuddy(passwordLineEdit);
-    timeLabel->setBuddy(timeSpinBox);
+    levelupPushButton = new KPushButton("Move &Up",this);
+    l->addWidget(levelupPushButton,3,4);
 
-    l->setRowStretch(5,1);
-    l->setRowStretch(14,1);
+    leveldownPushButton = new KPushButton("Move Do&wn",this);
+    l->addWidget(leveldownPushButton,3,6);
+
+    l->setRowMinimumHeight(4,KDialog::marginHint());
+
+    QLabel *passwordLabel = new QLabel("&Password:",this);
+    passwordLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+    l->addWidget(passwordLabel,5,4,Qt::AlignRight);
+
+    passwordLineEdit = new KLineEdit(this);
+    passwordLineEdit->setMaxLength(20);
+    passwordLabel->setBuddy(passwordLineEdit);
+    l->addWidget(passwordLineEdit,5,5,1,2,Qt::AlignLeft);
+
+    QLabel *timeLabel = new QLabel("T&ime limit:",this);
+    timeLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
+    l->addWidget(timeLabel,6,4,Qt::AlignRight);
+
+    timeSpinBox = new KIntSpinBox(this);
+    timeSpinBox->setMaximum( 999 );
+    timeSpinBox->setMinimum( 30 );
+    timeSpinBox->setSingleStep( 10 );
+    timeLabel->setBuddy(timeSpinBox);
+    l->addWidget(timeSpinBox,6,5,1,2,Qt::AlignLeft);
+
+    l->setRowStretch(7,1);
+
+    QLabel *transportLabel = new QLabel("&Transporters:",this);
+    l->addWidget(transportLabel,10,1,1,2,Qt::AlignLeft);
+
+    transportListBox = new QListWidget(this);
+    transportListBox->setSelectionMode(QAbstractItemView::SingleSelection);
+    transportLabel->setBuddy(transportListBox);
+    l->addWidget(transportListBox,11,1,3,2);
+
+    newtransportPushButton = new KPushButton("N&ew...",this);
+    l->addWidget(newtransportPushButton,11,4);
+
+    removetransportPushButton = new KPushButton("Rem&ove",this);
+    l->addWidget(removetransportPushButton,11,6);
+
+    changetransportPushButton = new KPushButton("C&hange...",this);
+    l->addWidget(changetransportPushButton,12,4);
+
+    l->setRowStretch(13,1);
 
     l->setColumnStretch(7,1);
-
-    l->setRowMinimumHeight(0,ksh);
-    l->setRowMinimumHeight(3,ksh);
-    l->setRowMinimumHeight(6,ksh);
-    l->setRowMinimumHeight(8,ksh);
-    l->setRowMinimumHeight(9,kmh);
-    l->setRowMinimumHeight(10,ksh);
-    l->setRowMinimumHeight(12,ksh);
-    l->setRowMinimumHeight(15,ksh);
-
-    l->setColumnMinimumWidth(0,ksh);
-    l->setColumnMinimumWidth(3,ksh);
-    l->setColumnMinimumWidth(5,ksh);
 }

@@ -61,6 +61,8 @@ void MapEdit::transporterInsert(int ox,int oy,int dx,int dy)
 
 void MapEdit::transporterGet(int item,int *ox,int *oy,int *dx,int *dy)
 {
+	if (item>=transporters.size()) return;
+
 	const Transporter *t = transporters.at(item);
 
 	if (ox!=NULL) *ox = t->orig_x+1;

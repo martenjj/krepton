@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		15-Jun-10					#
+#  Edit:		22-Apr-11					#
 #########################################################################
 #									#
 #									#
@@ -17,13 +17,13 @@ message(STATUS "Configuring for KRepton version ${VERSION}")
 #									#
 #########################################################################
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
 
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
 include(MacroLibrary)
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS} )
+add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
 include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 
 #########################################################################

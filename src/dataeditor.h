@@ -26,15 +26,9 @@
 #define DATAEDITOR_H
 
 #include <qwidget.h>
-//Added by qt3to4:
 
-class Q3VBoxLayout;
-class Q3HBoxLayout;
-class Q3GridLayout;
-class K3ListBox;
-class Q3ListBoxItem;
+class QListWidget;
 class KPushButton;
-class QLabel;
 class KLineEdit;
 class KIntSpinBox;
 
@@ -45,20 +39,20 @@ class DataEditor : public QWidget
 public:
     DataEditor(QWidget* parent = NULL);
 
-    K3ListBox* mapsListBox;
-    K3ListBox* transportListBox;
+    QListWidget *mapsListBox;
+    QListWidget *transportListBox;
 
-    KPushButton* newlevelPushButton;
-    KPushButton* removelevelPushButton;
-    KPushButton* levelupPushButton;
-    KPushButton* leveldownPushButton;
+    KPushButton *newlevelPushButton;
+    KPushButton *removelevelPushButton;
+    KPushButton *levelupPushButton;
+    KPushButton *leveldownPushButton;
 
-    KIntSpinBox* timeSpinBox;
-    KLineEdit* passwordLineEdit;
+    KIntSpinBox *timeSpinBox;
+    KLineEdit *passwordLineEdit;
 
-    KPushButton* newtransportPushButton;
-    KPushButton* changetransportPushButton;
-    KPushButton* removetransportPushButton;
+    KPushButton *newtransportPushButton;
+    KPushButton *changetransportPushButton;
+    KPushButton *removetransportPushButton;
 };
 
 #endif							// DATAEDITOR_H

@@ -244,3 +244,9 @@ void MapGridWidget::setSprites(Sprites *ss)
 {
 	sprites = ss;
 }
+
+
+void MapGrid::update()
+{
+	mWidget->update();
+}

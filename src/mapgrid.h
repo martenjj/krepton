@@ -75,6 +75,7 @@ public:
 	void showTransporters(bool state);
 	void showSelectedTransporter(bool state);
 	void selectedTransporter(int i = -1);
+	void update();
 
 signals:
 	void pressedButton(int,int,int);

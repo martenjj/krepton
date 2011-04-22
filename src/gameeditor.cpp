@@ -22,9 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-//Added by qt3to4:
-#include <QMoveEvent>
-#include <QCloseEvent>
+#include <qlistwidget.h>
 
 #include <kmainwindow.h>
 #include <kmessagebox.h>
@@ -32,7 +30,6 @@
 #include <kstdaction.h>
 #include <kglobal.h>
 #include <kconfig.h>
-#include <k3listbox.h>
 #include <klineedit.h>
 #include <knuminput.h>
 #include <kpushbutton.h>
@@ -111,7 +108,7 @@ GameEditor::GameEditor(QWidget *parent)
 	setCentralWidget(mw);
 	tabs->setCurrentIndex(dataIndex);
 #endif
-	connect(view->mapsListBox,SIGNAL(selectionChanged()),
+	connect(view->mapsListBox,SIGNAL(itemSelectionChanged()),
 		this,SLOT(selectedMap()));
 	connect(view->passwordLineEdit,SIGNAL(textChanged(const QString&)),
 		this,SLOT(changedPassword(const QString&)));
@@ -127,7 +124,7 @@ GameEditor::GameEditor(QWidget *parent)
 	connect(view->leveldownPushButton,SIGNAL(clicked()),
 		this,SLOT(mapMoveDown()));
 
-	connect(view->transportListBox,SIGNAL(selectionChanged()),
+	connect(view->transportListBox,SIGNAL(itemSelectionChanged()),
 		this,SLOT(selectedTransporter()));
 	connect(view->newtransportPushButton,SIGNAL(clicked()),
 		this,SLOT(transporterInsert()));
@@ -181,29 +178,24 @@ void GameEditor::updateMapsList()
 {
 	kDebug();
 
-	view->mapsListBox->setAutoUpdate(false);
 	view->mapsListBox->clear();
-
 	for (MapEditList::const_iterator it = maps.constBegin();
 		it!=maps.constEnd(); ++it)
 	{
 		const MapEdit *m = (*it);
-		view->mapsListBox->insertItem(m->getPassword());
+		view->mapsListBox->addItem(m->getPassword());
         }
-	view->mapsListBox->setAutoUpdate(true);
 }
 
 
 void GameEditor::updateTransportersList(int item)
 {
-	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int level = view->mapsListBox->currentRow();
 	kDebug() << "level=" << level << " item=" << item;
 	if (level<0) return;
 	MapEdit *map = maps.at(level);
 
-	view->transportListBox->setAutoUpdate(false);
 	view->transportListBox->clear();
-
 	TransporterList tl = map->getTransportersList();
         for (TransporterList::const_iterator it = tl.constBegin();
 		it!=tl.constEnd(); ++it)
@@ -212,25 +204,24 @@ void GameEditor::updateTransportersList(int item)
 		QString s;
 		s.sprintf("%d,%d -> %d,%d",
 			  tr->orig_x+1,tr->orig_y+1,tr->dest_x+1,tr->dest_y+1);
-		view->transportListBox->insertItem(s);
+		view->transportListBox->addItem(s);
 	}
 
 	if (item<-1) item = view->transportListBox->count()-1;
 	if (item>=0)
 	{
-		view->transportListBox->setSelected(item,true);
-		view->transportListBox->centerCurrentItem();
+		view->transportListBox->setCurrentRow(item);
+                view->transportListBox->scrollToItem(view->transportListBox->currentItem());
 	}
 
 	selectedTransporter();
-	view->transportListBox->setAutoUpdate(true);
 	if (mapwin!=NULL) mapwin->updateChilds();	// if showing transporters
 }
 
 
 void GameEditor::selectedTransporter()
 {
-	int item = view->transportListBox->index(view->transportListBox->selectedItem());
+	int item = view->transportListBox->currentRow();
 	kDebug() << "item=" << item;
 
 	view->removetransportPushButton->setEnabled(item>=0);
@@ -282,8 +273,8 @@ void GameEditor::selectLevel(int level)
 	view->passwordLineEdit->blockSignals(true);
 	view->timeSpinBox->blockSignals(true);
 
-	view->mapsListBox->setSelected(level,true);
-	view->mapsListBox->centerCurrentItem();
+	view->mapsListBox->setCurrentRow(level);
+        view->mapsListBox->scrollToItem(view->mapsListBox->currentItem());
 	view->passwordLineEdit->setText(map->getPassword());
 	view->timeSpinBox->setValue(map->getSeconds());
 #ifdef EDITOR_3_WINDOWS
@@ -355,7 +346,7 @@ void GameEditor::mapInsert()
 	setModified();
 //TODO: need 'selectLevel' here?
 	updateMapsList();
-	view->mapsListBox->setSelected(maps.count()-1,true);
+	view->mapsListBox->setCurrentRow(maps.count()-1);
 	emit editMapsChange();
 }
 
@@ -370,9 +361,9 @@ void GameEditor::mapRemove()
 		return;
 	}
 
-	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int item = view->mapsListBox->currentRow();
 	QString msg = QString("Are you sure to remove the selected map #%1, '%2'?")
-		.arg(item+1).arg(view->mapsListBox->currentText());
+		.arg(item+1).arg(view->mapsListBox->currentItem()->text());
 	if (KMessageBox::warningContinueCancel(this,msg,QString::null,
 					       KGuiItem("&Remove"))==KMessageBox::Continue)
 	{
@@ -391,7 +382,7 @@ void GameEditor::mapMoveUp()
 {
 	kDebug();
 
-	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int item = view->mapsListBox->currentRow();
 	if (item<=0)					// shouldn't happen, GUI disables
 	{
 		KMessageBox::error(this,"Cannot move up the first level");
@@ -410,7 +401,7 @@ void GameEditor::mapMoveDown()
 {
 	kDebug();
 
-	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int item = view->mapsListBox->currentRow();
 	int last_item = maps.count()-1;
 	if (item>=last_item)				// shouldn't happen, GUI disables
 	{
@@ -430,7 +421,7 @@ void GameEditor::transporterInsert()
 {
 	kDebug();
 
-	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int selm = view->mapsListBox->currentRow();
 	if (selm<0) return;				// shouldn't happen, GUI disables
 	MapEdit *map = maps.at(selm);
 
@@ -451,8 +442,8 @@ void GameEditor::transporterChange()
 {
 	kDebug();
 
-	int item = view->transportListBox->index(view->transportListBox->selectedItem());
-	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int item = view->transportListBox->currentRow();
+	int selm = view->mapsListBox->currentRow();
 	if (selm<0) return;				// shouldn't happen, GUI disables
 	MapEdit *map = maps.at(selm);
 
@@ -475,7 +466,7 @@ void GameEditor::transporterRemove()
 {
 	kDebug();
 
-	int selm = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int selm = view->mapsListBox->currentRow();
 	if (selm<0) return;				// shouldn't happen, GUI disables
 	MapEdit *map = maps.at(selm);
 
@@ -485,7 +476,7 @@ void GameEditor::transporterRemove()
 		return;
 	}
 
-	int item = view->transportListBox->index(view->transportListBox->selectedItem());
+	int item = view->transportListBox->currentRow();
 	QString msg = QString("Are you sure to remove the selected transporter #%1?").arg(item+1);
 
 	if (KMessageBox::warningContinueCancel(this,msg,QString::null,
@@ -501,29 +492,28 @@ void GameEditor::transporterRemove()
 
 void GameEditor::selectedMap()
 {
-	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	if (view->mapsListBox->selectedItems().count()==0) return;
+	int level = view->mapsListBox->currentRow();
 	if (level>=0) selectLevel(level);
 }
 
 
 void GameEditor::changedPassword(const QString &s)
 {
-	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int level = view->mapsListBox->currentRow();
 	if (level<0) return;
 
 	maps.at(level)->changePassword(s.toLocal8Bit());
 	setModified();
 
-	view->mapsListBox->setAutoUpdate(false);
-	view->mapsListBox->changeItem(s,level);
-	view->mapsListBox->setSelected(level,true);
-	view->mapsListBox->setAutoUpdate(true);
+	view->mapsListBox->item(level)->setText(s);
+	view->mapsListBox->setCurrentRow(level);
 }
 
 
 void GameEditor::changedTime(int i)
 {
-	int level = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int level = view->mapsListBox->currentRow();
 	if (level<0) return;
 
 	maps.at(level)->changeTime(i);
@@ -598,7 +588,7 @@ void GameEditor::showLevelEditor(bool show)
 #endif
 	}
 
-	int item = view->mapsListBox->index(view->mapsListBox->selectedItem());
+	int item = view->mapsListBox->currentRow();
 	kDebug() << "sel=" << item;
 	mapwin->setMap(item<0 ? NULL : maps.at(item));
 
@@ -701,7 +691,6 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	selectLevel(-1);
 	updateMapsList();
 	updateCaption();
-//	if (doshow) show();
 
 	if (spritewin!=NULL) spritewin->updateChilds();
 	if (mapwin!=NULL) mapwin->updateChilds();

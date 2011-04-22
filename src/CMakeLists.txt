@@ -65,6 +65,7 @@ endif (SOUND_TYPE STREQUAL "kaudioplayer")
 
 add_definitions(-DVERSION=\\"${VERSION}\\")
 add_definitions(-DQT3_SUPPORT=1)
+add_definitions(-DQT_STRICT_ITERATORS=1)
 
 #########################################################################
 #									#
