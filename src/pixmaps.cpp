@@ -22,15 +22,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <kdebug.h>
-#include <kstandarddirs.h>
+#include "pixmaps.h"
 
 #include <qpixmap.h>
 #include <qbitmap.h>
 #include <qpixmapcache.h>
-#include <Q3MimeSourceFactory>
 
-#include "pixmaps.h"
+#include <kdebug.h>
+#include <kstandarddirs.h>
+
+
+const QString Pixmaps::path(const char *key)
+{
+	return (KGlobal::dirs()->findResource("graphics",(QString(key)+".png")));
+}
 
 
 //  Need to pass round and return pixmaps as value here (this is efficient),
@@ -43,7 +48,7 @@ const QPixmap getPixmap(const char *key)
 
 	if (QPixmapCache::find(key,pm)) return (pm);
 
-	if (!pm.load(KGlobal::dirs()->findResource("graphics",(QString(key)+".png"))))
+	if (!pm.load(Pixmaps::path(key)))
         {
 		kDebug() << "cannot load pixmap" << QString(key);
 		pm = QPixmap(16,16); pm.fill(Qt::red);
@@ -55,7 +60,7 @@ const QPixmap getPixmap(const char *key)
 }
 
 
-const QPixmap Pixmaps::find(Pixmaps::type p,bool setMimeSource)
+const QPixmap Pixmaps::find(Pixmaps::type p)
 {
 	const char *key;
 	switch (p)
@@ -74,11 +79,6 @@ default:	key = "unknown";	break;
 	}
 
         QPixmap pm = getPixmap(key);
-        if (setMimeSource)				// set for labels/tooltips
-        {
-// for porting see http://lists.trolltech.com/qt-interest/2007-07/thread00818-0.html
-            Q3MimeSourceFactory::defaultFactory()->setPixmap(QString("pixmap_")+key,pm);
-        }
         return (pm);
 }
 

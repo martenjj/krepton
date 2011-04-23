@@ -22,7 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <klocale.h>
+#include "selectleveldialog.h"
+#include "selectleveldialog.moc"
 
 #include <qlistwidget.h>
 #include <qlineedit.h>
@@ -30,13 +31,24 @@
 #include <qgridlayout.h>
 #include <qtooltip.h>
 
+#include <klocale.h>
+#include <kstandarddirs.h>
+
 #include "krepton.h"
 
 #include "gameplayer.h"
 #include "pixmaps.h"
 
-#include "selectleveldialog.h"
-#include "selectleveldialog.moc"
+
+const QString tableRow(const char *imageKey, const QString &text)
+{
+	QString res = "<tr><td><img src=\"";
+	res += Pixmaps::path(imageKey);
+	res += "\"></td><td>";
+        res += text;
+        res += "</td></tr>";
+        return (res);
+}
 
 
 SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &msg,
@@ -111,20 +123,14 @@ default:			pix = Pixmaps::Unknown;						break;
     connect(wListBox,SIGNAL(itemDoubleClicked(QListWidgetItem *)),SLOT(accept()));
     connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotCheckButtonOk()));
 
-    Pixmaps::find(Pixmaps::Finished,true);		// set MIME source, see docs for
-    Pixmaps::find(Pixmaps::Password,true);		// QMimeSourceFactory
-    Pixmaps::find(Pixmaps::Playing,true);
-    Pixmaps::find(Pixmaps::Started,true);
-    Pixmaps::find(Pixmaps::Unplayed,true);
-
-    wListBox->setToolTip(i18n("<qt>\
-<table border=\"0\" cellspacing=\"4\" cellpadding=\"1\">\
-<tr><td><img src=\"pixmap_unplayed\"></td><td>First level, start here</td></tr>\
-<tr><td><img src=\"pixmap_playing\"></td><td>Level that was last played</td></tr>\
-<tr><td><img src=\"pixmap_started\"></td><td>Level that has been started, but not yet completed</td></tr>\
-<tr><td><img src=\"pixmap_finished\"></td><td>Level successfully completed</td></tr>\
-<tr><td><img src=\"pixmap_password\"></td><td>Level not started, a password is needed to play it</td></tr>\
-</table>"));
+    QString tt = "<qt><table border=\"0\" cellspacing=\"4\" cellpadding=\"1\">";
+    tt += tableRow("unplayed",i18n("First level, start here"));
+    tt += tableRow("playing",i18n("Level that was last played"));
+    tt += tableRow("started",i18n("Level that has been started, but not yet completed"));
+    tt += tableRow("finished",i18n("Level successfully completed"));
+    tt += tableRow("password",i18n("Level not started, a password is needed to play it"));
+    tt += "</table>";
+    wListBox->setToolTip(tt);
 
     slotSelectionChanged();
 }
