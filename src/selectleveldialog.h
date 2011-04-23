@@ -34,8 +34,7 @@
 #include "gameplayer.h"
 
 
-class Q3ListBox;
-class Q3ListBoxItem;
+class QListWidget;
 class QLineEdit;
 
 
@@ -50,13 +49,12 @@ public:
     QByteArray selectedPassword();
 
 protected slots:
-    void slotItemSelected(Q3ListBoxItem *item);
-    void slotPasswdChanged();
+    void slotSelectionChanged();
+    void slotCheckButtonOk();
 
 private:
-    void checkButtonOk();
 
-    Q3ListBox *wListBox;
+    QListWidget *wListBox;
     QLineEdit *wPasswdEdit;
 
     QVector<GamePlayer::State> mLevelStates;

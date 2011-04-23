@@ -24,12 +24,10 @@
 
 #include <klocale.h>
 
-#include <q3listbox.h>
+#include <qlistwidget.h>
 #include <qlineedit.h>
 #include <qlabel.h>
-#include <q3vbox.h>
-#include <qlayout.h>
-#include <q3hbox.h>
+#include <qgridlayout.h>
 #include <qtooltip.h>
 
 #include "krepton.h"
@@ -52,31 +50,32 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
     setModal(true);
     showButtonSeparator(true);
 
-    Q3VBox *vb = new Q3VBox(this);
-    setMainWidget(vb);
-    vb->setMargin(KDialog::marginHint());
-    vb->setSpacing(KDialog::spacingHint());
+    QWidget *mw = new QWidget(this);
+    QGridLayout *gl = new QGridLayout(mw);
 
-    (void) new QLabel(msg,vb);
-    (void) new QWidget(vb);
+    QLabel *l = new QLabel(msg,mw);
+    gl->addWidget(l,0,0,1,2);
 
-    wListBox = new Q3ListBox(vb);
-    wListBox->setSelectionMode(Q3ListBox::Single);
+    gl->setRowMinimumHeight(1,KDialog::spacingHint());
+
+    wListBox = new QListWidget(mw);
+    wListBox->setSelectionMode(QAbstractItemView::SingleSelection);
     wListBox->setMinimumSize(280,160);
-    vb->setStretchFactor(wListBox,1);
+    gl->addWidget(wListBox,2,0,1,2);
+    gl->setRowStretch(2,1);
 
-    Q3HBox *hb = new Q3HBox(vb);
-    hb->setSpacing(KDialog::spacingHint());
+    l = new QLabel(i18n("Password:"),mw);
+    gl->addWidget(l,3,0,Qt::AlignRight);
 
-    QLabel *l = new QLabel(i18n("Password:"),hb);
-
-    wPasswdEdit = new QLineEdit(hb);
+    wPasswdEdit = new QLineEdit(mw);
     wPasswdEdit->setEchoMode(QLineEdit::Password);
-    hb->setStretchFactor(wPasswdEdit,1);
+    gl->addWidget(wPasswdEdit,3,1);
+    gl->setColumnStretch(1,1);
     l->setBuddy(wPasswdEdit);
 
-    mLevelStates.resize(levels.count());
+    setMainWidget(mw);
 
+    mLevelStates.resize(levels.count());
     int toSelect = -1;
     for (QStringList::const_iterator it = levels.begin(); it!=levels.end(); ++it)
     {
@@ -99,19 +98,18 @@ default:			pix = Pixmaps::Unknown;						break;
         if (state==GamePlayer::Unplayed && level>0) pwd = QString::null;
         QString txt = QString("  %1: %2").arg(1+level).arg(pwd);
 
-        wListBox->insertItem(Pixmaps::find(pix),txt);
+        wListBox->addItem(new QListWidgetItem(Pixmaps::find(pix),txt));
         if (playing) toSelect = wListBox->count()-1;
         else if (toSelect<0 && state==GamePlayer::Started) toSelect = wListBox->count()-1;
         mLevelStates[level] = state;
     }
 
     if (toSelect<0) toSelect = 0;
-    wListBox->setSelected(toSelect,true);
+    wListBox->setCurrentRow(toSelect);
 
-    connect(wListBox,SIGNAL(selectionChanged(Q3ListBoxItem *)),SLOT(slotItemSelected(Q3ListBoxItem *)));
-    connect(wListBox,SIGNAL(returnPressed(Q3ListBoxItem *)),SLOT(slotOk()));
-    connect(wListBox,SIGNAL(doubleClicked(Q3ListBoxItem *)),SLOT(slotOk()));
-    connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotPasswdChanged()));
+    connect(wListBox,SIGNAL(itemSelectionChanged()),SLOT(slotSelectionChanged()));
+    connect(wListBox,SIGNAL(itemDoubleClicked(QListWidgetItem *)),SLOT(accept()));
+    connect(wPasswdEdit,SIGNAL(textChanged(const QString &)),SLOT(slotCheckButtonOk()));
 
     Pixmaps::find(Pixmaps::Finished,true);		// set MIME source, see docs for
     Pixmaps::find(Pixmaps::Password,true);		// QMimeSourceFactory
@@ -128,23 +126,23 @@ default:			pix = Pixmaps::Unknown;						break;
 <tr><td><img src=\"pixmap_password\"></td><td>Level not started, a password is needed to play it</td></tr>\
 </table>"));
 
-    slotItemSelected(wListBox->selectedItem());
+    slotSelectionChanged();
 }
 
 
-void SelectLevelDialog::checkButtonOk()
+void SelectLevelDialog::slotCheckButtonOk()
 {
-    enableButtonOk(wListBox->selectedItem()!=NULL &&
+    enableButtonOk(wListBox->selectedItems().count()!=0 &&
                    (!wPasswdEdit->isEnabled() || wPasswdEdit->text().length()>0));
 }
 
 
-void SelectLevelDialog::slotItemSelected(Q3ListBoxItem *item)
+void SelectLevelDialog::slotSelectionChanged()
 {
+    const QListWidgetItem *item = wListBox->currentItem();
     if (item!=NULL)
     {
         int level = item->text().section(':',0,0).toInt()-1;
-        //kdDebug() << k_funcinfo << "level " << level << endl;
 
         bool passwdState = (level>0 && mLevelStates[level]==GamePlayer::Unplayed);
         wPasswdEdit->setEnabled(passwdState);
@@ -152,22 +150,16 @@ void SelectLevelDialog::slotItemSelected(Q3ListBoxItem *item)
     }
     else wPasswdEdit->setEnabled(false);
 
-    checkButtonOk();
-}
-
-
-void SelectLevelDialog::slotPasswdChanged()
-{
-    checkButtonOk();
+    slotCheckButtonOk();
 }
 
 
 QByteArray SelectLevelDialog::selectedPassword()
 {
-    Q3ListBoxItem *cur = wListBox->selectedItem();
-    if (cur==NULL) return (NULL);
+    const QListWidgetItem *item = wListBox->currentItem();
+    if (item==NULL) return (NULL);
 
-    QByteArray pass = cur->text().section(": ",1).toLocal8Bit();
+    QByteArray pass = item->text().section(": ",1).toLocal8Bit();
     if (pass.isEmpty()) pass = wPasswdEdit->text().toLocal8Bit();
     return (pass);
 }
