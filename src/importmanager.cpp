@@ -30,7 +30,6 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
-#include <q3listbox.h>
 #include <qwidget.h>
 #include <qfile.h>
 #include <qfileinfo.h>
