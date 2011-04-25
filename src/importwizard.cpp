@@ -21,6 +21,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "importwizard.h"
+#include "importwizard.moc"
+
+#include <qlabel.h>
+#include <qlayout.h>
+#include <qlistwidget.h>
+#include <qlineedit.h>
+#include <qwidget.h>
+#include <qfile.h>
+#include <qfileinfo.h>
+#include <qcheckbox.h>
+#include <qcursor.h>
+#include <qscrollbar.h>
+
 #include <kdebug.h>
 #include <kglobal.h>
 #include <klocale.h>
@@ -28,27 +42,11 @@
 #include <kconfiggroup.h>
 #include <kurlrequester.h>
 #include <kfiledialog.h>
-#include <kactivelabel.h>
 #include <ktextedit.h>
-
-#include <qlabel.h>
-#include <qlayout.h>
-#include <q3listbox.h>
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qfile.h>
-#include <qfileinfo.h>
-#include <qcheckbox.h>
-#include <qcursor.h>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
 
 #include "episodes.h"
 #include "importmanager.h"
 #include "importerbase.h"
-
-#include "importwizard.h"
-#include "importwizard.moc"
 
 //////////////////////////////////////////////////////////////////////////
 //									//
@@ -166,6 +164,7 @@ void ImportWizard::showPage(QWidget *page)
 			t += i18n("<dt>New episode name:<dd><b>%1</b>", page3name->text());
                         t += "</dl>";
                         page4disp->setText(t);
+			//setButtonText(KDialog::User2,i18n("Import"));
                 }
         }
         else if (page==page5)
@@ -279,30 +278,37 @@ void ImportWizard::setupPage1()
 
 	QHBoxLayout *l = new QHBoxLayout(page1);
 
-	page1list = new Q3ListBox(page1);
-	page1list->setSelectionMode(Q3ListBox::Single);
-	page1list->setHScrollBarMode(Q3ScrollView::AlwaysOff);
-	page1list->setVScrollBarMode(Q3ScrollView::AlwaysOn);
+	page1list = new QListWidget(page1);
+	page1list->setSelectionMode(QAbstractItemView::SingleSelection);
+	page1list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	page1list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	page1list->setMinimumHeight(80);
-	connect(page1list,SIGNAL(selectionChanged()),this,SLOT(slotPage1FormatSelected()));
+	connect(page1list,SIGNAL(itemSelectionChanged()),this,SLOT(slotPage1FormatSelected()));
 	l->addWidget(page1list);
 
         const ImportManager::FormatList *fmts = manager->allInfo();
 
+        int maxlen = 0;
 	for (ImportManager::FormatList::const_iterator it = fmts->constBegin();
 		it!=fmts->constEnd(); ++it)
 	{
 		const ImportManager::formatInfo *fmt = (*it);
 		QString s = fmt->name;
-		page1list->insertItem(s);
+
+                QFontMetrics fm = page1list->fontMetrics();
+                int thislen = fm.width(s);
+                if (thislen>maxlen) maxlen = thislen;
+
+		page1list->addItem(s);
 	}
 
-	page1list->setMinimumWidth(page1list->maxItemWidth()+page1list->verticalScrollBar()->width()+20);
+	page1list->setFixedWidth(maxlen+page1list->verticalScrollBar()->width()+20);
 
 	page1info = new QLabel(page1text+"<p>"+i18n("Select a format for more information about it."),page1);
         page1info->setWordWrap(true);
         page1info->setOpenExternalLinks(true);
 	l->addWidget(page1info,1, Qt::AlignTop);
+        l->setStretchFactor(page1info,1);
 
 	page1->setMinimumHeight(240);
 	addPage(page1,page1caption);
@@ -314,7 +320,7 @@ void ImportWizard::slotPage1FormatSelected()
 {
     QString t = page1text;
 
-    Q3ListBoxItem *item = page1list->selectedItem();
+    QListWidgetItem *item = page1list->currentItem();
     QString fmtName = (item==NULL ? QString::null : item->text());
 
     format = manager->findNamed(fmtName);

@@ -27,19 +27,16 @@
 #include <k3wizard.h>
 
 #include "importmanager.h"
-//Added by qt3to4:
-//#include <Q3GridLayout>
-#include <QLabel>
 
 
-class QWidget;
-class Q3ListBox;
+class QListWidget;
 class QLineEdit;
 class QLabel;
 class QCheckBox;
-class Q3GridLayout;
+
 class KUrlRequester;
 class KTextEdit;
+
 
 class ImportWizard : public K3Wizard
 {
@@ -67,7 +64,7 @@ private:
 
 	void setupPage1();
 	QWidget *page1;
-	Q3ListBox *page1list;
+	QListWidget *page1list;
 	QLabel *page1info;
 
 	void setupPage2();
