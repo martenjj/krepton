@@ -37,6 +37,7 @@
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qregexp.h>
+#include <qalgorithms.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -215,7 +216,16 @@ QString Episode::savePath(const QString &name)
 }
 
 
+bool episodeLessThan(const Episode *item1,const Episode *item2)
+{
+	const QString n1 = item1->getName();
+	const QString n2 = item2->getName();
+	//kDebug() << n1 << "-" << n2;
 
+	if (n1=="blank") return (false);		// always force to end
+	if (n2=="blank") return (true);
+	return (n1.toLower()<n2.toLower());
+}
 
 
 EpisodeList::EpisodeList()
@@ -290,9 +300,7 @@ EpisodeList::EpisodeList()
                 KMessageBox::error(NULL, msg);
 	}
 
-// TODO: data type needs to have a comparison operator,
-// see http://doc.trolltech.com/4.7/qtalgorithms.html#qSort
-//	qSort(begin(),end());
+	qSort(begin(),end(),&episodeLessThan);		// alphabetical by names
 	kDebug() << "done";
 }
 
@@ -322,9 +330,9 @@ const Episode *EpisodeList::find(const QString &name)
 void EpisodeList::add(const Episode *e)
 {
 	kDebug() << "name='" << e->getName() << "'";
-// TODO: insert in sorted order
-//	if (findRef(e)==-1) inSort(e);
+
         append(e);
+	qSort(begin(),end(),&episodeLessThan);		// resort after insertion
 }
 
 
@@ -351,16 +359,3 @@ bool EpisodeList::any() const
 {
 	return (count()>0);
 }
-
-
-// TODO: see constructor
-//int EpisodeList::compareItems(Q3PtrCollection::Item item1,Q3PtrCollection::Item item2)
-//{
-//	const QString n1 = static_cast<const Episode *>(item1)->getName();
-//	const QString n2 = static_cast<const Episode *>(item2)->getName();
-////	kDebug() << "1='" << n1 << "' 2='" << n2 << "'";
-//
-//	if (n1=="blank") return (+1);			// always force to end
-//	if (n2=="blank") return (-1);
-//	return (QString::compare(n1, n2, Qt::CaseInsensitive));
-//}
