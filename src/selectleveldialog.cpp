@@ -61,6 +61,7 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
     setDefaultButton(KDialog::Ok);
     setModal(true);
     showButtonSeparator(true);
+    setButtonText(KDialog::Ok,i18n("Play"));
 
     QWidget *mw = new QWidget(this);
     QGridLayout *gl = new QGridLayout(mw);
