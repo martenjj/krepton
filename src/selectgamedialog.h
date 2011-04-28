@@ -31,8 +31,8 @@
 #include "episodes.h"
 
 
-class Q3IconView;
-class Q3IconViewItem;
+class QListWidget;
+class QListWidgetItem;
 
 
 class SelectGameDialog : public KDialog
@@ -50,14 +50,14 @@ public slots:
 
 protected slots:
     void slotSelectionChanged();
-    void slotExecuted(Q3IconViewItem *item);
+    void slotExecuted(QListWidgetItem *item);
     void timerTick();
 
 private:
-    Q3IconView *wEpisodeIconView;
+    QListWidget *wEpisodeIconView;
 
     QTimer *icontimer;
-    unsigned int nexticon;
+    int nexticon;
     EpisodeList *episodes;
 };
 

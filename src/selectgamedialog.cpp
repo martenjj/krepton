@@ -22,17 +22,16 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <q3iconview.h>
+#include "selectgamedialog.h"
+#include "selectgamedialog.moc"
+
+#include <qlistwidget.h>
 #include <qtimer.h>
-#include <q3vbox.h>
-#include <QPixmap>
+#include <qpixmap.h>
 
 #include "krepton.h"
 #include "episodes.h"
 #include "sprites.h"
-
-#include "selectgamedialog.h"
-#include "selectgamedialog.moc"
 
 
 SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool useronly)
@@ -45,45 +44,38 @@ SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool us
     setModal(true);
     showButtonSeparator(true);
 
-    Q3VBox *vb = new Q3VBox(this);
-    setMainWidget(vb);
-    vb->setMargin(KDialog::marginHint());
-    vb->setSpacing(KDialog::spacingHint());
+    wEpisodeIconView = new QListWidget(this);
+    setMainWidget(wEpisodeIconView);
 
-    wEpisodeIconView = new Q3IconView(vb);
     wEpisodeIconView->clear();
-    wEpisodeIconView->setItemsMovable(false);
-    wEpisodeIconView->setAutoArrange(true);
-    wEpisodeIconView->setResizeMode(Q3IconView::Adjust);
+    wEpisodeIconView->setViewMode(QListView::IconMode);
+    wEpisodeIconView->setMovement(QListView::Static);
+    //wEpisodeIconView->setUniformItemSizes(true);
+    wEpisodeIconView->setResizeMode(QListView::Adjust);
     wEpisodeIconView->setSpacing(10);
-    wEpisodeIconView->setGridX(70);
-    wEpisodeIconView->setGridY(50);
-    wEpisodeIconView->setMaxItemTextLength(10);
-    wEpisodeIconView->setWordWrapIconText(false);
-    wEpisodeIconView->arrangeItemsInGrid(true);
-    wEpisodeIconView->setMinimumSize(200,140);
+    wEpisodeIconView->setGridSize(QSize(75,60));
+    wEpisodeIconView->setMinimumSize(340,240);
 
     episodes = EpisodeList::list();
     for (EpisodeList::const_iterator it = episodes->constBegin();
          it!=episodes->constEnd(); ++it)
     {
         const Episode *e = (*it);
-        Q3IconViewItem *ic = new Q3IconViewItem(wEpisodeIconView,e->getName());
-        if (useronly && e->isGlobal()) ic->setSelectable(false);
+        QListWidgetItem *item = new QListWidgetItem(KIcon("folder-grey"),e->getName());
+        if (useronly && e->isGlobal()) item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+        wEpisodeIconView->addItem(item);
     }
 
-    connect(wEpisodeIconView,SIGNAL(selectionChanged()),
+    connect(wEpisodeIconView,SIGNAL(itemSelectionChanged()),
             this,SLOT(slotSelectionChanged()));
-    connect(wEpisodeIconView,SIGNAL(doubleClicked(Q3IconViewItem *)),
-            this,SLOT(slotExecuted(Q3IconViewItem *)));
+    connect(wEpisodeIconView,SIGNAL(itemDoubleClicked(QListWidgetItem *)),
+            this,SLOT(slotExecuted(QListWidgetItem *)));
 
     nexticon = 0;
-    // TODO: icontimer is never deleted, do in destructor?
     icontimer = new QTimer(this);
     connect(icontimer,SIGNAL(timeout()),this,SLOT(timerTick()));
     icontimer->start(50);
 
-    resize(410,330);
     slotSelectionChanged();
 }
 
@@ -97,30 +89,29 @@ SelectGameDialog::~SelectGameDialog()
 int SelectGameDialog::exec()
 {
     int status = QDialog::exec();
-    icontimer->stop();					// ensure stopped immediately
+    icontimer->stop();					// ensure stopped on close
     return (status);
 }
 
 
 void SelectGameDialog::slotSelectionChanged()
 {
-    const Q3IconViewItem *sel = wEpisodeIconView->currentItem();
+    const QListWidgetItem *sel = wEpisodeIconView->currentItem();
     enableButtonOk(sel!=NULL && sel->isSelected());
 }
 
 
 const Episode *SelectGameDialog::selectedItem()
 {
-    const Q3IconViewItem *sel = wEpisodeIconView->currentItem();
+    const QListWidgetItem *sel = wEpisodeIconView->currentItem();
     if (sel==NULL) return (NULL);
-    return (episodes->at(wEpisodeIconView->index(sel)));
+    return (episodes->at(wEpisodeIconView->row(sel)));
 }
 
 
-void SelectGameDialog::slotExecuted(Q3IconViewItem *item)
+void SelectGameDialog::slotExecuted(QListWidgetItem *item)
 {
-// TODO: port
-//    slotOk();
+    accept();
 }
 
 
@@ -132,15 +123,18 @@ void SelectGameDialog::timerTick()
         return;
     }
 
-    Q3IconViewItem *it;
-    int i = nexticon;
-    for (it = wEpisodeIconView->firstItem();
-         i>0 && it!=NULL; it = it->nextItem()) --i;
-
-    if (it!=NULL && it->isSelectable())
+    for (;;)
     {
-        QPixmap p = Sprites::preview(episodes->at(nexticon));
-        if (!p.isNull()) it->setPixmap(p);
+        QListWidgetItem *item = wEpisodeIconView->item(nexticon);
+        ++nexticon;
+        if (item==NULL) break;
+
+        if (item->flags() & Qt::ItemIsEnabled)
+        {
+            QPixmap p = Sprites::preview(episodes->at(nexticon-1));
+            if (!p.isNull()) item->setIcon(p);
+            break;
+        }
     }
-    ++nexticon;
 }
+
