@@ -24,7 +24,7 @@
 #ifndef IMPORTWIZARD_H
 #define IMPORTWIZARD_H
 
-#include <k3wizard.h>
+#include <kassistantdialog.h>
 
 #include "importmanager.h"
 
@@ -38,7 +38,7 @@ class KUrlRequester;
 class KTextEdit;
 
 
-class ImportWizard : public K3Wizard
+class ImportWizard : public KAssistantDialog
 {
 	Q_OBJECT
 
@@ -48,10 +48,10 @@ public:
 	QString newEpisodeToLoad() const;
 
 protected:
-	void showPage(QWidget *page);
 	void next();
 
 protected slots:
+	void slotShowPage(KPageWidgetItem *page);
 	void slotPage1FormatSelected();
 	void slotPage2SourceSelected();
 	void slotPage3NameChanged();
@@ -63,26 +63,26 @@ private:
 	bool importedOk;
 
 	void setupPage1();
-	QWidget *page1;
+	KPageWidgetItem *page1;
 	QListWidget *page1list;
 	QLabel *page1info;
 
 	void setupPage2();
-	QWidget *page2;
+	KPageWidgetItem *page2;
 	QLabel *page2info;
 	KUrlRequester *page2source;
 
 	void setupPage3();
-	QWidget *page3;
+	KPageWidgetItem *page3;
 	QLineEdit *page3name;
 	QCheckBox *page3over;
 
 	void setupPage4();
-	QWidget *page4;
+	KPageWidgetItem *page4;
 	KTextEdit *page4disp;
 
 	void setupPage5();
-	QWidget *page5;
+	KPageWidgetItem *page5;
 	KTextEdit *page5disp;
 	QCheckBox *page5load;
 };
