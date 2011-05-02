@@ -68,29 +68,35 @@ void SpriteGrid::paintEvent(QPaintEvent *ev)
 }
 
 
-void SpriteGrid::mousePressEvent(QMouseEvent *e)
+void SpriteGrid::mousePressEvent(QMouseEvent *ev)
 {
-	if (e->button()==Qt::LeftButton || e->button()==Qt::RightButton)
+	if (ev->button()==Qt::LeftButton || ev->button()==Qt::RightButton)
 	{
-		if (e->x()<border || e->x()>(width()-border) ||
-		    e->y()<border || e->y()>(height()-border)) return;
+		if (ev->x()<border || ev->x()>(width()-border) ||
+		    ev->y()<border || ev->y()>(height()-border)) return;
 
-		int x = (e->x()-border)/previewscale;
-		int y = (e->y()-border)/previewscale;
-		emit pressedButton(e->button(),x,y);
+		int x = (ev->x()-border)/previewscale;
+		int y = (ev->y()-border)/previewscale;
+		emit pressedButton(ev->button(),x,y);
 	}
 }
 
 
-void SpriteGrid::mouseMoveEvent(QMouseEvent *e)
+void SpriteGrid::mouseMoveEvent(QMouseEvent *ev)
 {
-	if (e->x()<border || e->x()>(width()-border) ||
-	    e->y()<border || e->y()>(height()-border)) return;
+	if (ev->x()<border || ev->x()>(width()-border) ||
+	    ev->y()<border || ev->y()>(height()-border)) return;
 
-	int x = (e->x()-border)/previewscale;
-	int y = (e->y()-border)/previewscale;
+	int x = (ev->x()-border)/previewscale;
+	int y = (ev->y()-border)/previewscale;
 
-	int b = e->buttons() & (Qt::LeftButton|Qt::RightButton);
+	int b = ev->buttons() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x, y);
+}
+
+
+void SpriteGrid::leaveEvent(QEvent *ev)
+{
+	emit changedCoordinates(-1,-1);
 }

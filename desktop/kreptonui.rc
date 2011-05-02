@@ -1,11 +1,12 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="krepton" version="400">
+<kpartgui name="krepton" version="401">
 <MenuBar>
 
 	<Menu name="file" noMerge="1"><text>&amp;File</text>
 		<Action name="file_open"/>
 		<Separator lineSeparator="true"/>
 
+		<Action name="edit_edit"/>
 		<Action name="file_save"/>
 		<Action name="file_save_as"/>
 		<Action name="file_remove"/>
@@ -30,19 +31,6 @@
 		<Action name="game_suicide"/>
 	</Menu>
 
-	<Menu name="editor" noMerge="1"><text>&amp;Editor</text>
-		<Action name="edit_edit"/>
-		<Separator lineSeparator="true"/>
-
-		<Action name="edit_check"/>
-		<Separator lineSeparator="true"/>
-
-		<Action name="window_spriteeditor"/>
-		<Action name="window_leveleditor"/>
-		<Action name="window_dataeditor"/>
-		<Action name="window_realign"/>
-	</Menu>
-
 	<Menu name="settings">
 		<Action name="settings_loadsprites"/>
 		<Separator lineSeparator="true"/>
@@ -52,7 +40,6 @@
 		<Separator lineSeparator="true"/>
 
 		<Action name="settings_check"/>
-		<Action name="settings_align"/>
 	</Menu>
 
 </MenuBar>

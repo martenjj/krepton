@@ -50,8 +50,9 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent *ev);
-	void mousePressEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
+	void mousePressEvent(QMouseEvent *ev);
+	void mouseMoveEvent(QMouseEvent *ev);
+	void leaveEvent(QEvent *ev);
 
 private:
 	Sprites *sprites;

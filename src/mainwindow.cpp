@@ -43,11 +43,7 @@
 
 #include <qdir.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QLabel>
 #include <qbytearray.h>
-#include <QPixmap>
-#include <QCloseEvent>
 
 #include "krepton.h"
 #include "pixmaps.h"
@@ -149,46 +145,9 @@ MainWindow::MainWindow(QWidget *parent)
         connect(removeAction, SIGNAL(triggered()), SLOT(slotRemove()));
         actionCollection()->addAction("file_remove", removeAction);
 
-        checkAction = new KAction(i18n("Check Consistency"), this);
-        checkAction->setShortcut(Qt::Key_F10);
-        connect(checkAction, SIGNAL(triggered()), SLOT(slotStrictCheck()));
-        actionCollection()->addAction("edit_check", checkAction);
-
         strictToggle = new KToggleAction(i18n("Check Consistency Before Saving"), this);
         actionCollection()->addAction("settings_check", strictToggle);
 
-#ifdef EDITOR_3_WINDOWS
-	alignToggle = new KToggleAction(i18n("Align Editor Windows"),0,
-					 this,SLOT(slotAlignChanged()),
-					 actionCollection(),"settings_align");
-
-	spriteToggle = new KToggleAction(i18n("Sprite Editor"),Qt::Key_F2,
-					 this,SLOT(slotSpriteEditor()),
-					 actionCollection(),"window_spriteeditor");
-
-	mapToggle = new KToggleAction(i18n("Map Editor"),Qt::Key_F3,
-				      this,SLOT(slotLevelEditor()),
-				      actionCollection(),"window_leveleditor");
-
-	realignAction = new KAction(i18n("Realign Windows"),Qt::Key_F4,
-				    this,SLOT(slotRealignEditor()),
-				    actionCollection(),"window_realign");
-#else
-        spriteAction = new KAction(i18n("Sprite Page"), this);
-        spriteAction->setShortcut(Qt::Key_F2);
-        connect(spriteAction, SIGNAL(triggered()), SLOT(slotSpriteEditor()));
-        actionCollection()->addAction("window_spriteeditor", spriteAction);
-
-        mapAction = new KAction(i18n("Map Page"), this);
-        mapAction->setShortcut(Qt::Key_F3);
-        connect(mapAction, SIGNAL(triggered()), SLOT(slotLevelEditor()));
-        actionCollection()->addAction("window_leveleditor", mapAction);
-
-        dataAction = new KAction(i18n("Episode Page"), this);
-        dataAction->setShortcut(Qt::Key_F4);
-        connect(dataAction, SIGNAL(triggered()), SLOT(slotDataEditor()));
-        actionCollection()->addAction("window_dataeditor", dataAction);
-#endif
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonui.rc");
 
 	QStringList list;
@@ -254,11 +213,9 @@ MainWindow::MainWindow(QWidget *parent)
 
 	setAutoSaveSettings();
 	finalizeGUI(false);
-
 	toolBar("mainToolBar")->hide();
 
 	updateGameState(false);
-	updateWindowStates();
 
 	kDebug() << "done";
 }
@@ -279,12 +236,9 @@ void MainWindow::readOptions()
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
-#ifdef EDITOR_3_WINDOWS
-	alignToggle->setChecked(grp2.readEntry("AutoAlign", true));
-#endif
+
 	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 	slotSoundsChanged();
-	slotAlignChanged();
 }
 
 
@@ -297,9 +251,6 @@ void MainWindow::saveOptions()
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
-#ifdef EDITOR_3_WINDOWS
-	grp2.writeEntry("AutoAlign", alignToggle->isChecked());
-#endif
 }
 
 
@@ -351,14 +302,6 @@ void MainWindow::slotHighScores()
 void MainWindow::slotSoundsChanged()
 {
 	Sound::setEnabled(soundsAction->isChecked());
-}
-
-
-void MainWindow::slotAlignChanged()
-{
-#ifdef EDITOR_3_WINDOWS
-	if (edit!=NULL) edit->setAlign(alignToggle->isChecked());
-#endif
 }
 
 
@@ -712,21 +655,14 @@ case KMessageBox::Cancel:
 	if (edit==NULL)
 	{
 		edit = new GameEditor(this);
-		connect(edit,SIGNAL(editWindowChange()),
-			this,SLOT(updateWindowStates()));
-		connect(edit,SIGNAL(closed()),
-			this,SLOT(updateWindowStates()));
 		connect(edit,SIGNAL(editModified()),
 			this,SLOT(updateEditModified()));
 		connect(edit,SIGNAL(editMapsChange()),
 			this,SLOT(updateEditLevels()));
-
-		slotAlignChanged();
 	}
 
 	passToEditor();
 	edit->show();
-	updateWindowStates();
 }
 
 
@@ -893,71 +829,6 @@ void MainWindow::slotPrint()
 {
 	kDebug();
 	KMessageBox::sorry(this,i18n("This option is not implemented yet.\nSee the TODO file for more information."));
-}
-
-
-void MainWindow::updateWindowStates()
-{
-	kDebug();
-
-	const bool evis = (edit==NULL ? false : edit->isVisible());
-#ifdef EDITOR_3_WINDOWS
-	const bool svis = (edit==NULL ? false : edit->spriteVisible());
-	const bool mvis = (edit==NULL ? false : edit->mapVisible());
-
-	spriteToggle->setChecked(svis);
-	spriteToggle->setEnabled(evis);
-	mapToggle->setChecked(mvis);
-	mapToggle->setEnabled(evis);
-	realignAction->setEnabled(evis && (svis || mvis));
-#else
-	dataAction->setEnabled(evis);
-	mapAction->setEnabled(evis);
-	spriteAction->setEnabled(evis);
-#endif
-	checkAction->setEnabled(evis);
-}
-
-
-void MainWindow::slotStrictCheck()
-{
-	if (edit!=NULL) edit->menuStrictCheck();
-}
-
-
-void MainWindow::slotSpriteEditor()
-{
-#ifdef EDITOR_3_WINDOWS
-	bool show = spriteToggle->isChecked();
-#else
-	bool show = true;
-#endif
-	if (edit!=NULL) edit->showSpriteEditor(show);
-}
-
-
-void MainWindow::slotLevelEditor()
-{
-#ifdef EDITOR_3_WINDOWS
-	bool show = mapToggle->isChecked();
-#else
-	bool show = true;
-#endif
-	if (edit!=NULL) edit->showLevelEditor(show);
-}
-
-
-void MainWindow::slotDataEditor()
-{
-#ifndef EDITOR_3_WINDOWS
-	if (edit!=NULL) edit->showDataEditor(true);
-#endif
-}
-
-
-void MainWindow::slotRealignEditor()
-{
-	if (edit!=NULL) edit->menuRealign();
 }
 
 

@@ -98,14 +98,12 @@ set(krepton_SRCS
   spritegrid.cpp
   objectlist.cpp
   mapgrid.cpp
-  coordlabel.cpp
   objectlistbox.cpp
   saveepisodedialog.cpp
   importwizard.cpp
   importmanager.cpp
   importerbase.cpp
   importerbbc.cpp
-#  parentactionmapper.cpp
 )
 
 kde4_add_executable(krepton ${krepton_SRCS})

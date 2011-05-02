@@ -29,11 +29,8 @@
 
 #include "krepton.h"
 
-class QCloseEvent;
-
 class SpritePreview;
 class MapGrid;
-class CoordLabel;
 class ObjectListBox;
 class MapEdit;
 class Sprites;
@@ -52,15 +49,11 @@ public slots:
 
 signals:
 	void modified(bool);
-	void closed();
-
-protected:
-	void closeEvent(QCloseEvent *e);
+	void coordinatePosition(int x,int y);
 
 protected slots:
 	void selectedSprite(int i);
 	void pressedButton(int button,int x,int y);
-	void updateCoordinates(int x,int y);
 	void optionShowTransporterRoutes(bool checked);
 	void optionShowTransporterSelected(bool checked);
 
@@ -70,7 +63,6 @@ private:
 	MapGrid *map_area;
 	Sprites **sprites;
 	Obj::Type current_sprite;
-	CoordLabel *coord;
 	MapEdit *map;
 
 };

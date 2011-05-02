@@ -25,25 +25,22 @@
 #ifndef GAMEEDITOR_H
 #define GAMEEDITOR_H
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
 
 #include "krepton.h"
 #include "sprites.h"
 #include "map2.h"
-//Added by qt3to4:
-#include <QMoveEvent>
-#include <QCloseEvent>
+
 
 class DataEditor;
 class SpriteEditor;
 class MapEditor;
-class KXMLGUIClient;
-#ifndef EDITOR_3_WINDOWS
 class QTabWidget;
-class KPushButton;
-#endif
 
-class GameEditor : public KMainWindow
+class KPushButton;
+
+
+class GameEditor : public KXmlGuiWindow
 {
 	Q_OBJECT
 
@@ -56,27 +53,18 @@ public:
 	const Sprites *getSprites() { return (sprites); }
 	const MapList getMaps() { return (maps); }
 
-	bool spriteVisible() const;
-	bool mapVisible() const;
-	void setEnabled(bool enable);
-	void setAlign(bool enable) { align = enable; }
-
 public slots:
 	void menuStrictCheck();
-        void showSpriteEditor(bool show);
-        void showLevelEditor(bool show);
-        void showDataEditor(bool show);
-	void menuRealign();
+        void showSpriteEditor();
+        void showLevelEditor();
+        void showDataEditor();
 	void setModified(bool mod = true);
 
 signals:
-	void editWindowChange();
 	void editMapsChange();
 	void editModified();
-	void closed();
 
 protected:
-	void moveEvent(QMoveEvent *e);
 	void closeEvent(QCloseEvent *e);
 
 protected slots:
@@ -92,33 +80,37 @@ protected slots:
 	void changedPassword(const QString &s);
 	void changedTime(int i);
 	void changedSprite();
-	void updateWindowStates();
+	void slotShowCoordinates(int x,int y);
 
 private:
 	DataEditor *view;
 	SpriteEditor *spritewin;
 	MapEditor *mapwin;
-#ifndef EDITOR_3_WINDOWS
+
 	QTabWidget *tabs;
 	KPushButton* checkPushButton;
 	KPushButton* closePushButton;
         int dataIndex;
         int mapIndex;
         int spriteIndex;
-#endif
+
+	KAction *spriteAction;
+	KAction *mapAction;
+	KAction *dataAction;
+	KAction *checkAction;
 
 	QString epname;
 	MapEditList maps;
 	Sprites *sprites;
 
 	bool modified;
-	bool align;
 
 	void updateCaption();
 	void selectLevel(int level);
 	void updateMapsList();
 	void updateTransportersList(int item = -1);
-	void alignWindows();
+
+	static QString formatCoordinates(int x,int y);
 };
 
 #endif							// !GAMEEDITOR_H

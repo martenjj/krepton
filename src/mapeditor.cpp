@@ -30,9 +30,6 @@
 #include <qgridlayout.h>
 
 #include <kdialog.h>
-#ifdef EDITOR_3_WINDOWS
-#include <kpushbutton.h>
-#endif
 
 #include "krepton.h"
 #include "sprites.h"
@@ -40,7 +37,6 @@
 #include "objectlistbox.h"
 #include "spritepreview.h"
 #include "mapgrid.h"
-#include "coordlabel.h"
 
 #include "mapeditor.h"
 
@@ -104,23 +100,12 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	connect(map_area,SIGNAL(pressedButton(int,int,int)),
 		this,SLOT(pressedButton(int,int,int)));
 	connect(map_area,SIGNAL(changedCoordinates(int,int)),
-		this,SLOT(updateCoordinates(int,int)));
+		SIGNAL(coordinatePosition(int,int)));
 	gl->addWidget(map_area,1,4,4,2);
 
-	label = new QLabel("Ma&p:", this);
+	label = new QLabel("Map:", this);
 	label->setBuddy(map_area);
 	gl->addWidget(label,0,4,Qt::AlignLeft);
-
-#ifdef EDITOR_3_WINDOWS
-	KPushButton *close_button = new KPushButton("&Close", this);
-	close_button->setDefault(true);
-	QToolTip::add(close_button, "Close this window");
-	connect(close_button,SIGNAL(clicked()),this,SLOT(close()));
-	gl->addWidget(close_button,5,0,Qt::AlignLeft);
-#endif
-
-	coord = new CoordLabel(this);
-	gl->addWidget(coord,0,5,Qt::AlignRight);
 
         sprite_list->setFocus();
 	selectedSprite(-1);
@@ -163,13 +148,6 @@ void MapEditor::pressedButton(int button,int x,int y)
 }
 
 
-void MapEditor::updateCoordinates(int x,int y)
-{
-	if (x>=0 && x<map->getWidth() && y>=0 && y<map->getHeight()) coord->setXY(x,y);
-	else coord->clear();
-}
-
-
 void MapEditor::updateChilds()
 {
 	map_area->update();
@@ -187,14 +165,6 @@ void MapEditor::optionShowTransporterSelected(bool checked)
 {
 	map_area->showSelectedTransporter(checked);
 	updateChilds();
-}
-
-
-void MapEditor::closeEvent(QCloseEvent *e)
-{
-	QWidget::closeEvent(e);
-	hide();
-	emit closed();
 }
 
 

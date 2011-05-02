@@ -23,8 +23,11 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include <qlistwidget.h>
+#include <qgridlayout.h>
+#include <qtabwidget.h>
 
-#include <kmainwindow.h>
+#include <kxmlguiwindow.h>
+#include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kaction.h>
 #include <kstdaction.h>
@@ -34,12 +37,8 @@
 #include <knuminput.h>
 #include <kpushbutton.h>
 #include <kmenubar.h>
-
-#ifndef EDITOR_3_WINDOWS
-#include <qgridlayout.h>
-#include <qtabwidget.h>
-#include <kdialog.h>
-#endif
+#include <ktoolbar.h>
+#include <kstatusbar.h>
 
 #include "krepton.h"
 
@@ -50,14 +49,13 @@
 #include "newmapdialog.h"
 #include "newtransporterdialog.h"
 #include "checkmap.h"
-#include "parentactionmapper.h"
 
 #include "gameeditor.h"
 #include "gameeditor.moc"
 
 
 GameEditor::GameEditor(QWidget *parent)
-	: KMainWindow(parent)
+	: KXmlGuiWindow(parent)
 {
 	kDebug();
 
@@ -65,22 +63,38 @@ GameEditor::GameEditor(QWidget *parent)
         setAttribute(Qt::WA_DeleteOnClose, false);	// we persist once opened
 
 	modified = true;				// force update first time
-	align = false;
 
 	sprites = NULL;
 	spritewin = NULL;
 	mapwin = NULL;
 
-        // TODO: needs to be replaced?
-	//if (parent!=NULL) (void) new ParentActionMapper(parent,actionCollection());
+	KStandardAction::close(this, SLOT(close()), actionCollection());
 
-	//toolBar("mainToolBar")->hide();
-	menuBar()->hide();
+        spriteAction = new KAction(i18n("Sprite Page"), this);
+        spriteAction->setShortcut(Qt::Key_F2);
+        connect(spriteAction, SIGNAL(triggered()), SLOT(showSpriteEditor()));
+        actionCollection()->addAction("window_spriteeditor", spriteAction);
 
-#ifdef EDITOR_3_WINDOWS
-	view = new DataEditor(this);
-	setCentralWidget(view);
-#else
+        mapAction = new KAction(i18n("Map Page"), this);
+        mapAction->setShortcut(Qt::Key_F3);
+        connect(mapAction, SIGNAL(triggered()), SLOT(showLevelEditor()));
+        actionCollection()->addAction("window_leveleditor", mapAction);
+
+        dataAction = new KAction(i18n("Episode Page"), this);
+        dataAction->setShortcut(Qt::Key_F4);
+        connect(dataAction, SIGNAL(triggered()), SLOT(showDataEditor()));
+        actionCollection()->addAction("window_dataeditor", dataAction);
+
+        checkAction = new KAction(i18n("Check Consistency"), this);
+        checkAction->setShortcut(Qt::Key_F10);
+        connect(checkAction, SIGNAL(triggered()), SLOT(menuStrictCheck()));
+        actionCollection()->addAction("edit_check", checkAction);
+
+	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonedui.rc");
+
+	KStatusBar *status = statusBar();
+	status->insertPermanentFixedItem(formatCoordinates(9999,9999), 1);
+
 	QWidget *mw = new QWidget(this);
 	QGridLayout *l = new QGridLayout(mw);
 
@@ -89,13 +103,21 @@ GameEditor::GameEditor(QWidget *parent)
 
 	view = new DataEditor(this);
 	dataIndex = tabs->addTab(view,"Episode");
-	showSpriteEditor(false);
-	showLevelEditor(false);
+
+	spritewin = new SpriteEditor(this,&sprites);
+	connect(spritewin,SIGNAL(changedSprite()),SLOT(changedSprite()));
+        connect(spritewin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
+	spriteIndex = tabs->addTab(spritewin,"Sprites");
+
+	mapwin = new MapEditor(this,&sprites);
+	connect(mapwin,SIGNAL(modified(bool)),SLOT(setModified(bool)));
+        connect(mapwin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
+	mapIndex = tabs->addTab(mapwin,"Map");
 
 	checkPushButton = new KPushButton("Check Consistency",mw);
 	l->addWidget(checkPushButton,2,1,Qt::AlignCenter);
-        // TODO: use standard GUI item
-	closePushButton = new KPushButton("Close",mw);
+
+	closePushButton = new KPushButton(KStandardGuiItem::close(),mw);
 	l->addWidget(closePushButton,2,3,Qt::AlignCenter);
 
 	l->setRowStretch(0,1);
@@ -107,7 +129,7 @@ GameEditor::GameEditor(QWidget *parent)
 
 	setCentralWidget(mw);
 	tabs->setCurrentIndex(dataIndex);
-#endif
+
 	connect(view->mapsListBox,SIGNAL(itemSelectionChanged()),
 		this,SLOT(selectedMap()));
 	connect(view->passwordLineEdit,SIGNAL(textChanged(const QString&)),
@@ -133,18 +155,17 @@ GameEditor::GameEditor(QWidget *parent)
 	connect(view->removetransportPushButton,SIGNAL(clicked()),
 		this,SLOT(transporterRemove()));
 
-#ifdef EDITOR_3_WINDOWS
-	connect(view->checkPushButton,SIGNAL(clicked()),this,SLOT(menuStrictCheck()));
-	connect(view->closePushButton,SIGNAL(clicked()),this,SLOT(close()));
-	view->closePushButton->setDefault(true);
-#else
 	connect(checkPushButton,SIGNAL(clicked()),this,SLOT(menuStrictCheck()));
 	connect(closePushButton,SIGNAL(clicked()),this,SLOT(close()));
 	closePushButton->setDefault(true);
-#endif
+
+	setAutoSaveSettings();
+	finalizeGUI(false);
+	toolBar("editToolBar")->hide();
 
 	setModified(false);
 	updateMapsList();
+        slotShowCoordinates(-1,-1);
 
 	kDebug() << "done";
 }
@@ -152,20 +173,6 @@ GameEditor::GameEditor(QWidget *parent)
 
 GameEditor::~GameEditor()
 {
-	if (spritewin!=NULL)
-	{
-		spritewin->hide();
-		delete spritewin;
-		spritewin = NULL;
-	}
-
-	if (mapwin!=NULL)
-	{
-		mapwin->hide();
-		delete mapwin;
-		mapwin = NULL;
-	}
-
 	if (sprites!=NULL) delete sprites;
 	qDeleteAll(maps);
 	maps.clear();
@@ -239,80 +246,54 @@ void GameEditor::selectLevel(int level)
 	{
 		view->passwordLineEdit->setEnabled(false);
 		view->timeSpinBox->setEnabled(false);
-#ifdef EDITOR_3_WINDOWS
-		view->transportGroupBox->setEnabled(false);
-#else
 		view->transportListBox->setEnabled(false);
 		view->newtransportPushButton->setEnabled(false);
 		view->changetransportPushButton->setEnabled(false);
 		view->removetransportPushButton->setEnabled(false);
-#endif
+
 		view->removelevelPushButton->setEnabled(false);
 		view->levelupPushButton->setEnabled(false);
 		view->leveldownPushButton->setEnabled(false);
 		if (mapwin!=NULL)
 		{
 			mapwin->setMap(NULL);
-#ifndef EDITOR_3_WINDOWS
 			tabs->setTabEnabled(mapIndex, false);
-#endif
 		}
-		return;
 	}
+        else
+        {
+		MapEdit *map = maps.at(level);
+		if (mapwin!=NULL)
+		{
+			mapwin->setMap(map);
+			tabs->setTabEnabled(mapIndex, true);
+		}
 
-	MapEdit *map = maps.at(level);
-	if (mapwin!=NULL)
-	{
-		mapwin->setMap(map);
-#ifndef EDITOR_3_WINDOWS
-		tabs->setTabEnabled(mapIndex, true);
-#endif
-	}
+		view->mapsListBox->blockSignals(true);
+		view->passwordLineEdit->blockSignals(true);
+		view->timeSpinBox->blockSignals(true);
 
-	view->mapsListBox->blockSignals(true);
-	view->passwordLineEdit->blockSignals(true);
-	view->timeSpinBox->blockSignals(true);
+		view->mapsListBox->setCurrentRow(level);
+	        view->mapsListBox->scrollToItem(view->mapsListBox->currentItem());
+		view->passwordLineEdit->setText(map->getPassword());
+		view->timeSpinBox->setValue(map->getSeconds());
+		view->transportListBox->setEnabled(true);
+		view->newtransportPushButton->setEnabled(true);
 
-	view->mapsListBox->setCurrentRow(level);
-        view->mapsListBox->scrollToItem(view->mapsListBox->currentItem());
-	view->passwordLineEdit->setText(map->getPassword());
-	view->timeSpinBox->setValue(map->getSeconds());
-#ifdef EDITOR_3_WINDOWS
-	view->transportGroupBox->setEnabled(true);
-#else
-	view->transportListBox->setEnabled(true);
-	view->newtransportPushButton->setEnabled(true);
-#endif
-	view->removelevelPushButton->setEnabled(maps.count()>1);
-	view->levelupPushButton->setEnabled(level>0);
-	view->leveldownPushButton->setEnabled(level<static_cast<int>(maps.count()-1));
-	view->passwordLineEdit->setEnabled(true);
-	view->timeSpinBox->setEnabled(true);
+		view->removelevelPushButton->setEnabled(maps.count()>1);
+		view->levelupPushButton->setEnabled(level>0);
+		view->leveldownPushButton->setEnabled(level<static_cast<int>(maps.count()-1));
+		view->passwordLineEdit->setEnabled(true);
+		view->timeSpinBox->setEnabled(true);
 
-	view->mapsListBox->blockSignals(false);
-	view->passwordLineEdit->blockSignals(false);
-	view->timeSpinBox->blockSignals(false);
+		view->mapsListBox->blockSignals(false);
+		view->passwordLineEdit->blockSignals(false);
+		view->timeSpinBox->blockSignals(false);
 
-	updateTransportersList();
-}
+		updateTransportersList();
+        }
 
-
-void GameEditor::alignWindows()
-{
-#ifdef EDITOR_3_WINDOWS
-	QRect g = frameGeometry();
-
-	if (spritewin!=NULL)
-	{
-		spritewin->move(x()+g.width(),y());
-		QRect h = spritewin->frameGeometry();
-		if (mapwin!=NULL) mapwin->move(x()+g.width(),spritewin->y()+h.height());
-	}
-	else
-	{
-		if (mapwin!=NULL) mapwin->move(x()+g.width(),y());
-	}
-#endif
+	mapAction->setEnabled(tabs->isTabEnabled(mapIndex));
 }
 
 
@@ -537,94 +518,25 @@ void GameEditor::menuStrictCheck()
 }
 
 
-void GameEditor::showSpriteEditor(bool show)
+void GameEditor::showSpriteEditor()
 {
-	kDebug() << "spritewin=" << spritewin;
-
-	if (spritewin==NULL)
-	{
-		spritewin = new SpriteEditor(this,&sprites);
-		connect(spritewin,SIGNAL(changedSprite()),
-			this,SLOT(changedSprite()));
-		connect(spritewin,SIGNAL(closed()),
-			this,SLOT(updateWindowStates()));
-		spritewin->setEnabled(this->isEnabled());
-
-#ifndef EDITOR_3_WINDOWS
-		spriteIndex = tabs->addTab(spritewin,"Sprites");
-#endif
-	}
-
-#ifdef EDITOR_3_WINDOWS
-	if (!show) spritewin->hide();
-	else
-	{
-		spritewin->show();
-		if (align) alignWindows();
-	}
-
-	updateWindowStates();
-#else
-	if (show) tabs->setCurrentIndex(spriteIndex);
-#endif
+	tabs->setCurrentIndex(spriteIndex);
 }
 
 
-void GameEditor::showLevelEditor(bool show)
+void GameEditor::showLevelEditor()
 {
-	kDebug() << "mapwin=" << mapwin;
-
-	if (mapwin==NULL)
-	{
-		mapwin = new MapEditor(this,&sprites);
-		connect(mapwin,SIGNAL(modified(bool)),
-			this,SLOT(setModified(bool)));
-		connect(mapwin,SIGNAL(closed()),
-			this,SLOT(updateWindowStates()));
-		mapwin->setEnabled(this->isEnabled());
-
-#ifndef EDITOR_3_WINDOWS
-		mapIndex = tabs->addTab(mapwin,"Map");
-#endif
-	}
-
 	int item = view->mapsListBox->currentRow();
 	kDebug() << "sel=" << item;
 	mapwin->setMap(item<0 ? NULL : maps.at(item));
 
-#ifdef EDITOR_3_WINDOWS
-	if (!show) mapwin->hide();
-	else
-	{
-		mapwin->show();
-		if (align) alignWindows();
-	}
-
-	updateWindowStates();
-#else
-	if (show) tabs->setCurrentIndex(mapIndex);
-#endif
+	tabs->setCurrentIndex(mapIndex);
 }
 
 
-void GameEditor::showDataEditor(bool show)
+void GameEditor::showDataEditor()
 {
-#ifndef EDITOR_3_WINDOWS
-	if (show) tabs->setCurrentIndex(dataIndex);
-#endif
-}
-
-
-void GameEditor::menuRealign()
-{
-	alignWindows();
-}
-
-
-void GameEditor::moveEvent(QMoveEvent *e)
-{
-	QWidget::moveEvent(e);
-	if (align) alignWindows();
+	tabs->setCurrentIndex(dataIndex);
 }
 
 
@@ -646,26 +558,13 @@ void GameEditor::updateCaption()
 }
 
 
-void GameEditor::updateWindowStates()
-{
-	kDebug();
-	emit editWindowChange();
-}
-
-
 void GameEditor::closeEvent(QCloseEvent *e)
 {
 	kDebug();
 
-	if (spritewin!=NULL) spritewin->hide();
-	if (mapwin!=NULL) mapwin->hide();
-	hide();
-
 //	saveOptions();
-	KMainWindow::closeEvent(e);
-	emit closed();
+	KXmlGuiWindow::closeEvent(e);
 }
-
 
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
@@ -699,23 +598,15 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 }
 
 
-bool GameEditor::spriteVisible() const
+void GameEditor::slotShowCoordinates(int x,int y)
 {
-	return (spritewin!=NULL && spritewin->isVisible());
+	KStatusBar *status = statusBar();
+	status->changeItem(formatCoordinates(x,y), 1);
 }
 
-bool GameEditor::mapVisible() const
-{
-	return (mapwin!=NULL && mapwin->isVisible());
-}
 
-void GameEditor::setEnabled(bool enable)
+QString GameEditor::formatCoordinates(int x,int y)
 {
-	kDebug();
-
-#ifdef EDITOR_3_WINDOWS
-	if (spritewin!=NULL) spritewin->setEnabled(enable);
-	if (mapwin!=NULL) mapwin->setEnabled(enable);
-#endif
-	KMainWindow::setEnabled(enable);
+	if (x<0) return (QString::null);
+	return (i18n(" X: %1  Y: %2 ",QString::number(x),QString::number(y)));
 }

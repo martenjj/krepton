@@ -163,24 +163,30 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 }
 
 
-void MapGridWidget::mousePressEvent(QMouseEvent *e)
+void MapGridWidget::mousePressEvent(QMouseEvent *ev)
 {
-	if (!(e->button()==Qt::LeftButton || e->button()==Qt::RightButton)) return;
+	if (!(ev->button()==Qt::LeftButton || ev->button()==Qt::RightButton)) return;
 
-	int x = e->x()/Sprites::base_width;
-	int y = e->y()/Sprites::base_height;
-	emit pressedButton(e->button(),x,y);
+	int x = ev->x()/Sprites::base_width;
+	int y = ev->y()/Sprites::base_height;
+	emit pressedButton(ev->button(),x,y);
 }
 
 
-void MapGridWidget::mouseMoveEvent(QMouseEvent *e)
+void MapGridWidget::mouseMoveEvent(QMouseEvent *ev)
 {
-	int x = e->x()/Sprites::base_width;
-	int y = e->y()/Sprites::base_height;
+	int x = ev->x()/Sprites::base_width;
+	int y = ev->y()/Sprites::base_height;
 
-	int b = e->buttons() & (Qt::LeftButton|Qt::RightButton);
+	int b = ev->buttons() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x,y);
+}
+
+
+void MapGridWidget::leaveEvent(QEvent *ev)
+{
+	emit changedCoordinates(-1,-1);
 }
 
 

@@ -26,15 +26,12 @@
 #define SPRITEEDITOR_H
 
 #include <qwidget.h>
-//Added by qt3to4:
-#include <QCloseEvent>
 
 #include "krepton.h"
 
 class ObjectListBox;
 class SpritePreview;
 class SpriteGrid;
-class CoordLabel;
 class KColorButton;
 class Sprites;
 
@@ -50,15 +47,11 @@ public slots:
 
 signals:
 	void changedSprite();
-	void closed();
-
-protected:
-	void closeEvent(QCloseEvent *e);
+	void coordinatePosition(int x,int y);
 
 protected slots:
 	void selectedSprite(int i);
 	void pressedButton(int button,int x,int y);
-	void updateCoordinates(int x,int y);
 
 private:
 	ObjectListBox *sprite_list;
@@ -68,8 +61,6 @@ private:
 	SpriteGrid *grid_sprite;
 	Sprites **sprites;
 	Obj::Type current_sprite;
-	CoordLabel *coord;
-
 };
 
 #endif							// !SPRITEEDITOR_H

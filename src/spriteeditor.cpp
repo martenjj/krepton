@@ -28,22 +28,15 @@
 #include <qstringlist.h>
 #include <qcolor.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <qgridlayout.h>
-#include <QCloseEvent>
 
 #include <kcolorbutton.h>
 #include <kdialog.h>
-#ifdef EDITOR_3_WINDOWS
-#include <kpushbutton.h>
-#endif
 
 #include "krepton.h"
 #include "spritepreview.h"
 #include "spritegrid.h"
 #include "sprites.h"
 #include "objectlistbox.h"
-#include "coordlabel.h"
 
 #include "spriteeditor.h"
 
@@ -55,7 +48,6 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 
         setObjectName("SpriteEditor");
 	setWindowTitle(i18n("Sprite Editor"));
-//	setFixedSize(525, 305);
 
 	sprites = ss;
 	current_sprite = Obj::Empty;
@@ -115,18 +107,7 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 	connect(grid_sprite,SIGNAL(pressedButton(int,int,int)),
 		this,SLOT(pressedButton(int,int,int)));
 	connect(grid_sprite,SIGNAL(changedCoordinates(int,int)),
-		this,SLOT(updateCoordinates(int,int)));
-
-#ifdef EDITOR_3_WINDOWS
-	KPushButton *close_button = new KPushButton("&Close", this);
-	close_button->setDefault(true);
-	QToolTip::add(close_button, "Close this window");
-	gl->addWidget(close_button,7,0,Qt::AlignLeft);
-	connect(close_button,SIGNAL(clicked()),this,SLOT(close()));
-#endif
-
-	coord = new CoordLabel(this);
-	gl->addWidget(coord,0,7,Qt::AlignRight);
+		SIGNAL(coordinatePosition(int,int)));
 
 	adjustSize();
 
@@ -153,25 +134,9 @@ void SpriteEditor::pressedButton(int button,int x,int y)
 }
 
 
-void SpriteEditor::updateCoordinates(int x,int y)
-{
-	coord->setXY(x,y);
-}
-
-
 void SpriteEditor::updateChilds()
 {
 	preview_sprite->setSprite(*sprites,current_sprite);
 	grid_sprite->setSprite(*sprites,current_sprite);
 	grid_sprite->repaint();	
-}
-
-
-void SpriteEditor::closeEvent(QCloseEvent *e)
-{
-	kDebug();
-
-	QWidget::closeEvent(e);
-	hide();
-	emit closed();
 }

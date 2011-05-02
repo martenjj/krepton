@@ -50,9 +50,10 @@ signals:
 	void changedCoordinates(int,int);
 
 protected:
-	void mousePressEvent(QMouseEvent *e);
-	void mouseMoveEvent(QMouseEvent *e);
+	void mousePressEvent(QMouseEvent *ev);
+	void mouseMoveEvent(QMouseEvent *ev);
 	void paintEvent(QPaintEvent *ev);
+	void leaveEvent(QEvent *ev);
 
 private:
 	MapEdit *map;

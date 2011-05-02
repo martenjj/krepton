@@ -26,9 +26,6 @@
 #define MAINWINDOW_H
 
 #include <kxmlguiwindow.h>
-//Added by qt3to4:
-#include <QLabel>
-#include <QCloseEvent>
 
 
 class GamePlayer;
@@ -79,14 +76,7 @@ protected slots:
 	void slotRemove();
 	void slotHighScores();
 	void slotSoundsChanged();
-	void slotAlignChanged();
 
-	void slotStrictCheck();
-	void slotSpriteEditor();
-	void slotLevelEditor();
-	void slotDataEditor();
-	void slotRealignEditor();
-	void updateWindowStates();
 	void updateEditModified();
 	void updateEditLevels();
 
@@ -105,7 +95,6 @@ private:
 	KAction *restartAction;
 	KAction *continueAction;
 	KAction *suicideAction;
-//	KAction *finishAction;
 	KAction *loadspritesAction;
 	KSelectAction *magnificationList;
 	KAction *editAction;
@@ -117,18 +106,6 @@ private:
 	KAction *printAction;
 
 	KToggleAction *strictToggle;
-#ifdef EDITOR_3_WINDOWS
-	KToggleAction *spriteToggle;
-	KToggleAction *mapToggle;
-	KToggleAction *dataToggle;
-	KToggleAction *alignToggle;
-	KAction *realignAction;
-#else
-	KAction *spriteAction;
-	KAction *mapAction;
-	KAction *dataAction;
-#endif
-	KAction *checkAction;
 
 	GamePlayer *game;
 	GameEditor *edit;
