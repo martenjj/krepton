@@ -1,0 +1,28 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="kreptoned" version="401">
+<MenuBar>
+
+	<Menu name="file" noMerge="1"><text>&amp;File</text>
+		<Action name="edit_check"/>
+		<Separator lineSeparator="true"/>
+		<Action name="file_close"/>
+	</Menu>
+
+	<Menu name="edit"><text>&amp;Edit</text>
+	</Menu>
+
+	<Menu name="window" noMerge="1"><text>&amp;Window</text>
+		<Action name="window_spriteeditor"/>
+		<Action name="window_leveleditor"/>
+		<Action name="window_dataeditor"/>
+	</Menu>
+
+</MenuBar>
+
+
+<ToolBar name="editToolBar" noMerge="1">
+    <text>Edit Toolbar</text>
+</ToolBar>
+
+
+</kpartgui>

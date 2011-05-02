@@ -1,0 +1,53 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="krepton" version="401">
+<MenuBar>
+
+	<Menu name="file" noMerge="1"><text>&amp;File</text>
+		<Action name="file_open"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="edit_edit"/>
+		<Action name="file_save"/>
+		<Action name="file_save_as"/>
+		<Action name="file_remove"/>
+		<Action name="file_print"/>
+		<Action name="file_import"/>
+		<Action name="file_export"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="file_highscores"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="file_quit"/>
+	</Menu>
+
+	<Menu name="game" noMerge="1"><text>&amp;Game</text>
+		<Action name="game_start"/>
+		<Action name="game_restart"/>
+		<Action name="game_continue"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="game_pause"/>
+		<Action name="game_suicide"/>
+	</Menu>
+
+	<Menu name="settings">
+		<Action name="settings_loadsprites"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="settings_magnification"/>
+		<Action name="settings_sounds"/>
+		<Separator lineSeparator="true"/>
+
+		<Action name="settings_check"/>
+	</Menu>
+
+</MenuBar>
+
+
+<ToolBar name="mainToolBar" noMerge="1">
+    <text>Main Toolbar</text>
+</ToolBar>
+
+
+</kpartgui>

@@ -1,0 +1,11 @@
+# KDE Config File  
+[Desktop Entry]
+Type=Application
+Exec=krepton -caption "%c" %i %m
+Icon=krepton
+DocPath=krepton/index.html
+GenericName=Classic BBC green lizard game
+Comment=The classic BBC green lizard game
+Terminal=0
+Name=KRepton
+Categories=Qt;KDE;Game;StrategyGame;
