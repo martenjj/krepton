@@ -452,16 +452,19 @@ void MainWindow::gameOver()
 
 	KConfigGroup grp = KGlobal::config()->group("High Score");
 
-	QString name = currentepisode->getName();
-	QString score = grp.readEntry((name+"Score"), "0");
+	QString name = currentepisode->getName().toUpper();
+	QString score = grp.readEntry((name+"_Score"), "");
+	if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
+	if (score.isEmpty()) score = "0";
+
 	if (game->getPoints()>score.toInt())
 	{
 		NewScoreDialog d(this);
 		if (d.exec())
 		{
 			score.setNum(game->getPoints());
-			grp.writeEntry((name+"Score"), score);
-			grp.writeEntry((name+"Name"), d.name());
+			grp.writeEntry((name+"_Score"), score);
+			grp.writeEntry((name+"_Name"), d.name());
 
 			ScoreDialog h(this);
 			h.exec();

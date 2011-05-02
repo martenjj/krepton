@@ -23,38 +23,46 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "newscoredialog.h"
-//#include "newscoredialog.moc"
+#include "newscoredialog.moc"
 
 #include <stdlib.h>
 
 #include <qlabel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
-//#include <qvboxlayout.h>
 
 #include <kdialog.h>
+#include <kemailsettings.h>
 
 #include "krepton.h"
 
 
-NewScoreDialog::NewScoreDialog(QWidget *parent)
-    : KDialog(parent)
-{
-    setObjectName("NewScoreDialog");
-    setCaption(i18n("New High Score"));
-    setButtons(KDialog::Ok|KDialog::Cancel);
-    setDefaultButton(KDialog::Ok);
-    setModal(true);
-    showButtonSeparator(true);
+// TODO: have a "Remember this" check box
 
-	const char *username = getenv("LOGNAME");
-	if (username==NULL) username = getenv("USER");
-	if (username==NULL) username = "";
+NewScoreDialog::NewScoreDialog(QWidget *parent)
+	: KDialog(parent)
+{
+	setObjectName("NewScoreDialog");
+	setCaption(i18n("New High Score"));
+	setButtons(KDialog::Ok|KDialog::Cancel);
+	setDefaultButton(KDialog::Ok);
+	setModal(true);
+	showButtonSeparator(true);
+
+        KEMailSettings es;				// first try configured full name
+        QString name = es.getSetting(KEMailSettings::RealName);
+        if (name.isEmpty())				// if not available then
+        {						// get Unix user name
+            const char *username = getenv("LOGNAME");
+            if (username==NULL) username = getenv("USER");
+            if (username==NULL) username = "";
+            name = username;
+        }
 
 	QWidget *page = new QWidget(this);
 	setMainWidget(page);
 
-	le = new QLineEdit(username,page);
+	le = new QLineEdit(name,page);
 	le->setMinimumWidth(fontMetrics().maxWidth()*20);
 	connect(le,SIGNAL(textChanged(const QString &)),
 		this,SLOT(slotTextChanged(const QString &)));
@@ -69,7 +77,7 @@ NewScoreDialog::NewScoreDialog(QWidget *parent)
 
         page->setLayout(topLayout);
 
-	slotTextChanged(username);
+	slotTextChanged(name);
 	le->setFocus();
 }
 

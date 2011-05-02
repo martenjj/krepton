@@ -29,20 +29,21 @@
 #include <kconfiggroup.h>
 
 
-class KConfig;
-class K3ListView;
+class QTreeWidget;
 
 
 class ScoreDialog : public KDialog
 {
+	Q_OBJECT
+
 public:
 	ScoreDialog(QWidget *parent = NULL);
 
-protected:
+protected slots:
 	void slotUser1();
 
 private:
-	K3ListView *list;
+	QTreeWidget *list;
 	KConfigGroup configGrp;
 };
 

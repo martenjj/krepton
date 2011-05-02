@@ -22,45 +22,42 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "scoredialog.h"
+#include "scoredialog.moc"
+
+#include <qtreewidget.h>
+
 #include <kglobal.h>
 #include <kconfig.h>
-#include <k3listview.h>
 #include <kmessagebox.h>
-
-#include <q3header.h>
-#include <qlayout.h>
-//Added by qt3to4:
-#include <Q3ListView>
 
 #include "krepton.h"
 #include "episodes.h"
-
-#include "scoredialog.h"
 
 
 const char *groupname = "High Score";
 
 
-class ScoreListItem : public K3ListViewItem
+class ScoreListItem : public QTreeWidgetItem
 {
 public:
-	ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3);
-	int compare(Q3ListViewItem *i,int col,bool ascending) const;
+	ScoreListItem(QTreeWidget *parent) : QTreeWidgetItem(parent)	{}
+	virtual bool operator<(const QTreeWidgetItem &other) const;
 };
 
-ScoreListItem::ScoreListItem(Q3ListView *parent,QString col1,QString col2,QString col3)
-	: K3ListViewItem(parent,col1,col2,col3)
+
+bool ScoreListItem::operator<(const QTreeWidgetItem &other) const
 {
+    int col = treeWidget()->sortColumn();
+    QVariant v1 = this->data(col,Qt::UserRole);
+    QVariant v2 = other.data(col,Qt::UserRole);
+
+    if (v1.type()==QVariant::Int) return (v1.toInt()<v2.toInt());
+    else return (v1.toString().toLower()<v2.toString().toLower());
 }
 
-int ScoreListItem::compare(Q3ListViewItem *i,int col,bool ascending) const
-{
-	if (col!=1) return (key(col,ascending).compare(i->key(col,ascending)));
 
-	int n1 = key(col,ascending).toInt();
-	int n2 = i->key(col,ascending).toInt();
-	return ((n1==n2) ? 0 : (n1<n2 ? -1 : +1));
-}
+// TODO: save/restore dialogue size and column layout
 
 ScoreDialog::ScoreDialog(QWidget *parent)
         : KDialog(parent)
@@ -68,60 +65,76 @@ ScoreDialog::ScoreDialog(QWidget *parent)
         setObjectName("ScoreDialog");
         setCaption(i18n("High Scores"));
         setButtons(KDialog::Close|KDialog::User1);
-        setButtonText(KDialog::User1, i18n("Clear"));
+        setButtonGuiItem(KDialog::User1,KStandardGuiItem::clear());
         setDefaultButton(KDialog::Close);
         setModal(true);
         showButtonSeparator(true);
 
+        connect(this,SIGNAL(user1Clicked()),SLOT(slotUser1()));
+
 	configGrp = KGlobal::config()->group(groupname);
 
-	list = new K3ListView(this);
-	list->setSelectionMode(Q3ListView::NoSelection);
-	list->setItemMargin(4);
+	list = new QTreeWidget(this);
+	list->setSelectionMode(QAbstractItemView::NoSelection);
+        list->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+        list->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        list->setColumnCount(3);
+        list->setRootIsDecorated(false);
+        list->setAllColumnsShowFocus(true);
+        list->setSortingEnabled(true);
+        list->setMinimumWidth(350);
 
-	list->addColumn("Episode");
-	list->addColumn("Score");
-	list->addColumn("Name");
+        QStringList hdrs;
+        hdrs << i18n("Episode") << i18n("Score") << i18n("Name");
+	list->setHeaderLabels(hdrs);
 
-	QString name1,score;
-	int h = list->header()->height()+list->itemMargin();
-	//int minh = 6*h;
-	//int maxh = 15*h;
-
-	bool any = false;
+        int row = 0;
 	const EpisodeList *el = EpisodeList::list();
 	for (EpisodeList::const_iterator it = el->constBegin();
          it!=el->constEnd(); ++it)
 	{
 	        const Episode *e = (*it);
-		const QString name = e->getName();
-		if (name=="---") continue;		// what does this do?
-		score = configGrp.readEntry((name+"Score"), "");
-		if (score=="0") score = "";
-		if (score.isEmpty()) continue;
+		const QString episode = e->getName().toUpper();
+		if (episode=="---") continue;		// what does this do?
 
-		name1 = configGrp.readEntry((name+"Name"), "");
-		ScoreListItem *i = new ScoreListItem(list,name,score,name1);
-		h += i->height();
-		any = true;
+		int score = configGrp.readEntry((episode+"_Score"),0);
+		if (score==0) score = configGrp.readEntry((episode+"Score"),0);
+		if (score==0) continue;
+
+		QString player = configGrp.readEntry((episode+"_Name"),"");
+		if (player.isEmpty()) player = configGrp.readEntry((episode+"Name"),"");
+
+                ScoreListItem *item = new ScoreListItem(list);
+                item->setText(0,episode);
+                item->setText(1,i18n("%1",score));	// formats with commas
+                item->setText(2,player);
+
+                item->setData(0,Qt::UserRole,episode);	// set sorting keys
+                item->setData(1,Qt::UserRole,score);
+                item->setData(2,Qt::UserRole,player);
+
+                ++row;
 	}
 
-        // TODO: any sizing needed?
-	//if (h<minh) h = minh;
-	//if (h>maxh) h = maxh;
-	//list->setFixedSize(list->columnWidth(0)+list->columnWidth(1)+
-	//		   list->columnWidth(2)+(3*2*list->itemMargin()),h);
 	setMainWidget(list);
 
-	if (!any) enableButton(KDialog::User1,false);
-	adjustSize();
+	if (row>0)					// some content in table
+        {						// now can resize columns
+            for (int col = 0; col<=2; ++col) list->resizeColumnToContents(col);
+            list->sortItems(1,Qt::DescendingOrder);	// set initial sort state
+        }
+        else						// nothing in the list
+        {
+            enableButton(KDialog::User1,false);		// no point in this button
+        }
 }
+
 
 void ScoreDialog::slotUser1()
 {
 	if (KMessageBox::warningContinueCancel(
 		    this,"Do you really want to clear the high scores list?",
-		    QString::null,KGuiItem("C&lear"))!=KMessageBox::Continue) return;
+		    QString::null,KStandardGuiItem::clear())!=KMessageBox::Continue) return;
 
 	configGrp.config()->deleteGroup(groupname);	// deep delete group
 
