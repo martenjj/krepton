@@ -8,7 +8,7 @@
 
 project(krepton)
 
-set(VERSION 4.3)
+set(VERSION 4.4)
 message(STATUS "Configuring for KRepton version ${VERSION}")
 
 #########################################################################
