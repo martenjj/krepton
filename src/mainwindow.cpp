@@ -393,24 +393,27 @@ void MainWindow::gameOver()
 	updateStats(-1);
 	updateLives(0);
 
-	KConfigGroup grp = KGlobal::config()->group("High Score");
+	if (game->getPoints()>2000)			// no high score for
+	{						// a trivial game
+		KConfigGroup grp = KGlobal::config()->group("High Score");
 
-	QString name = currentepisode->getName().toUpper();
-	QString score = grp.readEntry((name+"_Score"), "");
-	if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
-	if (score.isEmpty()) score = "0";
+		QString name = currentepisode->getName().toUpper();
+		QString score = grp.readEntry((name+"_Score"), "");
+		if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
+		if (score.isEmpty()) score = "0";
 
-	if (game->getPoints()>score.toInt())
-	{
-		NewScoreDialog d(this);
-		if (d.exec())
+		if (game->getPoints()>score.toInt())
 		{
-			score.setNum(game->getPoints());
-			grp.writeEntry((name+"_Score"), score);
-			grp.writeEntry((name+"_Name"), d.name());
+			NewScoreDialog d(this);
+			if (d.exec())
+			{
+				score.setNum(game->getPoints());
+				grp.writeEntry((name+"_Score"), score);
+				grp.writeEntry((name+"_Name"), d.name());
 
-			ScoreDialog h(this);
-			h.exec();
+				ScoreDialog h(this);
+				h.exec();
+			}
 		}
 	}
 }
