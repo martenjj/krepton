@@ -130,7 +130,7 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 	if (showtrans)
 	{
 		const TransporterList tl = map->getTransportersList();
-		for (unsigned int i = 0; i<tl.count(); ++i)
+		for (int i = 0; i<tl.count(); ++i)
 		{
 			int ox,oy,dx,dy;
 			map->transporterGet(i,&ox,&oy,&dx,&dy);

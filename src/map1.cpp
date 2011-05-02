@@ -81,7 +81,7 @@ void MapPlay::startGame()
 
 // This makes sure that KNotify is running at the start of the game.
 // Otherwise, there may be a big delay when the first diamond is hit...
-	Sound::playSound(Sound::Transport);
+	Sound::self()->playSound(Sound::Transport);
 }
 
 
@@ -192,7 +192,7 @@ bool MapPlay::tryBreakEgg(int x,int y)
 
 	if (obj!=Obj::Falling_Egg) return (false);
 
-	Sound::playSound(Sound::Broken_Egg);
+	Sound::self()->playSound(Sound::Broken_Egg);
 	ref(x,y) = Obj::Broken_Egg;
 	return (true);
 }
@@ -211,7 +211,7 @@ bool MapPlay::tryFallDown(int x,int y)
 	Monster *m;
 	if ((m = findMonster(x,y+1))!=NULL && m->type==Obj::Monster)
 	{
-		Sound::playSound(Sound::Kill_Monster);
+		Sound::self()->playSound(Sound::Kill_Monster);
 		killMonster(m);
 	}
 
@@ -223,7 +223,7 @@ bool MapPlay::tryFallDown(int x,int y)
 //      in the 'default' case in tryFallLeftOrRight() below.
 	if (next2==Obj::Wall && (obj==Obj::Egg || obj==Obj::Falling_Egg))
 	{
-		Sound::playSound(Sound::Broken_Egg);
+		Sound::self()->playSound(Sound::Broken_Egg);
 		obj = Obj::Broken_Egg;
 	}
 
@@ -554,7 +554,7 @@ bool MapPlay::tryPlant(int x, int y, int dx, int dy)
     Monster *m;
     if ((m = findMonster(x,y))!=NULL && m->type==Obj::Monster)
     {
-        Sound::playSound(Sound::Kill_Monster);
+        Sound::self()->playSound(Sound::Kill_Monster);
         killMonster(m);
     }
 
@@ -811,23 +811,23 @@ void MapPlay::gotObject(Obj::Type obj)
 	switch (obj)
 	{
 case Obj::Diamond:
-		Sound::playSound(Sound::Got_Diamond);
+		Sound::self()->playSound(Sound::Got_Diamond);
 		--num_diamonds;
 		num_points += 50;
 		break;
 
-case Obj::Time:	Sound::playSound(Sound::Got_Time);
+case Obj::Time:	Sound::self()->playSound(Sound::Got_Time);
 		num_secs += 30;
 		num_points += 10;
 		break;
 
-case Obj::Key:	Sound::playSound(Sound::Got_Key);
+case Obj::Key:	Sound::self()->playSound(Sound::Got_Key);
 		gotKey();
 		num_points += 30;
 		break;
 
 case Obj::Crown:
-		Sound::playSound(Sound::Got_Crown);
+		Sound::self()->playSound(Sound::Got_Crown);
 		num_points += 200;
 		have_crown = true;
 		break;
@@ -853,7 +853,7 @@ void MapPlay::useTransporter(int x,int y)
 	ref(x,y) = Obj::Empty;
 	ref(xpos,ypos) = Obj::Empty;
 
-	Sound::playSound(Sound::Transport);
+	Sound::self()->playSound(Sound::Transport);
 
 	xpos = t->dest_x; ypos = t->dest_y;		// move to destination
 	xstart = xpos; ystart = ypos;			// record for reincarnation
@@ -941,7 +941,7 @@ void MapPlay::moveHorizontalMoveObj(int xd, Obj::Type obj)
 		Monster *m;
 		if ((m = findMonster(xpos + xd*2, ypos))!=NULL && m->type==Obj::Monster)
 		{
-			Sound::playSound(Sound::Kill_Monster);
+			Sound::self()->playSound(Sound::Kill_Monster);
 			killMonster(m);
 		}
 		ref(xpos + xd*2, ypos) = obj;
@@ -1013,7 +1013,7 @@ void MapPlay::killMonster(Monster *mp)
 // Kill a blip, make it a diamond, and produce a sound.
 void MapPlay::cageBlip(Monster *m, int x, int y)
 {
-	Sound::playSound(Sound::Cage_Blip);
+	Sound::self()->playSound(Sound::Cage_Blip);
 	ref(x,y) = Obj::Diamond;
 	killMonster(m);
 }
@@ -1023,7 +1023,7 @@ void MapPlay::die(const QString &how)
 	kDebug() << "how='" << how << "'";
 
 	how_died = how;
-	Sound::playSound(Sound::Die);
+	Sound::self()->playSound(Sound::Die);
 }
 
 

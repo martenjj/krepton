@@ -25,44 +25,73 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
+#ifdef SND_PHONON
+#include <Phonon/MediaSource>
+#include <Phonon/AudioOutput>
+#endif
+
 #include "krepton.h"
 
 #include "sounds.h"
 
-#ifdef SND_PLAYOBJECT
-#include <arts/kartsdispatcher.h>
-#include <arts/kartsserver.h>
-#include <arts/kplayobjectfactory.h>
-#endif
-#ifdef SND_AUDIOPLAYER
-#include <kaudioplayer.h>
-#endif
 #ifdef SND_EXTERNAL
 #include <kprocess.h>
 #endif
 
-static QString sounddir = QString::null;		// directory for sound resources
-bool Sound::enabled = false;				// global sound enable flag
 
-#ifdef SND_PLAYOBJECT
-KDE::PlayObject *Sound::playObject = NULL;
-int Sound::lastPlayed = -1;
+static Sound *sInstance = NULL;
+
+
+Sound *Sound::self()
+{
+	if (sInstance==NULL) sInstance = new Sound();
+	return (sInstance);
+}
+
+
+Sound::Sound()
+{
+	mEnabled = true;
+
+        mSoundDir = KGlobal::dirs()->findResourceDir("sound","die.wav");
+	kDebug() << "sounds at " << mSoundDir;
+
+	mLastPlayed = Sound::None;
+
+#ifdef SND_PHONON
+        mMediaObject = new Phonon::MediaObject(NULL);
+        Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
+	Phonon::createPath(mMediaObject, audioOutput);
 #endif
+}
+
+
+Sound::~Sound()
+{
+	kDebug();
+}
+
 
 void Sound::playSound(Sound::Type s)
 {
-	if (!enabled) return;
+	if (!mEnabled) return;
 	kDebug() << "type=" << s << endl;
 
-	if (sounddir.isNull())
+#ifdef SND_PHONON
+	if (s==mLastPlayed)
 	{
-		sounddir = KGlobal::dirs()->findResourceDir("sound","die.wav");
-		kDebug() << "sounds at " << sounddir << endl;
+kDebug() << "last";
+		mMediaObject->play();
+		return;
 	}
 
-	QString name;
-	switch (s)
+	Phonon::MediaSource *src = mSourceMap.value(s);
+	if (src==NULL)
 	{
+#endif
+		QString name;
+		switch (s)
+		{
 case Sound::Die:		name = "die";		break;
 case Sound::Got_Diamond:	name = "diamond";	break;
 case Sound::Got_Crown:		name = "crown";		break;
@@ -72,36 +101,23 @@ case Sound::Got_Time:		name = "time";		break;
 case Sound::Transport:		name = "transport";	break;
 case Sound::Kill_Monster:	name = "monster";	break;
 case Sound::Broken_Egg:		name = "egg";		break;
+default:						return;
+		}
+
+		QString fname = mSoundDir+name+".wav";
+#ifdef SND_PHONON
+		src = new Phonon::MediaSource(fname);
+		kDebug() << "created media object for" << fname;
+		mSourceMap[s] = src;
 	}
 
-	QString fname = sounddir+name+".wav";
-
-#ifdef SND_PLAYOBJECT
-	if (playObject!=NULL)				// have existing player
+	if (src!=NULL)
 	{
-		if (lastPlayed!=s)			// but not for this sound
-		{
-			delete playObject;
-		}
-		else
-		{
-			if (playObject->state()!=Arts::posPlaying)
-			{
-				playObject->play();
-				return;
-			}
-		}
+		mMediaObject->setCurrentSource(*src);
+		mMediaObject->play();
+		mLastPlayed = s;
+		return;
 	}
-
-	KArtsDispatcher dispatcher;
-	KArtsServer server;
-	KDE::PlayObjectFactory factory(server.server());
-	playObject = factory.createPlayObject(fname,"audio/x-wav",true);
-	if (playObject!=NULL) playObject->play();
-#endif
-
-#ifdef SND_AUDIOPLAYER
-	KAudioPlayer::play(fname);
 #endif
 
 #ifdef SND_EXTERNAL

@@ -31,10 +31,6 @@
 #include <qpainter.h>
 #include <qpixmap.h>
 #include <qcursor.h>
-//Added by qt3to4:
-#include <QTimerEvent>
-#include <QPaintEvent>
-#include <QKeyEvent>
 
 #include "krepton.h"
 #include "episodes.h"

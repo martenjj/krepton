@@ -25,8 +25,8 @@
 #ifndef SOUNDS_H
 #define SOUNDS_H
 
-#ifdef SND_PLAYOBJECT
-#include <arts/kplayobject.h>
+#ifdef SND_PHONON
+#include <Phonon/MediaObject>
 #endif
 
 #include "krepton.h"
@@ -38,6 +38,7 @@ class Sound
 public:
 	enum Type
 	{
+		None,
 		Cage_Blip,
 		Die,
 		Broken_Egg,
@@ -49,17 +50,25 @@ public:
 		Transport
 	};
 
-	static void setEnabled(bool e) { enabled = e; }
-	static bool isEnabled() { return (enabled); }
-	static void playSound(Sound::Type s);
+	static Sound *self();
+
+	void setEnabled(bool e)		{ mEnabled = e; }
+	bool isEnabled()		{ return (mEnabled); }
+
+	void playSound(Sound::Type s);
 
 private:
-	static bool enabled;
+	Sound();
+	~Sound();
 
-#ifdef SND_PLAYOBJECT
-	static KDE::PlayObject* playObject;
-	static int lastPlayed;
+	bool mEnabled;
+	QString mSoundDir;
+	Sound::Type mLastPlayed;
+#ifdef SND_PHONON
+	Phonon::MediaObject *mMediaObject;
+	QMap<Sound::Type, Phonon::MediaSource *> mSourceMap;
 #endif
+
 };
 
 

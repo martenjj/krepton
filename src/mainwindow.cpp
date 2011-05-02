@@ -301,7 +301,7 @@ void MainWindow::slotHighScores()
 
 void MainWindow::slotSoundsChanged()
 {
-	Sound::setEnabled(soundsAction->isChecked());
+	Sound::self()->setEnabled(soundsAction->isChecked());
 }
 
 

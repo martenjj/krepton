@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		22-Apr-11					#
+#  Edit:		02-May-11					#
 #########################################################################
 #									#
 #									#
@@ -32,7 +32,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 #									#
 #########################################################################
 
-option(SOUND_TYPE "specify how sound is to be played (kaudioplayer,kdeplayobject,artsplay,soxplay,alsaplay,none)" OFF)
+option(SOUND_TYPE "specify how sound is to be played (phonon,artsplay,soxplay,alsaplay,none)" OFF)
 
 #########################################################################
 #									#
