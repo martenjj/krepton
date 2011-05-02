@@ -589,7 +589,8 @@ bool MapPlay::updatePlants()
 {
         if (plant_inhibit-->0) return (false);		// grace time at start
 
-	for (Monster *m = monsters.first(); m!=NULL; m = monsters.next())
+	for (MonsterList::const_iterator it = monsters.constBegin();
+             it!=monsters.constEnd(); ++it)
 	{
 		Monster *m = (*it);
                 if (m==NULL) continue;
