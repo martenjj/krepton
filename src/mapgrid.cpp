@@ -187,7 +187,7 @@ void MapGridWidget::mouseMoveEvent(QMouseEvent *e)
 void MapGrid::updatedCell(int x,int y)
 {
 	mWidget->repaint(x*Sprites::base_width,y*Sprites::base_height,
-	                 Sprites::base_width,Sprites::base_height,false);
+	                 Sprites::base_width,Sprites::base_height);
 }
 
 

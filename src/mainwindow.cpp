@@ -528,7 +528,7 @@ void MainWindow::slotContinueGame()
             pwd = dlg.password().toLocal8Bit();
 	}
 
-	pwd = pwd.stripWhiteSpace();
+	pwd = pwd.trimmed();
 	if (pwd.isEmpty()) KMessageBox::information(this,i18n("No idea? You need to start at the first level."));
 	else game->startGamePassword(currentepisode,pwd);
 }

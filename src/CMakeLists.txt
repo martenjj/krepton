@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		22-Apr-11					#
+#  Edit:		02-May-11					#
 #########################################################################
 
 project(krepton)
@@ -64,7 +64,6 @@ else (SOUND_TYPE STREQUAL "kaudioplayer")
 endif (SOUND_TYPE STREQUAL "kaudioplayer")
 
 add_definitions(-DVERSION=\\"${VERSION}\\")
-add_definitions(-DQT3_SUPPORT=1)
 add_definitions(-DQT_STRICT_ITERATORS=1)
 
 #########################################################################
@@ -110,8 +109,7 @@ set(krepton_SRCS
 )
 
 kde4_add_executable(krepton ${krepton_SRCS})
-target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS}
-  ${KDE4_KDE3SUPPORT_LIBS} ${QT_QT3SUPPORT_LIBRARY})
+target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS})
 add_dependencies(krepton vcsversion)
 
 #########################################################################
