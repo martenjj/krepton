@@ -2,6 +2,36 @@ ChangeLog for KRepton                             -*- mode:text -*-
 =====================
 
 
+Changes from version 4.3 to version 4.4:
+---------------------------------------
+
+KDE4 port.
+
+No high score recorded for a trivial game (less than 2000 points).
+
+When entering a new high score try to get the user's full name (from
+systemsettings) first, a bit more friendly then the plain user name.
+
+Tidied up tooltip and new "started" graphic for the level selection
+dialogue.
+
+Introduced a 'monster grace time' where it will stand still after birth.
+Gives an adjacent falling rock time to ensure that it will fall on the
+monster and kill it, with no chance for the monster to move and escape.
+
+Also restore the similar 'plant grace time' after the level start,
+somehow lost in the GIT conversion.
+
+
+
+Changes from version 4.2 to version 4.3:
+---------------------------------------
+
+Sources converted to GIT.
+No user-visible changes.
+
+
+
 Changes from version 4.1 to version 4.2:
 ---------------------------------------
 

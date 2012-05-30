@@ -2,6 +2,7 @@ Things to do for KRepton
 ========================
 
 Port to KDE 4
+** Done in version 4.4
 
 Allow for per-level colour schemes, as used in Repton 1 and Repton 3.
 ** Done in version 4.2
@@ -31,6 +32,7 @@ rows/columns, area fill, resize existing level.
 
 Sprite and map editors: blank the coordinate box if the mouse is not
 within the window.
+** Done in version 4.4
 
 Eliminate any remaining compiler warnings.
 
