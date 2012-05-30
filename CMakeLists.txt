@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		02-May-11					#
+#  Edit:		30-May-12					#
 #########################################################################
 #									#
 #									#
@@ -59,6 +59,17 @@ macro_optional_add_subdirectory(pics)
 macro_optional_add_subdirectory(episodes)
 macro_optional_add_subdirectory(sounds)
 macro_optional_add_subdirectory(doc)
+
+#########################################################################
+#									#
+#  Distribution archive							#
+#									#
+#########################################################################
+
+add_custom_target(dist
+  VERBATIM
+  COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/gendist.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_PROJECT_NAME} ${VERSION}
+)
 
 #########################################################################
 #									#
