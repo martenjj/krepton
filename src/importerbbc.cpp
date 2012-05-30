@@ -175,22 +175,20 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
     {
         ptr = 0x0000 + i*8;				// point to password
         QByteArray pw;
-        int l = 0;
-        while (l<=BBC_PW_MAXLEN)
+        for (int l = 0; l<=BBC_PW_MAXLEN; ++l)
         {
             unsigned char b = data[ptr] ^ (63-ptr);
             if (b=='\r') break;
             pw += b;
             ++ptr;
-            ++l;
         }
         if (pw.length()<1) pw = QByteArray(1,i+'A');	// substitute blank passwords
 
         MapEdit *m = new MapEdit(BBC_MAP_WIDTH,BBC_MAP_HEIGHT,pw);
 
         ptr = 0x0040 + i*2;				// point to time limit
-        int t = static_cast<int>(data[ptr]) + static_cast<int>(data[ptr+1])*256;
-        m->changeTime(t);
+        int tm = static_cast<int>(data[ptr]) + static_cast<int>(data[ptr+1])*256;
+        m->changeTime(tm);
 
         ptr = 0x0050 + i*2;				// point to edit code
         // not used in this application

@@ -288,7 +288,7 @@ EpisodeList::EpisodeList()
 
 	if (isEmpty())
 	{
-		QStringList dirs = KGlobal::dirs()->findDirs("episodes","");
+		dirs = KGlobal::dirs()->findDirs("episodes","");
                 if (dirs.isEmpty()) dirs = QStringList(i18n("(none)"));
 
                 // Not proper I18N here, but then the user should never see this message
