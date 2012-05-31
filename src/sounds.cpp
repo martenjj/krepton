@@ -38,6 +38,10 @@
 #include <kprocess.h>
 #endif
 
+#ifndef SOUND_FILE_EXT
+#define SOUND_FILE_EXT	".wav"
+#endif
+
 
 static Sound *sInstance = NULL;
 
@@ -53,7 +57,7 @@ Sound::Sound()
 {
 	mEnabled = true;
 
-        mSoundDir = KGlobal::dirs()->findResourceDir("sound","die.wav");
+        mSoundDir = KGlobal::dirs()->findResourceDir("sound",("die" SOUND_FILE_EXT));
 	kDebug() << "sounds at " << mSoundDir;
 
 	mLastPlayed = Sound::None;
@@ -104,7 +108,7 @@ case Sound::Broken_Egg:		name = "egg";		break;
 default:						return;
 		}
 
-		QString fname = mSoundDir+name+".wav";
+		QString fname = mSoundDir+name+SOUND_FILE_EXT;
 #ifdef SND_PHONON
 		src = new Phonon::MediaSource(fname);
 		kDebug() << "created media object for" << fname;

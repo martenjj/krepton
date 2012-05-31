@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		30-May-12					#
+#  Edit:		31-May-12					#
 #########################################################################
 #									#
 #									#
@@ -49,19 +49,6 @@ add_custom_target(vcsversion
 
 #########################################################################
 #									#
-#  Subdirectories							#
-#									#
-#########################################################################
-
-macro_optional_add_subdirectory(src)
-macro_optional_add_subdirectory(desktop)
-macro_optional_add_subdirectory(pics)
-macro_optional_add_subdirectory(episodes)
-macro_optional_add_subdirectory(sounds)
-macro_optional_add_subdirectory(doc)
-
-#########################################################################
-#									#
 #  Distribution archive							#
 #									#
 #########################################################################
@@ -70,6 +57,31 @@ add_custom_target(dist
   VERBATIM
   COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/gendist.sh ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_PROJECT_NAME} ${VERSION}
 )
+
+#########################################################################
+#									#
+#  Custom defintions							#
+#									#
+#########################################################################
+
+
+#########################################################################
+#									#
+#  Subdirectories							#
+#									#
+#########################################################################
+
+macro_optional_add_subdirectory(sounds)
+if(DEFINED SOUND_FILE_EXT)
+message(STATUS "ext ${SOUND_FILE_EXT}")
+  add_definitions(-DSOUND_FILE_EXT=${SOUND_FILE_EXT})
+endif(DEFINED SOUND_FILE_EXT)
+
+macro_optional_add_subdirectory(src)
+macro_optional_add_subdirectory(desktop)
+macro_optional_add_subdirectory(pics)
+macro_optional_add_subdirectory(episodes)
+macro_optional_add_subdirectory(doc)
 
 #########################################################################
 #									#
