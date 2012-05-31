@@ -312,28 +312,74 @@ bool MapPlay::tryFall(int x,int y)
 }
 
 
-// Check if the blip can go into a direction.
-bool MapPlay::blipTryDirection(Monster *m,Orientation::Type dir,int xd,int yd)
+void deltaForDirection(Orientation::Type dir, int *xp, int *yp)
 {
-	switch (xy(m->xpos+xd,m->ypos+yd))
+	int xd = 0;
+	int yd = 0;
+	switch (dir)					// calculate displacement
 	{
-case Obj::Empty:
-case Obj::Ground1:
-case Obj::Ground2:
+case Orientation::None:		         break;		// should never happen
+case Orientation::North:	yd = -1; break;
+case Orientation::East:		xd = +1; break;
+case Orientation::South:	yd = +1; break;
+case Orientation::West:		xd = -1; break;
+	}
+
+	*xp = xd;
+	*yp = yd;
+}
+
+
+
+char showDirection(Orientation::Type dir)
+{
+	switch (dir)					// calculate displacement
+	{
+case Orientation::North:	return ('N');
+case Orientation::East:		return ('E');
+case Orientation::South:	return ('S');
+case Orientation::West:		return ('W');
+default:			return ('?');
+	}
+}
+
+
+
+// Check if the blip can go that way.
+bool MapPlay::blipTryDirection(const Monster *m, Orientation::Type dir) const
+{
+	int xd, yd;
+	if (dir==Orientation::None) dir = m->orientation;
+	deltaForDirection(dir, &xd, &yd);
+
+	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);
+	return (isempty(obj) || obj==Obj::Cage || obj==Obj::Repton);
+}
+
+
+// Send the blip that way, and take appropriate action.
+bool MapPlay::blipGoDirection(Monster *m, Orientation::Type dir)
+{
+	int xd, yd;
+	if (dir==Orientation::None) dir = m->orientation;
+	deltaForDirection(dir, &xd, &yd);
+
+	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);
+	if (isempty(obj))
+	{
 		m->xpos += xd;
 		m->ypos += yd;
 		m->orientation = dir;
 		return (true);
-
-case Obj::Cage:
-		cageBlip(m, m->xpos + xd, m->ypos + yd);
+	}
+	else if (obj==Obj::Cage)
+	{
+		cageBlip(m, m->xpos+xd, m->ypos+yd);
 		return (true);
-
-case Obj::Repton:
+	}
+	else if (obj==Obj::Repton)
+	{
 		die("It got you!");
-		break;
-
-default:	;					// Avoid warning
 	}
 
 	return (false);
@@ -346,46 +392,97 @@ bool MapPlay::updateBlip(Monster *m)
 	const int mx = m->xpos;
 	const int my = m->ypos;
 
-	switch (m->orientation)
+	// is the spirit in empty space?
+	if (isempty(mx, my+1) && isempty(mx+1, my) &&
+	    isempty(mx, my-1) && isempty(mx-1, my) &&
+	    isempty(mx-1, my-1) && isempty(mx-1, my+1) &&
+	    isempty(mx+1, my-1) && isempty(mx+1, my+1))
 	{
+		kDebug() << "spirit confused at" << mx << my << showDirection(m->orientation);
+		blipGoDirection(m);			// just go straight on
+	}
+	else
+	{
+		switch (m->orientation)
+		{
 case Orientation::North:
-		if (!blipTryDirection(m, Orientation::West,-1,0) &&
-		    !blipTryDirection(m, Orientation::North,0,-1))
-		{
-			m->orientation = Orientation::East;
-			return (updateBlip(m));
-		}
-		break;
+			if (!blipTryDirection(m) &&
+			    blipTryDirection(m, Orientation::West) &&
+			    blipTryDirection(m, Orientation::East) &&
+			    isempty(mx-1, my+1))
+			{
+				kDebug() << "reorient at" << mx << my << "N, try E";
+				if (blipGoDirection(m, Orientation::East)) break;
+			}
 
-case Orientation::South:
-		if (!blipTryDirection(m, Orientation::East,1,0) &&
-		    !blipTryDirection(m, Orientation::South,0,1))
-		{
-			m->orientation = Orientation::West;
-			return (updateBlip(m));
-		}
-		break;
+			if (!blipGoDirection(m, Orientation::West) &&
+			    !blipGoDirection(m))
+			{
+				m->orientation = Orientation::East;
+				return (updateBlip(m));
+			}
+			break;
 
 case Orientation::East:
-		if (!blipTryDirection(m, Orientation::North,0,-1) &&
-		    !blipTryDirection(m, Orientation::East,1,0))
-		{
-			m->orientation = Orientation::South;
-			return (updateBlip(m));
-		}
-		break;
+			if (!blipTryDirection(m) &&
+			    blipTryDirection(m, Orientation::North) &&
+			    blipTryDirection(m, Orientation::South) &&
+			    isempty(mx-1, my-1))
+			{
+				kDebug() << "reorient at" << mx << my << "E, try S";
+				if (blipGoDirection(m, Orientation::South)) break;
+			}
+
+			if (!blipGoDirection(m, Orientation::North) &&
+			    !blipGoDirection(m))
+			{
+				m->orientation = Orientation::South;
+				return (updateBlip(m));
+			}
+			break;
+
+case Orientation::South:
+			if (!blipTryDirection(m) &&
+			    blipTryDirection(m, Orientation::East) &&
+			    blipTryDirection(m, Orientation::West) &&
+			    isempty(mx+1, my-1))
+			{
+				kDebug() << "reorient at" << mx << my << "S, try W";
+				if (blipGoDirection(m, Orientation::West)) break;
+			}
+
+			if (!blipGoDirection(m, Orientation::East) &&
+			    !blipGoDirection(m))
+			{
+				m->orientation = Orientation::West;
+				return (updateBlip(m));
+			}
+			break;
 
 case Orientation::West:
-		if (!blipTryDirection(m, Orientation::South,0,1) &&
-		    !blipTryDirection(m, Orientation::West,-1,0))
-		{
-			m->orientation = Orientation::North;
-			return (updateBlip(m));
+			if (!blipTryDirection(m) &&
+			    blipTryDirection(m, Orientation::South) &&
+			    blipTryDirection(m, Orientation::North) &&
+			    isempty(mx+1, my+1))
+			{
+				kDebug() << "reorient at" << mx << my << "W, try N";
+				if (blipGoDirection(m, Orientation::North)) break;
+			}
+
+			if (!blipGoDirection(m, Orientation::South) &&
+			    !blipGoDirection(m))
+			{
+				m->orientation = Orientation::North;
+				return (updateBlip(m));
+			}
+			break;
+
+case Orientation::None:
+			break;				// should never happen
 		}
-		break;
 	}
 
-	if (m->xpos != mx || m->ypos != my)
+	if (m->xpos!=mx || m->ypos!=my)
 		m->sprite = (m->sprite==Obj::Blip) ? Obj::Blip2 : Obj::Blip;
 	return (true);					// because of animation
 }
@@ -398,21 +495,19 @@ case Orientation::West:
 // distance between it and Repton.
 double MapPlay::monsterTryDirection(Monster *m, int xd, int yd)
 {
-	switch (xy(m->xpos+xd, m->ypos+yd))
-	{
-case Obj::Empty:
-case Obj::Ground1:
-case Obj::Ground2:
+	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);	// contents of destination
+
+	if (isempty(obj))				// can move to there
+	{						// calculate distance
 		return (sqrt(pow(m->xpos+xd-xpos,2) + pow(m->ypos+yd-ypos,2)));
-
-case Obj::Repton:
+        }
+        else if (obj==Obj::Repton)			// will move onto Repton
+        {
 		die("The monster got you!");
-
-default:	;
-	}
-
-	return (MONSTER_BLOCKED);
+        }
+        return (MONSTER_BLOCKED);
 }
+
 
 // Check the Repton position and move the monster according with it.
 bool MapPlay::updateMonster(Monster *m)
@@ -1028,16 +1123,16 @@ void MapPlay::die(const QString &how)
 
 
 
-void MapPlay::paintMap(QPainter *p,int width,int height,const Sprites *sprites)
+void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites)
 {
 //	kDebug();
 
-	for (int y = 0; y<=(height/Sprites::sprite_height); ++y)
+	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{
-		for (int x = 0; x<=(width/Sprites::sprite_width); ++x)
+		for (int x = 0; x<=(w/Sprites::sprite_width); ++x)
 		{
-			int mx = x + xpos - (width/Sprites::sprite_width/2);
-			int my = y + ypos - (height/Sprites::sprite_height/2);
+			int mx = x + xpos - (w/Sprites::sprite_width/2);
+			int my = y + ypos - (h/Sprites::sprite_height/2);
 
 			Obj::Type obj = xy(mx,my);
 			switch (obj)

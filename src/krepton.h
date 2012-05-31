@@ -95,7 +95,7 @@ public:	enum Type					// available Repton objects
 
 class Orientation
 {
-public:	enum Type { North, South, East, West };
+public:	enum Type { None = -1, North, South, East, West };
 };
 
 extern void reportError(const KLocalizedString &message,
