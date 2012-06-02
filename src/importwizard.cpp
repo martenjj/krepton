@@ -65,24 +65,24 @@
 //									//
 //////////////////////////////////////////////////////////////////////////
 
-static const QString page1caption = i18n("Select Import Format");
-static const QString page2caption = i18n("Specify File To Import");
-static const QString page3caption = i18n("New Episode Name");
-static const QString page4caption = i18n("Ready To Import");
-static const QString page5caption = i18n("Finished");
+static const KLocalizedString page1caption = ki18n("Select Import Format");
+static const KLocalizedString page2caption = ki18n("Specify File To Import");
+static const KLocalizedString page3caption = ki18n("New Episode Name");
+static const KLocalizedString page4caption = ki18n("Ready To Import");
+static const KLocalizedString page5caption = ki18n("Finished");
 
-static const QString page1text = i18n("<qt><p>Repton games in a variety of formats can be imported. \
+static const KLocalizedString page1text = ki18n("<qt><p>Repton games in a variety of formats can be imported. \
 An imported game will be saved and can be selected to play or edit in the same way as any other.");
 
 static const KLocalizedString page2text = ki18n("<qt><p>Importing a %1 data file.\
 <p>\
 Specify the file to be imported.");
 
-static const QString page3text = i18n("<qt><p>Specify a name for the imported episode.");
+static const KLocalizedString page3text = ki18n("<qt><p>Specify a name for the imported episode.");
 
-static const QString page4text = i18n("<qt><p>Use <b>Import</b> to start importing the episode as specified.");
+static const KLocalizedString page4text = ki18n("<qt><p>Use <b>Import</b> to start importing the episode as specified.");
 
-static const QString page5text = i18n("<qt><p>Use <b>Finish</b> to exit the assistant.<p>To immediately load the new episode, select the check box below.");
+static const KLocalizedString page5text = ki18n("<qt><p>Use <b>Finish</b> to exit the assistant.<p>To immediately load the new episode, select the check box below.");
 
 //////////////////////////////////////////////////////////////////////////
 //									//
@@ -315,20 +315,20 @@ void ImportWizard::setupPage1()
 
 	page1list->setFixedWidth(maxlen+page1list->verticalScrollBar()->width()+20);
 
-	page1info = new QLabel(page1text+"<p>"+i18n("Select a format for more information about it."),w);
+	page1info = new QLabel(page1text.toString()+"<p>"+i18n("Select a format for more information about it."),w);
         page1info->setWordWrap(true);
         page1info->setOpenExternalLinks(true);
 	l->addWidget(page1info,1, Qt::AlignTop);
         l->setStretchFactor(page1info,1);
 
 	w->setMinimumHeight(240);
-	page1 = addPage(w,page1caption);
+	page1 = addPage(w, page1caption.toString());
 }
 
 
 void ImportWizard::slotPage1FormatSelected()
 {
-	QString t = page1text;
+	QString t = page1text.toString();
 
 	QListWidgetItem *item = page1list->currentItem();
 	QString fmtName = (item==NULL ? QString::null : item->text());
@@ -370,14 +370,14 @@ void ImportWizard::setupPage2()
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *l = new QVBoxLayout(w);
 
-	page2info = new QLabel(page2text.subs("").toString(),w);
+	page2info = new QLabel(page2text.subs("").toString(), w);
         page2info->setWordWrap(true);
 	l->addWidget(page2info,1,Qt::AlignTop);
 
 	page2source = new KUrlRequester(w);
 	page2source->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
 
-	page2source->fileDialog()->setCaption(page2caption);
+	page2source->fileDialog()->setCaption(page2caption.toString());
 
         KConfigGroup grp = KGlobal::config()->group("Importer");
 	KUrl lastloc = grp.readEntry("LastLocation", KUrl());
@@ -390,7 +390,7 @@ void ImportWizard::setupPage2()
 	l->addWidget(lab,1,Qt::AlignBottom);
 	l->addWidget(page2source,0,Qt::AlignTop);
 
-	page2 = addPage(w,page2caption);
+	page2 = addPage(w, page2caption.toString());
 }
 
 
@@ -411,7 +411,7 @@ void ImportWizard::setupPage3()
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *l = new QVBoxLayout(w);
 
-	QLabel *info = new QLabel(page3text,w);
+	QLabel *info = new QLabel(page3text.toString(), w);
         info->setWordWrap(true);
         info->setOpenExternalLinks(true);
 	l->addWidget(info,1,Qt::AlignTop);
@@ -427,7 +427,7 @@ void ImportWizard::setupPage3()
         page3over = new QCheckBox(i18n("Overwrite any existing episode"),w);
         l->addWidget(page3over,0,Qt::AlignLeft);
 
-	page3 = addPage(w,page3caption);
+	page3 = addPage(w, page3caption.toString());
 }
 
 
@@ -448,7 +448,7 @@ void ImportWizard::setupPage4()
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *l = new QVBoxLayout(w);
 
-	QLabel *info = new QLabel(page4text,w);
+	QLabel *info = new QLabel(page4text.toString(), w);
         info->setWordWrap(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
@@ -457,7 +457,7 @@ void ImportWizard::setupPage4()
         page4disp->setText("?");
         l->addWidget(page4disp,1);
 
-	page4 = addPage(w,page4caption);
+	page4 = addPage(w, page4caption.toString());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -471,7 +471,7 @@ void ImportWizard::setupPage5()
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *l = new QVBoxLayout(w);
 
-	QLabel *info = new QLabel(page5text,w);
+	QLabel *info = new QLabel(page5text.toString(), w);
         info->setWordWrap(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
@@ -485,7 +485,7 @@ void ImportWizard::setupPage5()
         page5disp->setText("?");
         l->addWidget(page5disp,1);
 
-	page5 = addPage(w,page5caption);
+	page5 = addPage(w, page5caption.toString());
 }
 
 //////////////////////////////////////////////////////////////////////////
