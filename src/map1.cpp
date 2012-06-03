@@ -998,13 +998,15 @@ default:	die("You transported onto something!");
 	}
 }
 
-// Check if Repton can move vertically according with the yd value.
-bool MapPlay::moveVertical(int yd)
+
+// Check if Repton can move according with the xd/yd value,
+// and take appropriate action.  Either 'xd' or 'yd' can be
+// set, but the other must be zero (no diagonal moves).
+bool MapPlay::movePlayer(int xd, int yd)
 {
-	Obj::Type obj = xy(xpos,ypos+yd);
+	if (findMonster(xpos+xd, ypos+yd)!=NULL) die("You ran into a monster!");
 
-	if (findMonster(xpos,ypos+yd)!=NULL) die("You ran into a monster!");
-
+	Obj::Type obj = xy(xpos+xd, ypos+yd);
 	switch (obj)
 	{
 case Obj::Diamond:
@@ -1014,17 +1016,28 @@ case Obj::Key:	gotObject(obj);
 		/* FALLTHROUGH */
 
 case Obj::Empty:
-		moveVerticalDirect(yd);
+		if (xd!=0) moveHorizontalDirect(xd);
+		else moveVerticalDirect(yd);
 		break;
 
 case Obj::Ground1:
 case Obj::Ground2:
 		num_points += 2;
-		moveVerticalDirect(yd);
+		if (xd!=0) moveHorizontalDirect(xd);
+		else moveVerticalDirect(yd);
+		break;
+
+case Obj::Rock:
+case Obj::Egg:
+case Obj::Broken_Egg:
+case Obj::Broken_Egg1:
+case Obj::Broken_Egg2:
+case Obj::Broken_Egg3:
+		if (xd!=0) moveHorizontalMoveObj(xd, obj);
 		break;
 
 case Obj::Transport:
-		useTransporter(xpos, ypos + yd);
+		useTransporter(xpos+xd, ypos+yd);
 		break;
 
 case Obj::Skull:
@@ -1041,74 +1054,38 @@ default:	return (false);				// unable to move
 	return (true);
 }
 
+
 // Move Repton and a near object horizontally.
 void MapPlay::moveHorizontalMoveObj(int xd, Obj::Type obj)
 {
-	if (xy(xpos + xd*2, ypos)==Obj::Empty)
+	const int dest = xpos+xd*2;			// where pushed thing will end up
+	if (xy(dest, ypos)==Obj::Empty)
 	{
 		Monster *m;
-		if ((m = findMonster(xpos + xd*2, ypos))!=NULL && m->type==Obj::Monster)
+		if ((m = findMonster(dest, ypos))!=NULL && m->type==Obj::Monster)
 		{
 			Sound::self()->playSound(Sound::Kill_Monster);
 			killMonster(m);
 		}
-		ref(xpos + xd*2, ypos) = obj;
+		ref(dest, ypos) = obj;
 		moveHorizontalDirect(xd);
 	}
 }
+
+
+// Check if Repton can move vertically according with the yd value.
+bool MapPlay::moveVertical(int yd)
+{
+	return (movePlayer(0, yd));
+}
+
 
 // Check if Repton can move horizontally according with the xd value.
 bool MapPlay::moveHorizontal(int xd)
 {
-	Obj::Type obj = xy(xpos+xd,ypos);
-
-	if (findMonster(xpos + xd, ypos)!=NULL) die("You ran into a monster!");
-
-	switch (obj)
-	{
-case Obj::Rock:
-case Obj::Egg:
-case Obj::Broken_Egg:
-case Obj::Broken_Egg1:
-case Obj::Broken_Egg2:
-case Obj::Broken_Egg3:
-		moveHorizontalMoveObj(xd, obj);
-		break;
-
-case Obj::Diamond:
-case Obj::Time:
-case Obj::Crown:
-case Obj::Key:	gotObject(obj);
-		/* FALLTHROUGH */
-
-case Obj::Empty:
-		moveHorizontalDirect(xd);
-		break;
-
-case Obj::Ground1:
-case Obj::Ground2:
-		num_points += 2;
-		moveHorizontalDirect(xd);
-		break;
-
-case Obj::Transport:
-		useTransporter(xpos + xd, ypos);
-		break;
-
-case Obj::Skull:
-case Obj::Plant:
-		die("You ran into something fatal!");
-		break;
-
-case Obj::Bomb:
-		gotObject(Obj::Bomb);
-		break;
-
-default:	return (false);				// unable to move
-	}
-
-	return (true);
+	return (movePlayer(xd, 0));
 }
+
 
 // Kill a monster.
 void MapPlay::killMonster(Monster *mp)

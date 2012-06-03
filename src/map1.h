@@ -107,6 +107,7 @@ private:
 	bool moveVertical(int yd);
 	void moveHorizontalMoveObj(int xd, Obj::Type obj);
 	bool moveHorizontal(int xd);
+	bool movePlayer(int xd, int yd);
 	void killMonster(Monster *mp);
 	void cageBlip(Monster *m, int x, int y);
 	void die(const QString &how);
