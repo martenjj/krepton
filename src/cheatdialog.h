@@ -43,6 +43,7 @@ public:
 private:
 	QCheckBox *noCrushCheck;
 	QCheckBox *noTimeCheck;
+	QCheckBox *noReplicatingPlantCheck;
 
 
 

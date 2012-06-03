@@ -73,6 +73,9 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	noTimeCheck->setToolTip(i18n("If this option is turned on, there will be no time limit to the game."));
 	vl->addWidget(noTimeCheck);
 
+	noReplicatingPlantCheck = new QCheckBox(i18n("Plants do not replicate"), w);
+	noReplicatingPlantCheck->setToolTip(i18n("If this option is turned on, plants do not replicate (but they are still fatal to touch)."));
+	vl->addWidget(noReplicatingPlantCheck);
 
 
 
@@ -91,6 +94,7 @@ void CheatDialog::setCheats(Cheat::Options cheats)
 
 	noCrushCheck->setChecked(cheats & Cheat::CannotBeCrushed);
 	noTimeCheck->setChecked(cheats & Cheat::NoTimeLimit);
+	noReplicatingPlantCheck->setChecked(cheats & Cheat::NoReplicatingPlant);
 
 
 
@@ -103,6 +107,7 @@ Cheat::Options CheatDialog::getCheats() const
 
 	if (noCrushCheck->isChecked()) cheats |= Cheat::CannotBeCrushed;
 	if (noTimeCheck->isChecked()) cheats |= Cheat::NoTimeLimit;
+	if (noReplicatingPlantCheck->isChecked()) cheats |= Cheat::NoReplicatingPlant;
 
 
 

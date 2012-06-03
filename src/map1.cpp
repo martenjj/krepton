@@ -695,6 +695,7 @@ bool MapPlay::updatePlant(Monster *m)
 bool MapPlay::updatePlants()
 {
         if (plant_inhibit-->0) return (false);		// grace time at start
+	if (cheats_used & Cheat::NoReplicatingPlant) return (false);
 
 	for (MonsterList::const_iterator it = monsters.constBegin();
              it!=monsters.constEnd(); ++it)

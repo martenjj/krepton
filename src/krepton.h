@@ -113,7 +113,7 @@ public:
 		//HarmlessSkull = 0x08,			// skulls are harmless
 		CannotBeCrushed = 0x10,			// not crushed by falling object
 		NoTimeLimit = 0x20,			// time limit ignored
-		//NoReplicatingPlant = 0x40,		// plants do not replicate
+		NoReplicatingPlant = 0x40,		// plants do not replicate
 	};
 
 	Q_DECLARE_FLAGS(Options, Option)
