@@ -65,9 +65,13 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	vl->addWidget(new KSeparator(Qt::Horizontal));
 	vl->addSpacing(KDialog::spacingHint());
 
-	noCrushCheck = new QCheckBox(i18n("Repton immune from falling objects"), w);
+	noCrushCheck = new QCheckBox(i18n("Repton immune from &falling objects"), w);
 	noCrushCheck->setToolTip(i18n("If this option is turned on, Repton will not be crushed by falling objects (rocks or eggs)."));
 	vl->addWidget(noCrushCheck);
+
+	noTimeCheck = new QCheckBox(i18n("No &time limit"), w);
+	noTimeCheck->setToolTip(i18n("If this option is turned on, there will be no time limit to the game."));
+	vl->addWidget(noTimeCheck);
 
 
 
@@ -86,6 +90,7 @@ void CheatDialog::setCheats(Cheat::Options cheats)
 	kDebug() << "cheats" << cheats;
 
 	noCrushCheck->setChecked(cheats & Cheat::CannotBeCrushed);
+	noTimeCheck->setChecked(cheats & Cheat::NoTimeLimit);
 
 
 
@@ -97,6 +102,7 @@ Cheat::Options CheatDialog::getCheats() const
 	Cheat::Options cheats;
 
 	if (noCrushCheck->isChecked()) cheats |= Cheat::CannotBeCrushed;
+	if (noTimeCheck->isChecked()) cheats |= Cheat::NoTimeLimit;
 
 
 

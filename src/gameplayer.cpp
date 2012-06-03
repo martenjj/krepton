@@ -326,7 +326,16 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 	}
 	else if (id==timerSecs)
 	{
-		if (--seconds<=0) endedGame("Your time is up!");
+		--seconds;
+		if (seconds<=0)
+		{
+			if (cheats_used & Cheat::NoTimeLimit) seconds = 0;
+			else
+			{
+				endedGame("Your time is up!");
+				return;
+			}
+		}
 
 		++idle;
 		if (idle>10 && currentmap->updateIdle()) repaint();

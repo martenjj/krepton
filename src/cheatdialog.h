@@ -42,6 +42,7 @@ public:
 
 private:
 	QCheckBox *noCrushCheck;
+	QCheckBox *noTimeCheck;
 
 
 
