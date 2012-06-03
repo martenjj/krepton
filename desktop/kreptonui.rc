@@ -33,6 +33,7 @@
 
 	<Menu name="settings">
 		<Action name="settings_loadsprites"/>
+		<Action name="settings_cheats"/>
 		<Separator lineSeparator="true"/>
 
 		<Action name="settings_magnification"/>
