@@ -647,30 +647,28 @@ default:			;			// Avoid warning
 // Try to reproduce the plant.
 bool MapPlay::tryPlant(int x, int y, int dx, int dy)
 {
-    x += dx; y += dy;
+	x += dx; y += dy;
 
-    if (xy(x,y)==Obj::Repton)
-    {
-        die("The plant got you!");
-        return (true);
-    }
+	if (xy(x, y)==Obj::Repton)
+	{
+		if (!(cheats_used & Cheat::HarmlessPlant)) die("The plant got you!");
+		return (true);
+	}
 
-//  Replicating plant can kill a monster, but not a blip
-//  (see http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108)
+	// Replicating plant can kill a monster, but not a blip
+	// (see http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108)
+	Monster *m;
+	if ((m = findMonster(x, y))!=NULL && m->type==Obj::Monster)
+	{
+		Sound::self()->playSound(Sound::Kill_Monster);
+		killMonster(m);
+	}
 
-    Monster *m;
-    if ((m = findMonster(x,y))!=NULL && m->type==Obj::Monster)
-    {
-        Sound::self()->playSound(Sound::Kill_Monster);
-        killMonster(m);
-    }
-
-//  Also, IIRC, it can replicate into earth
-
+	// Also, IIRC, it can replicate into earth
 	if (isempty(x,y))
 	{
 		ref(x,y) = Obj::Plant;
-		addMonster(x,y,Obj::Plant);
+		addMonster(x, y, Obj::Plant);
 		return (true);
 	}
 
@@ -1004,7 +1002,26 @@ default:	die("You transported onto something!");
 // set, but the other must be zero (no diagonal moves).
 bool MapPlay::movePlayer(int xd, int yd)
 {
-	if (findMonster(xpos+xd, ypos+yd)!=NULL) die("You ran into a monster!");
+	Monster *m = findMonster(xpos+xd, ypos+yd);
+	if (m!=NULL)
+	{
+		switch (m->type)
+		{
+case Obj::Plant:	if (cheats_used & Cheat::HarmlessPlant) return (false);
+			break;
+
+//case Obj::Blip:		if (cheats_used & Cheat::HarmlessSpirit) return (false);
+			break;
+
+//case Obj::Monster:	if (cheats_used & Cheat::HarmlessMonster) return (false);
+			break;
+
+default:		break;
+		}
+
+		die("You ran into a monster!");
+		return (false);
+	}
 
 	Obj::Type obj = xy(xpos+xd, ypos+yd);
 	switch (obj)
@@ -1041,8 +1058,11 @@ case Obj::Transport:
 		break;
 
 case Obj::Skull:
+		if (!(cheats_used & Cheat::HarmlessSkull)) die("You ran into something nasty!");
+		break;
+
 case Obj::Plant:
-		die("You ran into something fatal!");
+		if (!(cheats_used & Cheat::HarmlessPlant)) die("You ran into a plant!");
 		break;
 
 case Obj::Bomb:	gotObject(Obj::Bomb);

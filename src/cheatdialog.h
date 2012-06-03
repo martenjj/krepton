@@ -44,6 +44,8 @@ private:
 	QCheckBox *noCrushCheck;
 	QCheckBox *noTimeCheck;
 	QCheckBox *noReplicatingPlantCheck;
+	QCheckBox *harmlessPlantCheck;
+	QCheckBox *harmlessSkullCheck;
 
 
 

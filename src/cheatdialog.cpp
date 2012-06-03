@@ -74,8 +74,16 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	vl->addWidget(noTimeCheck);
 
 	noReplicatingPlantCheck = new QCheckBox(i18n("Plants do not replicate"), w);
-	noReplicatingPlantCheck->setToolTip(i18n("If this option is turned on, plants do not replicate (but they are still fatal to touch)."));
+	noReplicatingPlantCheck->setToolTip(i18n("If this option is turned on, plants do not reproduce (but they are still fatal to touch)."));
 	vl->addWidget(noReplicatingPlantCheck);
+
+	harmlessPlantCheck = new QCheckBox(i18n("Plants are harmless"), w);
+	harmlessPlantCheck->setToolTip(i18n("If this option is turned on, plants (or the equivalent) are not dangerous (but they still reproduce)."));
+	vl->addWidget(harmlessPlantCheck);
+
+	harmlessSkullCheck = new QCheckBox(i18n("Skulls are harmless"), w);
+	harmlessSkullCheck->setToolTip(i18n("If this option is turned on, skulls (or the equivalent) are not dangerous."));
+	vl->addWidget(harmlessSkullCheck);
 
 
 
@@ -95,6 +103,8 @@ void CheatDialog::setCheats(Cheat::Options cheats)
 	noCrushCheck->setChecked(cheats & Cheat::CannotBeCrushed);
 	noTimeCheck->setChecked(cheats & Cheat::NoTimeLimit);
 	noReplicatingPlantCheck->setChecked(cheats & Cheat::NoReplicatingPlant);
+	harmlessPlantCheck->setChecked(cheats & Cheat::HarmlessPlant);
+	harmlessSkullCheck->setChecked(cheats & Cheat::HarmlessSkull);
 
 
 
@@ -108,6 +118,8 @@ Cheat::Options CheatDialog::getCheats() const
 	if (noCrushCheck->isChecked()) cheats |= Cheat::CannotBeCrushed;
 	if (noTimeCheck->isChecked()) cheats |= Cheat::NoTimeLimit;
 	if (noReplicatingPlantCheck->isChecked()) cheats |= Cheat::NoReplicatingPlant;
+	if (harmlessPlantCheck->isChecked()) cheats |= Cheat::HarmlessPlant;
+	if (harmlessSkullCheck->isChecked()) cheats |= Cheat::HarmlessSkull;
 
 
 

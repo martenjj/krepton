@@ -107,10 +107,10 @@ public:
 	enum Option
 	{
 		NoCheats = 0x00,
-		//HarmlessPlant = 0x01,			// plants are harmless
+		HarmlessPlant = 0x01,			// plants are harmless
 		//HarmlessMonster = 0x02,			// monsters are harmless
 		//HarmlessSpirit = 0x04,			// spirits are harmless
-		//HarmlessSkull = 0x08,			// skulls are harmless
+		HarmlessSkull = 0x08,			// skulls are harmless
 		CannotBeCrushed = 0x10,			// not crushed by falling object
 		NoTimeLimit = 0x20,			// time limit ignored
 		NoReplicatingPlant = 0x40,		// plants do not replicate
