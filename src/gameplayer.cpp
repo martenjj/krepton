@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+////////////////////////// -*- indent-tabs-mode:t; c-basic-offset:8; -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -54,6 +54,9 @@ GamePlayer::GamePlayer(QWidget *parent)
 	currentlevel = -1;
 	sprites = NULL;
 
+	cheats_used = Cheat::NoCheats;
+	cheats_ever_used = false;
+
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
 
@@ -80,16 +83,22 @@ GamePlayer::~GamePlayer()
 
 const QString GamePlayer::loadEpisode(const Episode *e)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	kDebug() << "name" << e->getName();
 
-	const QString status = loadSprites(e);
+	QString status = loadSprites(e);
 	if (!status.isNull()) return (status);
-	return (loadMaps(e));
+
+	status = loadMaps(e);
+	if (!status.isNull()) return (status);
+
+	cheats_used = Cheat::NoCheats;			// reset for new episode
+	cheats_ever_used = false;
+	return (QString::null);
 }
 
 const QString GamePlayer::loadSprites(const Episode *e)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	kDebug() << "name" << e->getName();
 
 	setCursor(QCursor(Qt::WaitCursor));
 	if (sprites!=NULL) delete sprites;
@@ -101,7 +110,7 @@ const QString GamePlayer::loadSprites(const Episode *e)
 
 const QString GamePlayer::loadMaps(const Episode *e)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	kDebug() << "name" << e->getName();
 
 	const QString status = e->loadMaps(&maps);
 	if (!status.isNull()) return (status);
@@ -191,7 +200,9 @@ void GamePlayer::startGame(const Episode *e,int level)
 
 	if (currentmap!=NULL) delete currentmap;
 	currentmap = new MapPlay(*maps.at(level));
-        sprites->prepare(level+1);
+	sprites->prepare(level+1);
+
+	if (cheats_used!=Cheat::NoCheats) currentmap->setCheats(cheats_used);
 
 	currentlevel = level;
 	seconds = currentmap->getSeconds();
@@ -477,8 +488,19 @@ void GamePlayer::pauseAction()
 	repaint();
 }
 
+
 void GamePlayer::suicideAction()
 {
 	if (!in_game) return;
 	endedGame("You killed yourself!",true);
+}
+
+
+void GamePlayer::setCheats(Cheat::Options cheats)
+{
+	kDebug() << "cheats" << cheats;
+	cheats_used = cheats;
+	if (cheats!=Cheat::NoCheats) cheats_ever_used = true;
+
+        if (currentmap!=NULL) currentmap->setCheats(cheats_used);
 }

@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////// -*- mode:c++; -*- ///
+///////////////// -*- mode:c++; indent-tabs-mode:t; c-basic-offset:8 -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -27,6 +27,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
+
 
 class Obj
 {
@@ -93,10 +94,33 @@ public:	enum Type					// available Repton objects
 	};
 };
 
+
 class Orientation
 {
 public:	enum Type { None = -1, North, South, East, West };
 };
+
+
+class Cheat
+{
+public:
+	enum Option
+	{
+		NoCheats = 0x00,
+		//HarmlessPlant = 0x01,			// plants are harmless
+		//HarmlessMonster = 0x02,			// monsters are harmless
+		//HarmlessSpirit = 0x04,			// spirits are harmless
+		//HarmlessSkull = 0x08,			// skulls are harmless
+		CannotBeCrushed = 0x10,			// not crushed by falling object
+		//NoTimeLimit = 0x20,			// time limit ignored
+		//NoReplicatingPlant = 0x40,		// plants do not replicate
+	};
+
+	Q_DECLARE_FLAGS(Options, Option)
+};
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Cheat::Options)
+
 
 extern void reportError(const KLocalizedString &message,
                         const QString &filename = QString::null,

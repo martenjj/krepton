@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////// -*- mode:c++; -*- ///
+///////////////// -*- mode:c++; indent-tabs-mode:t; c-basic-offset:8 -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -57,6 +57,9 @@ public:
 	void setSprites(const Sprites *ss);
 	void setMaps(const MapList ml);
 
+	void setCheats(Cheat::Options cheats);
+	bool everCheated() const { return (cheats_ever_used); }
+
 	QStringList listLevels(const Episode *e);
 	void recordLevel(GamePlayer::State state);
 
@@ -109,6 +112,9 @@ private:
 	int idle;
 	int diamonds;
 	bool havekey,havecrown;
+
+	Cheat::Options cheats_used;
+	bool cheats_ever_used;
 
 	void endedGame(const QString &how,bool finish = false);
 };

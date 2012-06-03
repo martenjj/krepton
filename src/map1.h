@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////// -*- mode:c++; -*- ///
+///////////////// -*- mode:c++; indent-tabs-mode:t; c-basic-offset:8 -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -67,14 +67,16 @@ public:
 
 	void paintMap(QPainter *p,int width,int height,const Sprites *sprites);
 
+	void setCheats(Cheat::Options cheats);
+
 private:
 	int num_points;
 	int num_diamonds;
 	bool have_key,have_crown;
 	bool levelfinished;
 	QString how_died;
-        int plant_inhibit;
-
+	int plant_inhibit;
+	Cheat::Options cheats_used;
 	int xpos,ypos;					// current Repton position
 	Obj::Type currentRepton;			// sprite shown for him
 

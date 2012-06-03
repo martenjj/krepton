@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+////////////////////////// -*- indent-tabs-mode:t; c-basic-offset:8; -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -22,6 +22,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "krepton.h"
 #include "mainwindow.h"
 #include "mainwindow.moc"
 
@@ -45,7 +46,6 @@
 #include <qcursor.h>
 #include <qbytearray.h>
 
-#include "krepton.h"
 #include "pixmaps.h"
 #include "episodes.h"
 #include "sprites.h"
@@ -59,6 +59,7 @@
 #include "selectleveldialog.h"
 #include "sounds.h"
 #include "importwizard.h"
+#include "cheatdialog.h"
 
 
 static const int minimum_wid = 5;			// sizes for main window
@@ -75,6 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
 	currentepisode = NULL;
 	modified = false;
         editWarned = false;
+	cheats_used = Cheat::NoCheats;
 
 	KStandardAction::quit(this, SLOT(close()), actionCollection());
 
@@ -123,10 +125,14 @@ MainWindow::MainWindow(QWidget *parent)
         connect(magnificationList, SIGNAL(triggered()), SLOT(slotSetMagnification()));
         actionCollection()->addAction("settings_magnification", magnificationList);
 
+	cheatsAction = new KAction(i18n("Cheat Modes..."), this);
+	connect(cheatsAction, SIGNAL(triggered()), SLOT(slotSelectCheats()));
+	actionCollection()->addAction("settings_cheats", cheatsAction);
+
         editAction = new KAction(i18n("Game Editor..."), this);
-        editAction->setShortcut(Qt::CTRL+Qt::Key_E);
-        connect(editAction, SIGNAL(triggered()), SLOT(slotEdit()));
-        actionCollection()->addAction("edit_edit", editAction);
+	editAction->setShortcut(Qt::CTRL+Qt::Key_E);
+	connect(editAction, SIGNAL(triggered()), SLOT(slotEdit()));
+	actionCollection()->addAction("edit_edit", editAction);
 
 	saveAction = KStandardAction::save(this, SLOT(slotSave()), actionCollection());
 	saveAsAction = KStandardAction::saveAs(this, SLOT(slotSaveAs()), actionCollection());
@@ -199,9 +205,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(game,SIGNAL(changedGameState(bool)),this,SLOT(updateGameState(bool)));
 	connect(game,SIGNAL(gameOver()),this,SLOT(gameOver()));
 
-
 	readOptions();
-
+	if (cheats_used!=Cheat::NoCheats) game->setCheats(cheats_used);
 
 	QSize s1(minimum_wid*Sprites::sprite_width,minimum_hei*Sprites::sprite_height);
         // TODO: what's the equivalent?
@@ -393,29 +398,35 @@ void MainWindow::gameOver()
 	updateStats(-1);
 	updateLives(0);
 
-	if (game->getPoints()>2000)			// no high score for
-	{						// a trivial game
-		KConfigGroup grp = KGlobal::config()->group("High Score");
-
-		QString name = currentepisode->getName().toUpper();
-		QString score = grp.readEntry((name+"_Score"), "");
-		if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
-		if (score.isEmpty()) score = "0";
-
-		if (game->getPoints()>score.toInt())
+	const int points = game->getPoints();
+	if (points>2000)				// no high score for trivial game
+	{
+		if (!game->everCheated())		// no high score for cheats
 		{
-			NewScoreDialog d(this);
-			if (d.exec())
-			{
-				score.setNum(game->getPoints());
-				grp.writeEntry((name+"_Score"), score);
-				grp.writeEntry((name+"_Name"), d.name());
+			KConfigGroup grp = KGlobal::config()->group("High Score");
 
-				ScoreDialog h(this);
-				h.exec();
+			QString name = currentepisode->getName().toUpper();
+			QString score = grp.readEntry((name+"_Score"), "");
+			if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
+			if (score.isEmpty()) score = "0";
+
+			if (points>score.toInt())
+			{
+				NewScoreDialog d(this);
+				if (d.exec())
+				{
+					score.setNum(points);
+					grp.writeEntry((name+"_Score"), score);
+					grp.writeEntry((name+"_Name"), d.name());
+
+					ScoreDialog h(this);
+					h.exec();
+				}
 			}
 		}
+		else kDebug() << "no high score, cheated";
 	}
+	else kDebug() << "no high score, points" << points;
 }
 
 
@@ -841,4 +852,19 @@ void MainWindow::updateEditLevels()
 
 	fetchFromEditor();				// need to update 'lastlevel'
 	updatePlayState(false,false);
+}
+
+
+void MainWindow::slotSelectCheats()
+{
+	kDebug() << "current" << cheats_used;
+
+	CheatDialog d(i18n("Select Cheats"), this);
+	d.setCheats(cheats_used);
+	if (d.exec())
+	{
+		cheats_used = d.getCheats();
+		kDebug() << "new" << cheats_used;
+	        game->setCheats(cheats_used);
+        }
 }

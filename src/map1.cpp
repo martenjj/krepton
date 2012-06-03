@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+////////////////////////// -*- indent-tabs-mode:t; c-basic-offset:8; -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -57,7 +57,8 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	currentRepton = Obj::Repton;
 	how_died = QString::null;
 	levelfinished = false;
-        plant_inhibit = BEGIN_PLANT_GRACE;
+	plant_inhibit = BEGIN_PLANT_GRACE;
+	cheats_used = Cheat::NoCheats;
 
 	kDebug() << "done";
 }
@@ -70,6 +71,14 @@ MapPlay::~MapPlay()
 	qDeleteAll(monsters);
 	monsters.clear();
 	kDebug() << "done";
+}
+
+
+
+void MapPlay::setCheats(Cheat::Options cheats)
+{
+	kDebug() << "cheats" << cheats;
+	cheats_used = cheats;
 }
 
 
@@ -227,7 +236,10 @@ bool MapPlay::tryFallDown(int x,int y)
 		obj = Obj::Broken_Egg;
 	}
 
-	if (next2==Obj::Repton) die("You got crushed!");
+	if (!(cheats_used & Cheat::CannotBeCrushed))
+	{
+		if (next2==Obj::Repton) die("You got crushed!");
+	}
 
 	if (obj==Obj::Egg) obj = Obj::Falling_Egg;
 	ref(x,y+1) = obj;

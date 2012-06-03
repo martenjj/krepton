@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////// -*- mode:c++; -*- ///
+///////////////// -*- mode:c++; indent-tabs-mode:t; c-basic-offset:8 -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -67,6 +67,7 @@ protected slots:
 	void slotSuicide();
 //	void slotFinish();
 	void slotSetMagnification();
+	void slotSelectCheats();
 	void slotEdit();
 	void slotSave();
 	void slotSaveAs();
@@ -97,6 +98,7 @@ private:
 	KAction *suicideAction;
 	KAction *loadspritesAction;
 	KSelectAction *magnificationList;
+	KAction *cheatsAction;
 	KAction *editAction;
 	KAction *saveAction;
 	KAction *saveAsAction;
@@ -112,6 +114,7 @@ private:
 	const Episode *currentepisode;
 	bool modified;
 	bool editWarned;
+	Cheat::Options cheats_used;
 
 	QLabel *keyflag;				// toolbar icons
 	QLabel *crownflag;

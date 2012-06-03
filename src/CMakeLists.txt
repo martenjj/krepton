@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		02-May-11					#
+#  Edit:		03-Jun-12					#
 #########################################################################
 
 project(krepton)
@@ -106,6 +106,7 @@ set(krepton_SRCS
   importmanager.cpp
   importerbase.cpp
   importerbbc.cpp
+  cheatdialog.cpp
 )
 
 kde4_add_executable(krepton ${krepton_SRCS})
