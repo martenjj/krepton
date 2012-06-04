@@ -47,10 +47,7 @@ private:
 	QCheckBox *harmlessPlantCheck;
 	QCheckBox *harmlessSkullCheck;
 	QCheckBox *harmlessMonsterCheck;
-
-
-
-
+	QCheckBox *harmlessSpiritCheck;
 };
 
 #endif							// !CHEATDIALOG_H

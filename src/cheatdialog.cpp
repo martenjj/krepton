@@ -65,7 +65,7 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	vl->addWidget(new KSeparator(Qt::Horizontal));
 	vl->addSpacing(KDialog::spacingHint());
 
-	noCrushCheck = new QCheckBox(i18n("Repton immune from &falling objects"), w);
+	noCrushCheck = new QCheckBox(i18n("Immune from &falling objects"), w);
 	noCrushCheck->setToolTip(i18n("If this option is turned on, Repton will not be crushed by falling objects (rocks or eggs)."));
 	vl->addWidget(noCrushCheck);
 
@@ -89,13 +89,13 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	harmlessMonsterCheck->setToolTip(i18n("If this option is turned on, monsters are not dangerous (but they can still be killed)."));
 	vl->addWidget(harmlessMonsterCheck);
 
-
-
-
+	harmlessSpiritCheck = new QCheckBox(i18n("Spirits are harmless"), w);
+	harmlessSpiritCheck->setToolTip(i18n("If this option is turned on, spirits are not dangerous (but they can still be caught)."));
+	vl->addWidget(harmlessSpiritCheck);
 
 	vl->addStretch(1);
 	w->setLayout(vl);
-	w->setMinimumSize(250, 70);
+	w->setMinimumSize(220, 70);
 	setMainWidget(w);
 }
 
@@ -110,9 +110,7 @@ void CheatDialog::setCheats(Cheat::Options cheats)
 	harmlessPlantCheck->setChecked(cheats & Cheat::HarmlessPlant);
 	harmlessSkullCheck->setChecked(cheats & Cheat::HarmlessSkull);
 	harmlessMonsterCheck->setChecked(cheats & Cheat::HarmlessMonster);
-
-
-
+	harmlessSpiritCheck->setChecked(cheats & Cheat::HarmlessSpirit);
 }
 
 
@@ -126,10 +124,7 @@ Cheat::Options CheatDialog::getCheats() const
 	if (harmlessPlantCheck->isChecked()) cheats |= Cheat::HarmlessPlant;
 	if (harmlessSkullCheck->isChecked()) cheats |= Cheat::HarmlessSkull;
 	if (harmlessMonsterCheck->isChecked()) cheats |= Cheat::HarmlessMonster;
-
-
-
-
+	if (harmlessSpiritCheck->isChecked()) cheats |= Cheat::HarmlessSpirit;
 
 	kDebug() << "cheats" << cheats;
 	return (cheats);

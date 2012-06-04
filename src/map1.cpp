@@ -389,7 +389,7 @@ bool MapPlay::blipGoDirection(Monster *m, Orientation::Type dir)
 		cageBlip(m, m->xpos+xd, m->ypos+yd);
 		return (true);
 	}
-	else if (obj==Obj::Repton)
+	else if (obj==Obj::Repton && !(cheats_used & Cheat::HarmlessSpirit))
 	{
 		die("It got you!");
 	}
@@ -1011,7 +1011,7 @@ bool MapPlay::movePlayer(int xd, int yd)
 case Obj::Plant:	if (cheats_used & Cheat::HarmlessPlant) return (false);
 			break;
 
-//case Obj::Blip:		if (cheats_used & Cheat::HarmlessSpirit) return (false);
+case Obj::Blip:		if (cheats_used & Cheat::HarmlessSpirit) return (false);
 			break;
 
 case Obj::Monster:	if (cheats_used & Cheat::HarmlessMonster) return (false);
@@ -1112,6 +1112,9 @@ bool MapPlay::moveHorizontal(int xd)
 void MapPlay::killMonster(Monster *mp)
 {
 	num_points += 500;
+	// Do not remove the monster from the 'monsters' list,
+	// because this function can be called while iterating over it.
+	// Just deactivate it.
 	monsters[monsters.indexOf(mp)] = NULL;
 	delete mp;
 }
@@ -1126,7 +1129,7 @@ void MapPlay::cageBlip(Monster *m, int x, int y)
 
 void MapPlay::die(const QString &how)
 {
-	kDebug() << "how='" << how << "'";
+	kDebug() << "how" << how;
 
 	how_died = how;
 	Sound::self()->playSound(Sound::Die);
@@ -1136,8 +1139,6 @@ void MapPlay::die(const QString &how)
 
 void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites)
 {
-//	kDebug();
-
 	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{
 		for (int x = 0; x<=(w/Sprites::sprite_width); ++x)
