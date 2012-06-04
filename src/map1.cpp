@@ -513,8 +513,8 @@ double MapPlay::monsterTryDirection(Monster *m, int xd, int yd)
 	{						// calculate distance
 		return (sqrt(pow(m->xpos+xd-xpos,2) + pow(m->ypos+yd-ypos,2)));
         }
-        else if (obj==Obj::Repton)			// will move onto Repton
-        {
+        else if (obj==Obj::Repton && !(cheats_used & Cheat::HarmlessMonster))
+        {						// will move onto Repton
 		die("The monster got you!");
         }
         return (MONSTER_BLOCKED);
@@ -970,7 +970,7 @@ case Obj::Time:
 case Obj::Key:
 case Obj::Crown:
 		gotObject(xy(xpos,ypos));
-		// Move Repton to the new location.
+		// Move Repton to the new location
 		ref(xpos,ypos) = Obj::Repton;
 		currentRepton = Obj::Repton;
 		break;
@@ -981,6 +981,7 @@ case Obj::Ground2:
 		/* FALLTHROUGH */
 
 case Obj::Empty:
+		// No simple way to fix this for HarmlessMonster cheat
 		if (findMonster(xpos,ypos)!=NULL) die("You transported onto a monster!");
 		// Move Repton to the new location
 		ref(xpos,ypos) = Obj::Repton;
@@ -1013,7 +1014,7 @@ case Obj::Plant:	if (cheats_used & Cheat::HarmlessPlant) return (false);
 //case Obj::Blip:		if (cheats_used & Cheat::HarmlessSpirit) return (false);
 			break;
 
-//case Obj::Monster:	if (cheats_used & Cheat::HarmlessMonster) return (false);
+case Obj::Monster:	if (cheats_used & Cheat::HarmlessMonster) return (false);
 			break;
 
 default:		break;

@@ -85,6 +85,10 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	harmlessSkullCheck->setToolTip(i18n("If this option is turned on, skulls (or the equivalent) are not dangerous."));
 	vl->addWidget(harmlessSkullCheck);
 
+	harmlessMonsterCheck = new QCheckBox(i18n("Monsters are harmless"), w);
+	harmlessMonsterCheck->setToolTip(i18n("If this option is turned on, monsters are not dangerous (but they can still be killed)."));
+	vl->addWidget(harmlessMonsterCheck);
+
 
 
 
@@ -105,6 +109,7 @@ void CheatDialog::setCheats(Cheat::Options cheats)
 	noReplicatingPlantCheck->setChecked(cheats & Cheat::NoReplicatingPlant);
 	harmlessPlantCheck->setChecked(cheats & Cheat::HarmlessPlant);
 	harmlessSkullCheck->setChecked(cheats & Cheat::HarmlessSkull);
+	harmlessMonsterCheck->setChecked(cheats & Cheat::HarmlessMonster);
 
 
 
@@ -120,6 +125,7 @@ Cheat::Options CheatDialog::getCheats() const
 	if (noReplicatingPlantCheck->isChecked()) cheats |= Cheat::NoReplicatingPlant;
 	if (harmlessPlantCheck->isChecked()) cheats |= Cheat::HarmlessPlant;
 	if (harmlessSkullCheck->isChecked()) cheats |= Cheat::HarmlessSkull;
+	if (harmlessMonsterCheck->isChecked()) cheats |= Cheat::HarmlessMonster;
 
 
 
