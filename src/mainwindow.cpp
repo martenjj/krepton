@@ -366,6 +366,7 @@ void MainWindow::updateGameState(bool playing)
 	exportAction->setEnabled(loaded && !playing);
 	printAction->setEnabled(loaded && !playing);
 	removeAction->setEnabled(EpisodeList::list()->anyUser());
+	cheatsAction->setEnabled(loaded);
 
 	livesflag->setEnabled(playing);
 
