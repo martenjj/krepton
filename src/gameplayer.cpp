@@ -211,8 +211,8 @@ void GamePlayer::startGame(const Episode *e,int level)
 	havekey = false;
 	havecrown = false;
 
-	QString msg = QString("<qt>Starting level %1 of episode <b>%2</b>").arg(level+1).arg(episodeName);
-	if (level>0) msg += QString("<br>The password is \"<b>%1</b>\"").arg(currentmap->getPassword());
+	QString msg = i18n("<qt>Starting level %1 of episode <b>%2</b>", level+1, episodeName);
+	if (level>0) msg += i18n("<br>The password is \"<b>%1</b>\"", currentmap->getPassword());
 	KMessageBox::information(this,msg);
 
         recordLevel(GamePlayer::Started);		// record level as started
@@ -453,23 +453,23 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 
 	--lives;					// count down this life
 
-	QString msg = QString("<qt>You died...<br><b>%1</b>").arg(how);
-	QString liv = "no";
-	if (lives>0) liv.setNum(lives);
-	msg += QString("<p>You have <b>%1</b> %2 remaining.")
-		.arg(liv).arg(lives==1 ? "life" : "lives");
+	QString remain;
+	if (lives==0) remain = i18n("You have no lives remaining.");
+	else remain = i18np("You have 1 life remaining.",
+			    "You have %1 lives remaining.", lives);
+	QString msg = i18n("<qt>You died...<br><b>%1</b><p>%2", how, remain);
 
 	if (suicide && lives>0)				// option to continue
 	{
-		msg += QString("<p>Do you want to continue the game?");
-		if (KMessageBox::questionYesNo(this,msg,QString::null,
+		msg += i18n("<p>Do you want to continue the game?");
+		if (KMessageBox::questionYesNo(this, msg, QString::null,
 					       KGuiItem("&Continue"),
 					       KGuiItem("&Finish"))!=KMessageBox::Yes)
 		{
 			lives = 0;
 		}
 	}
-	else KMessageBox::sorry(this,msg);
+	else KMessageBox::sorry(this, msg);
 
 	if (lives==0)					// not continuing the game
 	{
