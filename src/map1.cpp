@@ -404,6 +404,14 @@ bool MapPlay::updateBlip(Monster *m)
 	const int mx = m->xpos;
 	const int my = m->ypos;
 
+	// is the spirit surrounded?
+	if (!isempty(mx, my+1) && !isempty(mx+1, my) &&
+	    !isempty(mx, my-1) && !isempty(mx-1, my))
+	{
+		kDebug() << "spirit surrounded at" << mx << my;
+		return (false);				// nothing we can do
+	}
+
 	// is the spirit in empty space?
 	if (isempty(mx, my+1) && isempty(mx+1, my) &&
 	    isempty(mx, my-1) && isempty(mx-1, my) &&
