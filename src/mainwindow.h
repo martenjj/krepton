@@ -76,7 +76,8 @@ protected slots:
 	void slotPrint();
 	void slotRemove();
 	void slotHighScores();
-	void slotSoundsChanged();
+	void slotSoundsEnable();
+	void slotSoundsScheme(QAction *act);
 
 	void updateEditModified();
 	void updateEditLevels();
@@ -90,7 +91,7 @@ protected slots:
 
 private:
 	KToggleAction *pauseAction;
-	KToggleAction *soundsAction;
+	KToggleAction *soundsEnableAction;
 	KAction *selectAction;
 	KAction *startAction;
 	KAction *restartAction;
@@ -106,6 +107,7 @@ private:
 	KAction *importAction;
 	KAction *exportAction;
 	KAction *printAction;
+	KSelectAction *soundsSchemeList;
 
 	KToggleAction *strictToggle;
 

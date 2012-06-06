@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="krepton" version="401">
+<kpartgui name="krepton" version="402">
 <MenuBar>
 
 	<Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -32,14 +32,18 @@
 	</Menu>
 
 	<Menu name="settings">
+		<!-- display -->
 		<Action name="settings_loadsprites"/>
+		<Action name="settings_magnification"/>
+		<Separator lineSeparator="true"/>
+		<!-- gameplay -->
 		<Action name="settings_cheats"/>
 		<Separator lineSeparator="true"/>
-
-		<Action name="settings_magnification"/>
-		<Action name="settings_sounds"/>
+		<!-- sound -->
+		<Action name="settings_sound_enable"/>
+		<Action name="settings_sound_scheme"/>
 		<Separator lineSeparator="true"/>
-
+		<!-- editing -->
 		<Action name="settings_check"/>
 	</Menu>
 

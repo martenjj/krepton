@@ -179,3 +179,17 @@ void Sound::setSchemeName(const QString &name)
 	qDeleteAll(mSourceMap);				// clear media object cache
 #endif
 }
+
+
+QMap<QString,QString> Sound::allSchemesList()
+{
+// Testing ///////////////////////
+QMap<QString,QString> a;
+a["default"] = "KRepton Default";
+a["repton3"] = "Repton 3";
+a["repton2"] = "Repton 2";
+a["repton1"] = "Repton 1";
+return(a);
+
+}
+

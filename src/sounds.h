@@ -54,10 +54,12 @@ public:
 
 	void setEnabled(bool e)		{ mEnabled = e; }
 	bool isEnabled()		{ return (mEnabled); }
-	QString schemeName() const	{ return (mSoundScheme); }
-	void setSchemeName(const QString &name);
 
 	void playSound(Sound::Type s);
+
+	QMap<QString,QString> allSchemesList();
+	void setSchemeName(const QString &name);
+	QString schemeName() const	{ return (mSoundScheme); }
 
 private:
 	Sound();
