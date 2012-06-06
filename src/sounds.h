@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////// -*- mode:c++; -*- ///
+///////////////// -*- mode:c++; indent-tabs-mode:t; c-basic-offset:8 -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -39,14 +39,14 @@ public:
 	enum Type
 	{
 		None,
-		Cage_Blip,
+		Cage,
 		Die,
-		Broken_Egg,
-		Got_Crown,
-		Got_Diamond,
-		Got_Key,
-		Got_Time,
-		Kill_Monster,
+		Egg,
+		Crown,
+		Diamond,
+		Key,
+		Time,
+		Monster,
 		Transport
 	};
 

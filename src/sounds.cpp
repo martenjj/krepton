@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////
+////////////////////////// -*- indent-tabs-mode:t; c-basic-offset:8; -*- ///
 //  
 //  KRepton - the classic Repton game for KDE
 //  
@@ -97,14 +97,14 @@ kDebug() << "last";
 		switch (s)
 		{
 case Sound::Die:		name = "die";		break;
-case Sound::Got_Diamond:	name = "diamond";	break;
-case Sound::Got_Crown:		name = "crown";		break;
-case Sound::Cage_Blip:		name = "cage";		break;
-case Sound::Got_Key:		name = "key";		break;
-case Sound::Got_Time:		name = "time";		break;
+case Sound::Diamond:		name = "diamond";	break;
+case Sound::Crown:		name = "crown";		break;
+case Sound::Cage:		name = "cage";		break;
+case Sound::Key:		name = "key";		break;
+case Sound::Time:		name = "time";		break;
 case Sound::Transport:		name = "transport";	break;
-case Sound::Kill_Monster:	name = "monster";	break;
-case Sound::Broken_Egg:		name = "egg";		break;
+case Sound::Monster:		name = "monster";	break;
+case Sound::Egg:		name = "egg";		break;
 default:						return;
 		}
 

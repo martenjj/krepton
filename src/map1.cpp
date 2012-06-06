@@ -201,7 +201,7 @@ bool MapPlay::tryBreakEgg(int x,int y)
 
 	if (obj!=Obj::Falling_Egg) return (false);
 
-	Sound::self()->playSound(Sound::Broken_Egg);
+	Sound::self()->playSound(Sound::Egg);
 	ref(x,y) = Obj::Broken_Egg;
 	return (true);
 }
@@ -220,7 +220,7 @@ bool MapPlay::tryFallDown(int x,int y)
 	Monster *m;
 	if ((m = findMonster(x,y+1))!=NULL && m->type==Obj::Monster)
 	{
-		Sound::self()->playSound(Sound::Kill_Monster);
+		Sound::self()->playSound(Sound::Monster);
 		killMonster(m);
 	}
 
@@ -232,7 +232,7 @@ bool MapPlay::tryFallDown(int x,int y)
 //      in the 'default' case in tryFallLeftOrRight() below.
 	if (next2==Obj::Wall && (obj==Obj::Egg || obj==Obj::Falling_Egg))
 	{
-		Sound::self()->playSound(Sound::Broken_Egg);
+		Sound::self()->playSound(Sound::Egg);
 		obj = Obj::Broken_Egg;
 	}
 
@@ -668,7 +668,7 @@ bool MapPlay::tryPlant(int x, int y, int dx, int dy)
 	Monster *m;
 	if ((m = findMonster(x, y))!=NULL && m->type==Obj::Monster)
 	{
-		Sound::self()->playSound(Sound::Kill_Monster);
+		Sound::self()->playSound(Sound::Monster);
 		killMonster(m);
 	}
 
@@ -925,23 +925,23 @@ void MapPlay::gotObject(Obj::Type obj)
 	switch (obj)
 	{
 case Obj::Diamond:
-		Sound::self()->playSound(Sound::Got_Diamond);
+		Sound::self()->playSound(Sound::Diamond);
 		--num_diamonds;
 		num_points += 50;
 		break;
 
-case Obj::Time:	Sound::self()->playSound(Sound::Got_Time);
+case Obj::Time:	Sound::self()->playSound(Sound::Time);
 		num_secs += 30;
 		num_points += 10;
 		break;
 
-case Obj::Key:	Sound::self()->playSound(Sound::Got_Key);
+case Obj::Key:	Sound::self()->playSound(Sound::Key);
 		gotKey();
 		num_points += 30;
 		break;
 
 case Obj::Crown:
-		Sound::self()->playSound(Sound::Got_Crown);
+		Sound::self()->playSound(Sound::Crown);
 		num_points += 200;
 		have_crown = true;
 		break;
@@ -1093,7 +1093,7 @@ void MapPlay::moveHorizontalMoveObj(int xd, Obj::Type obj)
 		Monster *m;
 		if ((m = findMonster(dest, ypos))!=NULL && m->type==Obj::Monster)
 		{
-			Sound::self()->playSound(Sound::Kill_Monster);
+			Sound::self()->playSound(Sound::Monster);
 			killMonster(m);
 		}
 		ref(dest, ypos) = obj;
@@ -1130,7 +1130,7 @@ void MapPlay::killMonster(Monster *mp)
 // Kill a blip, make it a diamond, and produce a sound.
 void MapPlay::cageBlip(Monster *m, int x, int y)
 {
-	Sound::self()->playSound(Sound::Cage_Blip);
+	Sound::self()->playSound(Sound::Cage);
 	ref(x,y) = Obj::Diamond;
 	killMonster(m);
 }
