@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		31-May-12					#
+#  Edit:		06-Jun-12					#
 #########################################################################
 #									#
 #									#
@@ -73,7 +73,6 @@ add_custom_target(dist
 
 macro_optional_add_subdirectory(sounds)
 if(DEFINED SOUND_FILE_EXT)
-message(STATUS "ext ${SOUND_FILE_EXT}")
   add_definitions(-DSOUND_FILE_EXT=${SOUND_FILE_EXT})
 endif(DEFINED SOUND_FILE_EXT)
 

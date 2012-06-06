@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		31-May-12					#
+#  Edit:		06-Jun-12					#
 #########################################################################
 #									#
 #									#
@@ -8,23 +8,8 @@
 
 project(krepton)
 
-#########################################################################
+set(SOUND_FILE_EXT "ogg")
+message(STATUS "Sound files are of type '${SOUND_FILE_EXT}'")
+set(SOUND_FILE_EXT "\\\".${SOUND_FILE_EXT}\\\"" PARENT_SCOPE)
 
-set(EXT "ogg")
-message(STATUS "Sound files are of type '${EXT}'")
-
-set(krepton_SNDS
-  cage.${EXT}
-  crown.${EXT}
-  diamond.${EXT}
-  die.${EXT}
-  egg.${EXT}
-  key.${EXT}
-  monster.${EXT}
-  time.${EXT}
-  transport.${EXT}
-)
-
-install(FILES ${krepton_SNDS} DESTINATION ${DATA_INSTALL_DIR}/krepton/sounds)
-
-set(SOUND_FILE_EXT "\\\".${EXT}\\\"" PARENT_SCOPE)
+add_subdirectory(default)

@@ -22,6 +22,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "krepton.h"
+#include "sounds.h"
+
+#include <qdir.h>
+#include <qfile.h>
+
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
@@ -30,17 +36,14 @@
 #include <Phonon/AudioOutput>
 #endif
 
-#include "krepton.h"
-
-#include "sounds.h"
-
 #ifdef SND_EXTERNAL
 #include <kprocess.h>
 #endif
 
 #ifndef SOUND_FILE_EXT
-#define SOUND_FILE_EXT	".wav"
+#define SOUND_FILE_EXT		".wav"
 #endif
+#define SOUND_DEFAULT_SCHEME	"default"
 
 
 static Sound *sInstance = NULL;
@@ -56,13 +59,11 @@ Sound *Sound::self()
 Sound::Sound()
 {
 	mEnabled = true;
-
-        mSoundDir = KGlobal::dirs()->findResourceDir("sound",("die" SOUND_FILE_EXT));
-	kDebug() << "sounds at " << mSoundDir;
-
-	mLastPlayed = Sound::None;
+	setSchemeName(QString::null);			// find sounds for default scheme
 
 #ifdef SND_PHONON
+	mLastPlayed = Sound::None;
+
         mMediaObject = new Phonon::MediaObject(NULL);
         Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
 	Phonon::createPath(mMediaObject, audioOutput);
@@ -72,19 +73,19 @@ Sound::Sound()
 
 Sound::~Sound()
 {
-	kDebug();
 }
 
 
 void Sound::playSound(Sound::Type s)
 {
-	if (!mEnabled) return;
-	kDebug() << "type=" << s << endl;
+	if (!mEnabled) return;				// sounds not enabled
+	if (mSoundDir.isEmpty()) return;		// no media to play
+
+	kDebug() << "type" << s;
 
 #ifdef SND_PHONON
-	if (s==mLastPlayed)
+	if (s==mLastPlayed)				// same as last sound
 	{
-kDebug() << "last";
 		mMediaObject->play();
 		return;
 	}
@@ -109,6 +110,12 @@ default:						return;
 		}
 
 		QString fname = mSoundDir+name+SOUND_FILE_EXT;
+		if (!QFile::exists(fname))
+		{
+			kDebug() << "Sound file does not exist" << fname;
+			return;
+		}
+
 #ifdef SND_PHONON
 		src = new Phonon::MediaSource(fname);
 		kDebug() << "created media object for" << fname;
@@ -138,4 +145,37 @@ default:						return;
 	proc->start(KProcess::DontCare);
 #endif
 
+}
+
+
+void Sound::setSchemeName(const QString &name)
+{
+	mSoundDir = QString::null;			// not located yet
+
+	mSoundScheme = name;
+	if (mSoundScheme.isEmpty()) mSoundScheme = SOUND_DEFAULT_SCHEME;
+	kDebug() << "set to" << mSoundScheme;
+
+	QString resfile = (QString(SOUND_DEFAULT_SCHEME)+"/info");
+	QString resource = KGlobal::dirs()->findResourceDir("sound", resfile);
+	if (resource.isEmpty())
+	{
+		kDebug() << "Cannot find sound resource for" << resfile << "- check installation!";
+		return;
+	}
+
+	resource += mSoundScheme+"/";
+	QDir d(resource);
+	if (!d.exists())
+	{
+		kDebug() << "Sound scheme directory" << resource << "not found - check installation!";
+		return;
+	}
+
+	mSoundDir = resource;
+	kDebug() << "sounds at" << mSoundDir;
+
+#ifdef SND_PHONON
+	qDeleteAll(mSourceMap);				// clear media object cache
+#endif
 }

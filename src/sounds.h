@@ -54,6 +54,8 @@ public:
 
 	void setEnabled(bool e)		{ mEnabled = e; }
 	bool isEnabled()		{ return (mEnabled); }
+	QString schemeName() const	{ return (mSoundScheme); }
+	void setSchemeName(const QString &name);
 
 	void playSound(Sound::Type s);
 
@@ -63,8 +65,9 @@ private:
 
 	bool mEnabled;
 	QString mSoundDir;
-	Sound::Type mLastPlayed;
+	QString mSoundScheme;
 #ifdef SND_PHONON
+	Sound::Type mLastPlayed;
 	Phonon::MediaObject *mMediaObject;
 	QMap<Sound::Type, Phonon::MediaSource *> mSourceMap;
 #endif
