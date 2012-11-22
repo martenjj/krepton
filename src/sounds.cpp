@@ -72,7 +72,6 @@ Sound::Sound()
 
 Sound::~Sound()
 {
-	kDebug();
 }
 
 
@@ -84,7 +83,6 @@ void Sound::playSound(Sound::Type s)
 #ifdef SND_PHONON
 	if (s==mLastPlayed)
 	{
-kDebug() << "last";
 		mMediaObject->play();
 		return;
 	}
