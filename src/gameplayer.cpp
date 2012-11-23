@@ -121,9 +121,9 @@ const QString GamePlayer::loadMaps(const Episode *e)
 	return (QString::null);
 }
 
-const Episode *GamePlayer::saveEpisode(const QString name,const QString path)
+const Episode *GamePlayer::saveEpisode(const QString name, const QString path)
 {
-	kDebug() << "AS name='" << name << "' path='" << path << "'";
+	kDebug() << "name" << name << "path" << path;
 
 	Episode *e = new Episode(name,false,path);	// construct new episode
 
@@ -139,7 +139,7 @@ const Episode *GamePlayer::saveEpisode(const QString name,const QString path)
 
 const Episode *GamePlayer::saveEpisode(const Episode *e)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	kDebug() << "name" << e->getName();
 	if (!(e->saveInfoAndMaps(&maps) && sprites->save(e))) return (NULL);
 
 	EpisodeList::list()->add(e);			// ensure still in list

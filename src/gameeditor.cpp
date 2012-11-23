@@ -280,7 +280,7 @@ void GameEditor::selectLevel(int level)
 		view->transportListBox->setEnabled(true);
 		view->newtransportPushButton->setEnabled(true);
 
-		view->removelevelPushButton->setEnabled(maps.count()>1);
+		view->removelevelPushButton->setEnabled(maps.count()>0);
 		view->levelupPushButton->setEnabled(level>0);
 		view->leveldownPushButton->setEnabled(level<static_cast<int>(maps.count()-1));
 		view->passwordLineEdit->setEnabled(true);
@@ -336,11 +336,11 @@ void GameEditor::mapRemove()
 {
 	kDebug();
 
-	if (maps.count()==1)				// shouldn't happen, GUI disables
-	{
-		KMessageBox::error(this,"Cannot remove the only level");
-		return;
-	}
+//	if (maps.count()==1)				// shouldn't happen, GUI disables
+//	{
+//		KMessageBox::error(this,"Cannot remove the only level");
+//		return;
+//	}
 
 	int item = view->mapsListBox->currentRow();
 	QString msg = QString("Are you sure to remove the selected map #%1, '%2'?")

@@ -431,7 +431,7 @@ void MainWindow::updatePlayState(bool ingame,bool inpause)
 
 	startAction->setEnabled(loaded && !ingame && game->countLevels()>0);
 	restartAction->setEnabled(loaded && !ingame && game->lastLevel()>=0);
-	continueAction->setEnabled(loaded && !ingame);
+	continueAction->setEnabled(loaded && !ingame && game->countLevels()>0);
 }
 
 
@@ -469,7 +469,7 @@ void MainWindow::gameOver()
 		}
 		else kDebug() << "no high score, cheated";
 	}
-	else kDebug() << "no high score, points" << points;
+	else kDebug() << "no high score, only" << points << "points";
 }
 
 
