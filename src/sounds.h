@@ -47,7 +47,8 @@ public:
 		Key,
 		Time,
 		Monster,
-		Transport
+		Transport,
+		Start
 	};
 
 	static Sound *self();
@@ -58,7 +59,7 @@ public:
 	void playSound(Sound::Type s);
 
 	QMap<QString,QString> allSchemesList();
-	void setSchemeName(const QString &name);
+	bool setSchemeName(const QString &name);
 	QString schemeName() const	{ return (mSoundScheme); }
 
 private:
@@ -67,6 +68,8 @@ private:
 
 	bool mEnabled;
 	QString mSoundDir;
+	QString mDefaultSoundDir;
+	QString mFallbackSoundDir;
 	QString mSoundScheme;
 #ifdef SND_PHONON
 	Sound::Type mLastPlayed;

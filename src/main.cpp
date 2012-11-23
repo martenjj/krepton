@@ -77,11 +77,8 @@ int main(int argc,char *argv[])
                         "",
                         "http://www.stairwaytohell.com");
 
-    //aboutData.setProgramIconName("krepton");
-    //aboutData.setProgramIconName("krepton");
-
     KCmdLineOptions opts;
-    // TODO: options for mode, start game or editor
+    // TODO: options for mode (start game or editor), sound scheme
     opts.add("l <episode>", ki18n("Name of episode to load"));
     KCmdLineArgs::addCmdLineOptions(opts);
 
@@ -97,7 +94,7 @@ int main(int argc,char *argv[])
 
     KGlobal::dirs()->addResourceType("episodes", "appdata", "episodes");
     KGlobal::dirs()->addResourceType("graphics", "appdata", "pics");
-    KGlobal::dirs()->addResourceType("sound", "appdata", "sounds");
+    KGlobal::dirs()->addResourceType("appsound", "appdata", "sounds");
 
     MainWindow *w = new MainWindow(NULL);
     w->show();

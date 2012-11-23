@@ -327,13 +327,9 @@ void MainWindow::slotSoundsEnable()
 
 void MainWindow::slotSoundsScheme(QAction *act)
 {
-	kDebug() << "act" << act->data().toString();
-
-
-
-
-
-
+	QString name = act->data().toString();
+	kDebug() << "name" << name;
+	Sound::self()->setSchemeName(name);
 }
 
 
