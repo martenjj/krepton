@@ -90,7 +90,7 @@ void MapPlay::startGame()
 
 // This makes sure that KNotify is running at the start of the game.
 // Otherwise, there may be a big delay when the first diamond is hit...
-	Sound::self()->playSound(Sound::Transport);
+	Sound::self()->playSound(Sound::Start);
 }
 
 

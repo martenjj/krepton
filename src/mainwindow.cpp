@@ -49,6 +49,7 @@
 #include "pixmaps.h"
 #include "episodes.h"
 #include "sprites.h"
+#include "sounds.h"
 #include "gameplayer.h"
 #include "checkmap.h"
 #include "selectgamedialog.h"
@@ -113,9 +114,24 @@ MainWindow::MainWindow(QWidget *parent)
         connect(scoresAction, SIGNAL(triggered()), SLOT(slotHighScores()));
         actionCollection()->addAction("file_highscores", scoresAction);
 
-        soundsAction = new KToggleAction(i18n("Sounds"), this);
-        connect(soundsAction, SIGNAL(triggered()), SLOT(slotSoundsChanged()));
-        actionCollection()->addAction("settings_sounds", soundsAction);
+        soundsEnableAction = new KToggleAction(i18n("Sounds"), this);
+        connect(soundsEnableAction, SIGNAL(triggered()), SLOT(slotSoundsEnable()));
+        actionCollection()->addAction("settings_sound_enable", soundsEnableAction);
+
+	soundsSchemeList = new KSelectAction(i18n("Sound Scheme"), this);
+        connect(soundsSchemeList, SIGNAL(triggered(QAction *)), SLOT(slotSoundsScheme(QAction *)));
+        actionCollection()->addAction("settings_sound_scheme", soundsSchemeList);
+
+	QMap<QString,QString> schemeMap = Sound::self()->allSchemesList();
+	QString curScheme = Sound::self()->schemeName();
+	for (QMap<QString,QString>::const_iterator it = schemeMap.constBegin();
+	     it!=schemeMap.constEnd(); ++it)
+	{
+		QString scheme = it.key();
+		KAction *act = soundsSchemeList->addAction(it.value());
+		if (scheme==curScheme) act->setChecked(true);
+		act->setData(scheme);
+	}
 
         loadspritesAction = new KAction(i18n("Change Sprites..."), this);
         connect(loadspritesAction, SIGNAL(triggered()), SLOT(slotLoadSprites()));
@@ -236,14 +252,17 @@ void MainWindow::readOptions()
 	kDebug();
 
 	KConfigGroup grp1 = KGlobal::config()->group("Options");
-	soundsAction->setChecked(grp1.readEntry("Sounds", true));
+	soundsEnableAction->setChecked(grp1.readEntry("SoundsEnable", true));
+	QString soundScheme = grp1.readEntry("SoundScheme", "");
+	if (!soundScheme.isEmpty()) Sound::self()->setSchemeName(soundScheme);
+	slotSoundsEnable();
+	updateSoundsMenu();
+
 	int mag = grp1.readEntry("Magnification", static_cast<int>(Sprites::Normal));
+	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
-
-	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
-	slotSoundsChanged();
 }
 
 
@@ -252,7 +271,8 @@ void MainWindow::saveOptions()
 	kDebug();
 
 	KConfigGroup grp1 = KGlobal::config()->group("Options");
-	grp1.writeEntry("Sounds", soundsAction->isChecked());
+	grp1.writeEntry("SoundsEnable", soundsEnableAction->isChecked());
+	grp1.writeEntry("SoundScheme", Sound::self()->schemeConfigName());
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
@@ -304,9 +324,31 @@ void MainWindow::slotHighScores()
 }
 
 
-void MainWindow::slotSoundsChanged()
+void MainWindow::slotSoundsEnable()
 {
-	Sound::self()->setEnabled(soundsAction->isChecked());
+	Sound::self()->setEnabled(soundsEnableAction->isChecked());
+}
+
+
+void MainWindow::slotSoundsScheme(QAction *act)
+{
+	QString name = act->data().toString();
+	kDebug() << "name" << name;
+	Sound::self()->setSchemeName(name);
+}
+
+
+void MainWindow::updateSoundsMenu()
+{
+	QList<QAction *> acts = soundsSchemeList->actions();
+	QString curScheme = Sound::self()->schemeName();
+
+	for (QList<QAction *>::const_iterator it = acts.constBegin();
+	     it!=acts.constEnd(); ++it)
+	{
+		QAction *act = (*it);
+		act->setChecked(act->data()==curScheme);
+	}
 }
 
 
