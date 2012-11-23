@@ -49,6 +49,7 @@
 #include "pixmaps.h"
 #include "episodes.h"
 #include "sprites.h"
+#include "sounds.h"
 #include "gameplayer.h"
 #include "checkmap.h"
 #include "selectgamedialog.h"
@@ -251,14 +252,17 @@ void MainWindow::readOptions()
 	kDebug();
 
 	KConfigGroup grp1 = KGlobal::config()->group("Options");
-	soundsEnableAction->setChecked(grp1.readEntry("Sounds", true));
+	soundsEnableAction->setChecked(grp1.readEntry("SoundsEnable", true));
+	QString soundScheme = grp1.readEntry("SoundScheme", "");
+	if (!soundScheme.isEmpty()) Sound::self()->setSchemeName(soundScheme);
+	slotSoundsEnable();
+	updateSoundsMenu();
+
 	int mag = grp1.readEntry("Magnification", static_cast<int>(Sprites::Normal));
+	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
-
-	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
-	slotSoundsEnable();
 }
 
 
@@ -267,7 +271,8 @@ void MainWindow::saveOptions()
 	kDebug();
 
 	KConfigGroup grp1 = KGlobal::config()->group("Options");
-	grp1.writeEntry("Sounds", soundsEnableAction->isChecked());
+	grp1.writeEntry("SoundsEnable", soundsEnableAction->isChecked());
+	grp1.writeEntry("SoundScheme", Sound::self()->schemeConfigName());
 
 	KConfigGroup grp2 = KGlobal::config()->group("Editor");
 	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
@@ -330,6 +335,20 @@ void MainWindow::slotSoundsScheme(QAction *act)
 	QString name = act->data().toString();
 	kDebug() << "name" << name;
 	Sound::self()->setSchemeName(name);
+}
+
+
+void MainWindow::updateSoundsMenu()
+{
+	QList<QAction *> acts = soundsSchemeList->actions();
+	QString curScheme = Sound::self()->schemeName();
+
+	for (QList<QAction *>::const_iterator it = acts.constBegin();
+	     it!=acts.constEnd(); ++it)
+	{
+		QAction *act = (*it);
+		act->setChecked(act->data()==curScheme);
+	}
 }
 
 

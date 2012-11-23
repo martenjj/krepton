@@ -127,6 +127,7 @@ private:
 	void updateCaption();
 	void fetchFromEditor();
 	void passToEditor();
+	void updateSoundsMenu();
 };
 
 #endif							// !MAINWINDOW_H

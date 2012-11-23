@@ -299,3 +299,9 @@ QMap<QString,QString> Sound::allSchemesList()
 
 	return (res);
 }
+
+
+QString Sound::schemeConfigName() const
+{
+	return (mSoundScheme==SOUND_DEFAULT_SCHEME ? QString::null : mSoundScheme);
+}

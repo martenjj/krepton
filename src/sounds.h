@@ -61,6 +61,7 @@ public:
 	QMap<QString,QString> allSchemesList();
 	bool setSchemeName(const QString &name);
 	QString schemeName() const	{ return (mSoundScheme); }
+	QString schemeConfigName() const;
 
 private:
 	Sound();
