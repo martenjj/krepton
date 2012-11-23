@@ -22,3 +22,4 @@ stamp-*
 *.moc.cpp
 *ui.cpp
 *ui.h
+KTdata
