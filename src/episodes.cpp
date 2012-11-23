@@ -123,6 +123,7 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 	t << maps->count() << '\n';
 	f.close();
 
+	path = getFilePath("");				// containing directory
 	removeMapFiles(path);				// clean up old maps
         int i = 0;
         for (MapList::const_iterator it = maps->constBegin();
@@ -329,10 +330,13 @@ const Episode *EpisodeList::find(const QString &name)
 
 void EpisodeList::add(const Episode *e)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	kDebug() << "name" << e->getName();
+
+	const Episode *old = find(e->getName());	// name already exists?
+	if (old!=NULL) removeOne(old);			// yes, remove the old one
 
         append(e);
-	qSort(begin(),end(),&episodeLessThan);		// resort after insertion
+	qSort(begin(), end(), &episodeLessThan);	// resort after insertion
 }
 
 
