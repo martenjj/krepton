@@ -105,6 +105,7 @@ const QString GamePlayer::loadSprites(const Episode *e)
 	sprites = new Sprites(e);
 	unsetCursor();
 
+	if (in_game) sprites->prepare(currentlevel+1);
 	return (sprites->loadStatus());
 }
 
