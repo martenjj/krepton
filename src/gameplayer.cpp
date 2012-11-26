@@ -220,6 +220,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 
 	in_game = true;
 	in_pause = false;
+	emit changedStats(diamonds,seconds,points);
 	emit changedPlayState(in_game,in_pause);
 	emit changedLives(lives);
 	emit changedFlags(havekey,havecrown);
@@ -309,8 +310,8 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 
 	const int oldsecs = seconds;
 	const int oldpoints = points;
-	seconds += currentmap->readSeconds();		// anything gained this tick
-	points += currentmap->readPoints();
+	seconds += currentmap->gameSeconds();		// anything gained this tick
+	points += currentmap->gamePoints();
 
 	int id = e->timerId();
 	if (id==timerObjects)

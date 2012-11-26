@@ -58,8 +58,8 @@ public:
 	bool hasDied() const { return (how_died!=QString::null); }
 	const QString &howDied() const { return (how_died); }
 
-	int readSeconds() { int s = num_secs; num_secs = 0; return (s); }
-	int readPoints() { int p = num_points; num_points = 0; return (p); }
+	int gameSeconds() { int s = game_secs; game_secs = 0; return (s); }
+	int gamePoints() { int p = game_points; game_points = 0; return (p); }
 
 	int getDiamonds() const { return (num_diamonds); }
 	bool haveKey() const { return (have_key); }
@@ -70,7 +70,8 @@ public:
 	void setCheats(Cheat::Options cheats);
 
 private:
-	int num_points;
+	int game_points;
+	int game_secs;
 	int num_diamonds;
 	bool have_key,have_crown;
 	bool levelfinished;

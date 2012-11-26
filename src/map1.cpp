@@ -86,7 +86,7 @@ void MapPlay::setCheats(Cheat::Options cheats)
 void MapPlay::startGame()
 {
 	prepareMap();
-	num_secs = num_points = 0;			// nothing accumulated yet
+	game_secs = game_points = 0;			// nothing accumulated yet
 
 // This makes sure that KNotify is running at the start of the game.
 // Otherwise, there may be a big delay when the first diamond is hit...
@@ -103,7 +103,7 @@ void MapPlay::restartGame()
 	currentRepton = Obj::Repton;
 
 	how_died = QString::null;
-	num_secs = num_points = 0;			// nothing accumulated yet
+	game_secs = game_points = 0;			// nothing accumulated yet
 }
 
 
@@ -927,22 +927,22 @@ void MapPlay::gotObject(Obj::Type obj)
 case Obj::Diamond:
 		Sound::self()->playSound(Sound::Diamond);
 		--num_diamonds;
-		num_points += 50;
+		game_points += 50;
 		break;
 
 case Obj::Time:	Sound::self()->playSound(Sound::Time);
-		num_secs += 30;
-		num_points += 10;
+		game_secs += 30;
+		game_points += 10;
 		break;
 
 case Obj::Key:	Sound::self()->playSound(Sound::Key);
 		gotKey();
-		num_points += 30;
+		game_points += 30;
 		break;
 
 case Obj::Crown:
 		Sound::self()->playSound(Sound::Crown);
-		num_points += 200;
+		game_points += 200;
 		have_crown = true;
 		break;
 
@@ -985,7 +985,7 @@ case Obj::Crown:
 
 case Obj::Ground1:
 case Obj::Ground2:
-		num_points += 2;
+		game_points += 2;
 		/* FALLTHROUGH */
 
 case Obj::Empty:
@@ -1048,7 +1048,7 @@ case Obj::Empty:
 
 case Obj::Ground1:
 case Obj::Ground2:
-		num_points += 2;
+		game_points += 2;
 		if (xd!=0) moveHorizontalDirect(xd);
 		else moveVerticalDirect(yd);
 		break;
@@ -1119,7 +1119,7 @@ bool MapPlay::moveHorizontal(int xd)
 // Kill a monster.
 void MapPlay::killMonster(Monster *mp)
 {
-	num_points += 500;
+	game_points += 500;
 	// Do not remove the monster from the 'monsters' list,
 	// because this function can be called while iterating over it.
 	// Just deactivate it.
