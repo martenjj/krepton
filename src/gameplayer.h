@@ -61,7 +61,6 @@ public:
 	bool everCheated() const { return (cheats_ever_used); }
 
 	QStringList listLevels(const Episode *e);
-	void recordLevel(GamePlayer::State state);
 
 	void startGame(const Episode *e,int level = 0);
 	void startGamePassword(const Episode *e,const QString& password);
@@ -97,6 +96,8 @@ protected:
 	void keyPressEvent(QKeyEvent *e);
 
 private:
+	void recordLevel(GamePlayer::State state);
+
 	MapList maps;
 	Sprites *sprites;
 

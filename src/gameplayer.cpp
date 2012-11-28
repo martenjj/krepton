@@ -233,9 +233,14 @@ void GamePlayer::recordLevel(GamePlayer::State state)
         QString cg = "Episode "+Episode::sanitisedName(episodeName);
 	KConfigGroup grp = KGlobal::config()->group(cg);
 
-        // TODO: look at current state, if successfully completed and new state
-        // is 'failed' then don't override the earlier success.
-        grp.writeEntry(QString::number(currentlevel), static_cast<int>(state));
+	QString levelKey = QString::number(currentlevel);
+	int oldstate = grp.readEntry(levelKey, -1);
+	int newstate = static_cast<int>(state);
+
+        // Only increase (improve) the level play/finish state, never lower it.
+        if (newstate>oldstate) grp.writeEntry(levelKey, newstate);
+
+	// But record the currently playing level anyway.
         if (state==GamePlayer::Started) grp.writeEntry("Playing", currentlevel);
 }
 
