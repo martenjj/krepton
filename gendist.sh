@@ -27,6 +27,7 @@ mkdir $ARCH						# create as empty
 
 echo
 cp -rp $1/* $ARCH					# copy in source files
+rm -rf $ARCH/KTdata $ARCH/.git*				# remove any unwanted
 tar cvvf $ARCH.tar $ARCH				# create tar archive
 gzip -9v $ARCH.tar					# compress the archive
 rm -rf $ARCH						# don't need the directory
