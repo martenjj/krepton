@@ -2,6 +2,18 @@ ChangeLog for KRepton                             -*- mode:text -*-
 =====================
 
 
+Changes from version 4.4 to version 4.5:
+---------------------------------------
+
+Spirits are hopefully less likely to get trapped or confused.
+
+Cheat modes are available to turn off various dangerous things.
+
+Multiple sound schemes: as well as the original KRepton sounds those
+from Repton 1, Repton 2 and Repton 3 are available.
+
+
+
 Changes from version 4.3 to version 4.4:
 ---------------------------------------
 
