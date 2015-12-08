@@ -3,9 +3,9 @@ KRepton Installation Instructions
 
 KRepton is now ported to KDE4 and so uses CMake.
 
-To compile and install, extract the source archive and then create a
-separate build directory.  Change into the newly created build directory
-and then do:
+To compile and install, clone the Git repository or download and
+extract the source archive, and then create a separate build
+directory.  Change into the newly created build directory and then do:
 
   cmake /path/to/source/directory
 
