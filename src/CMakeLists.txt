@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		03-Jun-12					#
+#  Edit:		19-Jun-16					#
 #########################################################################
 
 project(krepton)
@@ -21,7 +21,7 @@ if (HAVE_STRERROR)
   add_definitions(-DHAVE_STRERROR)
   check_include_files(errno.h HAVE_ERRNO_H)
   if (HAVE_ERRNO_H)
-  add_definitions(-DHAVE_ERRNO_H)
+    add_definitions(-DHAVE_ERRNO_H)
   endif (HAVE_ERRNO_H)
 endif (HAVE_STRERROR)
 
