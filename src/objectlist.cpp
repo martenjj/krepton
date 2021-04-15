@@ -95,7 +95,7 @@ ObjectList::ObjectList(const QString &s)
 {
 	qDebug();
 
-	lSprites = s.split(',', QString::SkipEmptyParts);
+	lSprites = s.split(',', Qt::SkipEmptyParts);
 	lMaps = s.section(",,",0,0).split(',');
 
 	qDebug() << "done, n1=" << lSprites.count() << "l2=" << lMaps.count();

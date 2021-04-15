@@ -17,7 +17,7 @@ message(STATUS "Configuring for KRepton version ${VERSION}")
 #									#
 #########################################################################
 
-set(QT_MIN_VERSION "5.12.0")
+set(QT_MIN_VERSION "5.14.0")
 set(KF5_MIN_VERSION "5.60.0")
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
