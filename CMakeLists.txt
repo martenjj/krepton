@@ -1,6 +1,6 @@
 #########################################################################
-#  Project:		KRepton for KDE4				#
-#  Edit:		19-Jun-16					#
+#  Project:		KRepton for Plasma 5				#
+#  Edit:		15-Apr-21					#
 #########################################################################
 #									#
 #									#
@@ -8,24 +8,29 @@
 
 project(krepton)
 
-set(VERSION 4.5)
+set(VERSION 5.0)
 message(STATUS "Configuring for KRepton version ${VERSION}")
 
 #########################################################################
 #									#
-#  KDE paths and definitions						#
+#  ECM paths and definitions						#
 #									#
 #########################################################################
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+set(QT_MIN_VERSION "5.12.0")
+set(KF5_MIN_VERSION "5.60.0")
 
-find_package(KDE4 REQUIRED)
-include(KDE4Defaults)
-include(MacroLibrary)
-include(CheckIncludeFiles)
+find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
+include(ECMSetupVersion)
+include(FeatureSummary)
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDEFrameworkCompilerSettings)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${KDE_INSTALL_FULL_DATAROOTDIR}/marble/cmake)
 
 #########################################################################
 #									#
@@ -33,7 +38,7 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES})
 #									#
 #########################################################################
 
-option(SOUND_TYPE "specify how sound is to be played (phonon,artsplay,soxplay,alsaplay,none)" OFF)
+option(SOUND_TYPE "Specify how sound is to be played (phonon,artsplay,soxplay,alsaplay,none)" OFF)
 
 #########################################################################
 #									#
@@ -61,27 +66,20 @@ add_custom_target(dist
 
 #########################################################################
 #									#
-#  Custom defintions							#
-#									#
-#########################################################################
-
-
-#########################################################################
-#									#
 #  Subdirectories							#
 #									#
 #########################################################################
 
-macro_optional_add_subdirectory(sounds)
-if(DEFINED SOUND_FILE_EXT)
+add_subdirectory(sounds)
+if (DEFINED SOUND_FILE_EXT)
   add_definitions(-DSOUND_FILE_EXT=${SOUND_FILE_EXT})
-endif(DEFINED SOUND_FILE_EXT)
+endif (DEFINED SOUND_FILE_EXT)
 
-macro_optional_add_subdirectory(src)
-macro_optional_add_subdirectory(desktop)
-macro_optional_add_subdirectory(pics)
-macro_optional_add_subdirectory(episodes)
-macro_optional_add_subdirectory(doc)
+add_subdirectory(src)
+add_subdirectory(desktop)
+add_subdirectory(pics)
+add_subdirectory(episodes)
+add_subdirectory(doc)
 
 #########################################################################
 #									#
@@ -89,4 +87,4 @@ macro_optional_add_subdirectory(doc)
 #									#
 #########################################################################
 
-macro_display_feature_log()
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

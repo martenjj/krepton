@@ -1,15 +1,32 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		19-Jun-16					#
+#  Edit:		15-Apr-21					#
 #########################################################################
 
 project(krepton)
 
 #########################################################################
 #									#
+#  CMake modules required here						#
+#									#
+#########################################################################
+
+include(CheckLibraryExists)
+include(CheckFunctionExists)
+include(CheckIncludeFiles)
+
+#########################################################################
+#									#
 #  Tests and options							#
 #									#
 #########################################################################
+
+find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Gui Widgets)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash)
+find_package(Phonon4Qt5 NO_POLICY_SCOPE)
+set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Required for playback of audio/video notes")
+#find_package(DialogUtil REQUIRED NO_POLICY_SCOPE)
+#set_package_properties("DialogUtil" PROPERTIES DESCRIPTION "Dialogue utility library" TYPE REQUIRED PURPOSE "Required to build the project")
 
 check_library_exists(m fabs "" HAVE_LIBM)
 if (HAVE_LIBM)
@@ -42,9 +59,9 @@ if (SOUND_TYPE STREQUAL "phonon")
 endif (SOUND_TYPE STREQUAL "phonon")
 
 if (SOUND_TYPE STREQUAL "OFF")
-  if (PHONON_FOUND)
+  if (Phonon4Qt5_FOUND)
     set(SOUND_TYPE "phonon")
-  endif (PHONON_FOUND)
+  endif (Phonon4Qt5_FOUND)
 endif (SOUND_TYPE STREQUAL "OFF")
 
 if (SOUND_TYPE STREQUAL "phonon")
@@ -66,7 +83,24 @@ else (SOUND_TYPE STREQUAL "phonon")
 endif (SOUND_TYPE STREQUAL "phonon")
 
 add_definitions(-DVERSION=\\"${VERSION}\\")
-add_definitions(-DQT_STRICT_ITERATORS=1)
+
+#########################################################################
+#									#
+#  Rigourousness							#
+#									#
+#########################################################################
+
+add_definitions("-DQT_USE_FAST_CONCATENATION")
+add_definitions("-DQT_USE_FAST_OPERATOR_PLUS")
+add_definitions("-DQT_NO_CAST_FROM_BYTEARRAY")
+add_definitions("-DQT_NO_URL_CAST_FROM_STRING")
+add_definitions("-DQT_NO_CAST_TO_ASCII")
+add_definitions("-DQT_NO_NARROWING_CONVERSIONS_IN_CONNECT")
+add_definitions("-DQT_DEPRECATED_WARNINGS")
+add_definitions("-DQT_STRICT_ITERATORS=1")
+
+remove_definitions("-DQT_NO_CAST_FROM_ASCII")
+remove_definitions("-DQT_NO_SIGNALS_SLOTS_KEYWORDS")
 
 #########################################################################
 #									#
@@ -109,10 +143,12 @@ set(krepton_SRCS
   cheatdialog.cpp
 )
 
-kde4_add_executable(krepton ${krepton_SRCS})
+add_executable(krepton ${krepton_SRCS})
 target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS})
 if (SOUND_TYPE STREQUAL "phonon")
-  target_link_libraries(krepton ${PHONON_LIBS})
+  add_definitions("-DHAVE_PHONON=1")
+  include_directories(${PHONON_INCLUDES})
+  target_link_libraries(krepton Phonon::phonon4qt5)
 endif (SOUND_TYPE STREQUAL "phonon")
 
 add_dependencies(krepton vcsversion)
@@ -123,4 +159,6 @@ add_dependencies(krepton vcsversion)
 #									#
 #########################################################################
 
-install(TARGETS krepton ${INSTALL_TARGETS_DEFAULT_ARGS})
+if (INSTALL_BINARIES)
+  install(TARGETS krepton ${INSTALL_TARGETS_DEFAULT_ARGS})
+endif (INSTALL_BINARIES)
