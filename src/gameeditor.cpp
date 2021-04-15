@@ -203,9 +203,8 @@ void GameEditor::updateTransportersList(int item)
 		it!=tl.constEnd(); ++it)
 	{
 		const Transporter *tr = (*it);
-		QString s;
-		s.sprintf("%d,%d -> %d,%d",
-			  tr->orig_x+1,tr->orig_y+1,tr->dest_x+1,tr->dest_y+1);
+		QString s = QString::asprintf("%d,%d -> %d,%d",
+					      tr->orig_x+1,tr->orig_y+1,tr->dest_x+1,tr->dest_y+1);
 		view->transportListBox->addItem(s);
 	}
 
