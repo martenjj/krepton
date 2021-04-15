@@ -27,21 +27,18 @@
 
 #include <qgridlayout.h>
 #include <qlabel.h>
-
-#include <kdialog.h>
+#include <qspinbox.h>
 
 #include "krepton.h"
 
 
 NewTransporterDialog::NewTransporterDialog(const QString &title, QWidget *parent)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
         setObjectName("NewTransporterDialog");
-        setCaption(title);
-        setButtons(KDialog::Ok|KDialog::Cancel);
-        setDefaultButton(KDialog::Ok);
+        setWindowTitle(title);
+        setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
         setModal(true);
-        showButtonSeparator(true);
 
 	QWidget *w = new QWidget(this);
         QGridLayout *gl = new QGridLayout;
@@ -67,7 +64,7 @@ NewTransporterDialog::NewTransporterDialog(const QString &title, QWidget *parent
         gl->addWidget(mDestYBox, 2, 3, Qt::AlignLeft);
 
         gl->setColumnStretch(4, 1);
-        gl->setRowMinimumHeight(1, KDialog::spacingHint());
+        gl->setRowMinimumHeight(1, DialogBase::verticalSpacing());
         gl->setRowStretch(3, 1);
 
         w->setLayout(gl);
@@ -94,3 +91,9 @@ void NewTransporterDialog::setValues(int ox,int oy,int dx,int dy)
 	mOrigYBox->setValue(oy);
 	mDestYBox->setValue(dy);
 }
+
+
+int NewTransporterDialog::xorig() const		{ return (mOrigXBox->value()); }
+int NewTransporterDialog::yorig() const		{ return (mOrigYBox->value()); }
+int NewTransporterDialog::xdest() const		{ return (mDestXBox->value()); }
+int NewTransporterDialog::ydest() const		{ return (mDestYBox->value()); }

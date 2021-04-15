@@ -39,6 +39,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${KDE_INSTALL_FULL_DATAROOTDIR}/marbl
 #########################################################################
 
 option(SOUND_TYPE "Specify how sound is to be played (phonon,artsplay,soxplay,alsaplay,none)" OFF)
+option(INSTALL_BINARIES "Install the binaries and libraries, turn off for development in place" ON)
 
 #########################################################################
 #									#

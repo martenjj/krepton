@@ -32,7 +32,7 @@ class GamePlayer;
 class GameEditor;
 class Episode;
 
-class KAction;
+class QAction;
 class KToggleAction;
 class KSelectAction;
 
@@ -92,21 +92,21 @@ protected slots:
 private:
 	KToggleAction *pauseAction;
 	KToggleAction *soundsEnableAction;
-	KAction *selectAction;
-	KAction *startAction;
-	KAction *restartAction;
-	KAction *continueAction;
-	KAction *suicideAction;
-	KAction *loadspritesAction;
+	QAction *selectAction;
+	QAction *startAction;
+	QAction *restartAction;
+	QAction *continueAction;
+	QAction *suicideAction;
+	QAction *loadspritesAction;
 	KSelectAction *magnificationList;
-	KAction *cheatsAction;
-	KAction *editAction;
-	KAction *saveAction;
-	KAction *saveAsAction;
-	KAction *removeAction;
-	KAction *importAction;
-	KAction *exportAction;
-	KAction *printAction;
+	QAction *cheatsAction;
+	QAction *editAction;
+	QAction *saveAction;
+	QAction *saveAsAction;
+	QAction *removeAction;
+	QAction *importAction;
+	QAction *exportAction;
+	QAction *printAction;
 	KSelectAction *soundsSchemeList;
 
 	KToggleAction *strictToggle;

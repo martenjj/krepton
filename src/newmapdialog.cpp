@@ -29,19 +29,19 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qlineedit.h>
+#include <qspinbox.h>
 
 #include "krepton.h"
 
 
 NewMapDialog::NewMapDialog(QWidget *parent)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
 	setObjectName("NewMapDialog");
-        setCaption(i18n("New Level"));
-        setButtons(KDialog::Ok|KDialog::Cancel);
-        setDefaultButton(KDialog::Ok);
+        setWindowTitle(i18n("New Level"));
+        setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
         setModal(true);
-        showButtonSeparator(true);
 
         QWidget *w = new QWidget(this);
 
@@ -58,7 +58,7 @@ NewMapDialog::NewMapDialog(QWidget *parent)
         l->setBuddy(mNameEdit);
 
         vb->addLayout(hb1);
-        vb->addSpacing(KDialog::spacingHint());
+        vb->addSpacing(DialogBase::verticalSpacing());
 
         QHBoxLayout *hb2 = new QHBoxLayout;
 
@@ -71,7 +71,7 @@ NewMapDialog::NewMapDialog(QWidget *parent)
         hb2->addWidget(mSizeXBox, 0, Qt::AlignLeft);
         l->setBuddy(mSizeXBox);
 
-        hb2->addSpacing(KDialog::spacingHint());
+        hb2->addSpacing(DialogBase::horizontalSpacing());
         hb2->addStretch(1);
 
         l = new QLabel(i18n("Height:"), w);
@@ -97,5 +97,10 @@ NewMapDialog::NewMapDialog(QWidget *parent)
 
 void NewMapDialog::slotNameChanged(const QString &s)
 {
-	enableButtonOk(!s.isEmpty());
+	setButtonEnabled(QDialogButtonBox::Ok, !s.isEmpty());
 }
+
+
+int NewMapDialog::mapWidth() const		{ return (mSizeXBox->value()); }
+int NewMapDialog::mapHeight() const		{ return (mSizeYBox->value()); }
+QByteArray NewMapDialog::mapPassword() const	{ return (mNameEdit->text().toLocal8Bit()); }

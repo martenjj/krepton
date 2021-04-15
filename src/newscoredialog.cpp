@@ -31,7 +31,6 @@
 #include <qlineedit.h>
 #include <qlayout.h>
 
-#include <kdialog.h>
 #include <kemailsettings.h>
 
 #include "krepton.h"
@@ -40,14 +39,12 @@
 // TODO: have a "Remember this" check box
 
 NewScoreDialog::NewScoreDialog(QWidget *parent)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
 	setObjectName("NewScoreDialog");
-	setCaption(i18n("New High Score"));
-	setButtons(KDialog::Ok|KDialog::Cancel);
-	setDefaultButton(KDialog::Ok);
+	setWindowTitle(i18n("New High Score"));
+	setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
 	setModal(true);
-	showButtonSeparator(true);
 
         KEMailSettings es;				// first try configured full name
         QString name = es.getSetting(KEMailSettings::RealName);
@@ -91,5 +88,5 @@ QString NewScoreDialog::name() const
 
 void NewScoreDialog::slotTextChanged(const QString& text)
 {
-	enableButtonOk(!text.isEmpty());
+	setButtonEnabled(QDialogButtonBox::Ok, !text.isEmpty());
 }

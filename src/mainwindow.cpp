@@ -26,14 +26,9 @@
 #include "mainwindow.h"
 #include "mainwindow.moc"
 
-#include <kapplication.h>
-#include <kstatusbar.h>
 #include <kxmlguiwindow.h>
-#include <kconfig.h>
-#include <kglobal.h>
-#include <klocale.h>
+#include <ksharedconfig.h>
 #include <kstandardaction.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kselectaction.h>
 #include <ktoggleaction.h>
@@ -44,7 +39,10 @@
 
 #include <qdir.h>
 #include <qcursor.h>
-#include <qbytearray.h>
+// #include <qbytearray.h>
+#include <qlabel.h>
+#include <qstatusbar.h>
+#include <qapplication.h>
 
 #include "pixmaps.h"
 #include "episodes.h"
@@ -72,7 +70,7 @@ static const int default_hei = 9;
 MainWindow::MainWindow(QWidget *parent)
         : KXmlGuiWindow(parent)
 {
-	kDebug();
+	qDebug();
 
 	currentepisode = NULL;
 	modified = false;
@@ -84,32 +82,32 @@ MainWindow::MainWindow(QWidget *parent)
         selectAction = KStandardAction::open(this, SLOT(slotSelectGame()), actionCollection());
         selectAction->setText(i18n("Select Game..."));
 
-        startAction = new KAction(i18n("Start at first level"), this);
+        startAction = new QAction(i18n("Start at first level"), this);
         startAction->setShortcut(Qt::Key_S);
         connect(startAction, SIGNAL(triggered()), SLOT(slotStartGame()));
         actionCollection()->addAction("game_start", startAction);
 
-        restartAction = new KAction(i18n("Restart last level"), this);
+        restartAction = new QAction(i18n("Restart last level"), this);
         restartAction->setShortcut(Qt::Key_R);
         connect(restartAction, SIGNAL(triggered()), SLOT(slotRestartGame()));
         actionCollection()->addAction("game_restart", restartAction);
 
-        continueAction = new KAction(i18n("Restart at level..."), this);
+        continueAction = new QAction(i18n("Restart at level..."), this);
         continueAction->setShortcut(Qt::Key_C);
         connect(continueAction, SIGNAL(triggered()), SLOT(slotContinueGame()));
         actionCollection()->addAction("game_continue", continueAction);
 
         pauseAction = new KToggleAction(i18n("Pause"), this);
-        pauseAction->setShortcut(KShortcut(Qt::Key_P, Qt::Key_Pause));
+        pauseAction->setShortcut(QKeySequence(Qt::Key_P, Qt::Key_Pause));
         connect(pauseAction, SIGNAL(triggered()), SLOT(slotPauseGame()));
         actionCollection()->addAction("game_pause", pauseAction);
 
-        suicideAction = new KAction(i18n("Give up"), this);
+        suicideAction = new QAction(i18n("Give up"), this);
         suicideAction->setShortcut(Qt::Key_Escape);
         connect(suicideAction, SIGNAL(triggered()), SLOT(slotSuicide()));
         actionCollection()->addAction("game_suicide", suicideAction);
 
-	KAction *scoresAction = new KAction(i18n("High Scores..."), this);
+	QAction *scoresAction = new QAction(i18n("High Scores..."), this);
         scoresAction->setShortcut(Qt::CTRL+Qt::Key_H);
         connect(scoresAction, SIGNAL(triggered()), SLOT(slotHighScores()));
         actionCollection()->addAction("file_highscores", scoresAction);
@@ -128,12 +126,12 @@ MainWindow::MainWindow(QWidget *parent)
 	     it!=schemeMap.constEnd(); ++it)
 	{
 		QString scheme = it.key();
-		KAction *act = soundsSchemeList->addAction(it.value());
+		QAction *act = soundsSchemeList->addAction(it.value());
 		if (scheme==curScheme) act->setChecked(true);
 		act->setData(scheme);
 	}
 
-        loadspritesAction = new KAction(i18n("Change Sprites..."), this);
+        loadspritesAction = new QAction(i18n("Change Sprites..."), this);
         connect(loadspritesAction, SIGNAL(triggered()), SLOT(slotLoadSprites()));
         actionCollection()->addAction("settings_loadsprites", loadspritesAction);
 
@@ -141,11 +139,11 @@ MainWindow::MainWindow(QWidget *parent)
         connect(magnificationList, SIGNAL(triggered()), SLOT(slotSetMagnification()));
         actionCollection()->addAction("settings_magnification", magnificationList);
 
-	cheatsAction = new KAction(i18n("Cheat Modes..."), this);
+	cheatsAction = new QAction(i18n("Cheat Modes..."), this);
 	connect(cheatsAction, SIGNAL(triggered()), SLOT(slotSelectCheats()));
 	actionCollection()->addAction("settings_cheats", cheatsAction);
 
-        editAction = new KAction(i18n("Game Editor..."), this);
+        editAction = new QAction(i18n("Game Editor..."), this);
 	editAction->setShortcut(Qt::CTRL+Qt::Key_E);
 	connect(editAction, SIGNAL(triggered()), SLOT(slotEdit()));
 	actionCollection()->addAction("edit_edit", editAction);
@@ -153,17 +151,17 @@ MainWindow::MainWindow(QWidget *parent)
 	saveAction = KStandardAction::save(this, SLOT(slotSave()), actionCollection());
 	saveAsAction = KStandardAction::saveAs(this, SLOT(slotSaveAs()), actionCollection());
 
-        importAction = new KAction(i18n("Import..."), this);
+        importAction = new QAction(i18n("Import..."), this);
         connect(importAction, SIGNAL(triggered()), SLOT(slotImport()));
         actionCollection()->addAction("file_import", importAction);
 
-        exportAction = new KAction(i18n("Export..."), this);
+        exportAction = new QAction(i18n("Export..."), this);
         connect(exportAction, SIGNAL(triggered()), SLOT(slotExport()));
         actionCollection()->addAction("file_export", exportAction);
 
         printAction = KStandardAction::print(this, SLOT(slotPrint()), actionCollection());
 
-        removeAction = new KAction(i18n("Remove..."), this);
+        removeAction = new QAction(i18n("Remove..."), this);
         connect(removeAction, SIGNAL(triggered()), SLOT(slotRemove()));
         actionCollection()->addAction("file_remove", removeAction);
 
@@ -176,10 +174,11 @@ MainWindow::MainWindow(QWidget *parent)
 	list << i18n("Half") << i18n("Normal") << i18n("Double");
 	magnificationList->setItems(list);
 
-	KStatusBar *status = statusBar();
-	status->insertPermanentFixedItem(i18n("Diamonds: Plenty!  "), 1);
-	status->insertPermanentFixedItem(i18n("Time: 999:99  "), 2);
-	status->insertPermanentFixedItem(i18n("Score: 999999  "), 3);
+	QStatusBar *status = statusBar();
+	// TODO: Port to Qt5
+// 	status->insertPermanentFixedItem(i18n("Diamonds: Plenty!  "), 1);
+// 	status->insertPermanentFixedItem(i18n("Time: 999:99  "), 2);
+// 	status->insertPermanentFixedItem(i18n("Score: 999999  "), 3);
 
 	const QPixmap keypix = Pixmaps::find(Pixmaps::Key);
 	keyflag = new QLabel(this);
@@ -203,7 +202,8 @@ MainWindow::MainWindow(QWidget *parent)
 	status->addPermanentWidget(crownflag, 0);
 	status->addPermanentWidget(livesflag, 0);
 
-	for (int i = 1; i<=3; ++i) status->setItemAlignment(i,Qt::AlignLeft|Qt::AlignVCenter);
+	// TODO: Port to Qt5
+// 	for (int i = 1; i<=3; ++i) status->setItemAlignment(i,Qt::AlignLeft|Qt::AlignVCenter);
 	updateStats(-1);
 
 	game = new GamePlayer(this);
@@ -238,7 +238,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	updateGameState(false);
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
@@ -249,9 +249,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::readOptions()
 {
-	kDebug();
+	qDebug();
 
-	KConfigGroup grp1 = KGlobal::config()->group("Options");
+	const KConfigGroup grp1 = KSharedConfig::openConfig()->group("Options");
 	soundsEnableAction->setChecked(grp1.readEntry("SoundsEnable", true));
 	QString soundScheme = grp1.readEntry("SoundScheme", "");
 	if (!soundScheme.isEmpty()) Sound::self()->setSchemeName(soundScheme);
@@ -261,27 +261,27 @@ void MainWindow::readOptions()
 	int mag = grp1.readEntry("Magnification", static_cast<int>(Sprites::Normal));
 	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 
-	KConfigGroup grp2 = KGlobal::config()->group("Editor");
+	const KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
 	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
 }
 
 
 void MainWindow::saveOptions()
 {
-	kDebug();
+	qDebug();
 
-	KConfigGroup grp1 = KGlobal::config()->group("Options");
+	KConfigGroup grp1 = KSharedConfig::openConfig()->group("Options");
 	grp1.writeEntry("SoundsEnable", soundsEnableAction->isChecked());
 	grp1.writeEntry("SoundScheme", Sound::self()->schemeConfigName());
 
-	KConfigGroup grp2 = KGlobal::config()->group("Editor");
+	KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
 	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
 }
 
 
 bool MainWindow::queryClose()
 {
-	kDebug() << "mod=" << modified;
+	qDebug() << "mod=" << modified;
 
 	if (currentepisode==NULL) return (true);	// no episode loaded
 	const bool emod = (edit==NULL ? false : edit->isModified());
@@ -333,7 +333,7 @@ void MainWindow::slotSoundsEnable()
 void MainWindow::slotSoundsScheme(QAction *act)
 {
 	QString name = act->data().toString();
-	kDebug() << "name" << name;
+	qDebug() << "name" << name;
 	Sound::self()->setSchemeName(name);
 }
 
@@ -354,7 +354,8 @@ void MainWindow::updateSoundsMenu()
 
 void MainWindow::updateStats(int diamonds,int secs,int points)
 {
-	KStatusBar *status = statusBar();
+	// TODO: Port to Qt5
+// 	KStatusBar *status = statusBar();
 
 	QString ds = QString::null;
 	if (diamonds>=0)
@@ -364,7 +365,7 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		else ds.setNum(diamonds);
 		ds = i18n("Diamonds: %1", ds);
 	}
-	status->changeItem(ds, 1);
+// 	status->changeItem(ds, 1);
 
 	QString ts = QString::null;
 	if (secs>=0)
@@ -373,9 +374,9 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		const int sec = secs % 60;
                 ts = i18n("Time: %1:%2", min, QString("%1").arg(sec, 2, 10, QChar('0')));
 	}
-	status->changeItem(ts, 2);
+// 	status->changeItem(ts, 2);
 
-	status->changeItem((points<0 ? QString::null : i18n("Score: %1", points)), 3);
+// 	status->changeItem((points<0 ? QString::null : i18n("Score: %1", points)), 3);
 }
 
 
@@ -388,14 +389,14 @@ void MainWindow::updateFlags(bool key,bool crown)
 
 void MainWindow::updateLives(int lives)
 {
-	kDebug() << " lives=" << lives;
+	qDebug() << " lives=" << lives;
 	livesflag->setPixmap(Pixmaps::findLives(lives));
 }
 
 
 void MainWindow::updateGameState(bool playing)
 {
-	kDebug() << "playing=" << playing;
+	qDebug() << "playing=" << playing;
 
 	const bool loaded = (currentepisode!=NULL);
 	selectAction->setEnabled(!playing && EpisodeList::list()->any());
@@ -421,7 +422,7 @@ void MainWindow::updateGameState(bool playing)
 
 void MainWindow::updatePlayState(bool ingame,bool inpause)
 {
-	kDebug() << "game=" << ingame << " pause=" << inpause;
+	qDebug() << "game=" << ingame << " pause=" << inpause;
 
 	const bool loaded = (currentepisode!=NULL);
 
@@ -446,7 +447,7 @@ void MainWindow::gameOver()
 	{
 		if (!game->everCheated())		// no high score for cheats
 		{
-			KConfigGroup grp = KGlobal::config()->group("High Score");
+			KConfigGroup grp = KSharedConfig::openConfig()->group("High Score");
 
 			QString name = currentepisode->getName().toUpper();
 			QString score = grp.readEntry((name+"_Score"), "");
@@ -467,15 +468,15 @@ void MainWindow::gameOver()
 				}
 			}
 		}
-		else kDebug() << "no high score, cheated";
+		else qDebug() << "no high score, cheated";
 	}
-	else kDebug() << "no high score, only" << points << "points";
+	else qDebug() << "no high score, only" << points << "points";
 }
 
 
 void MainWindow::updateEditModified()
 {
-	kDebug();
+	qDebug();
 
 	modified = true;
 	updateCaption();
@@ -484,7 +485,7 @@ void MainWindow::updateEditModified()
 
 void MainWindow::slotStartGame()
 {
-	kDebug();
+	qDebug();
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 
 	fetchFromEditor();
@@ -494,7 +495,7 @@ void MainWindow::slotStartGame()
 
 void MainWindow::slotRestartGame()
 {
-	kDebug();
+	qDebug();
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 
 	fetchFromEditor();
@@ -504,7 +505,7 @@ void MainWindow::slotRestartGame()
 
 void MainWindow::slotContinueGame()
 {
-	kDebug();
+	qDebug();
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 	fetchFromEditor();
 
@@ -541,7 +542,7 @@ void MainWindow::slotLoadSprites()
 	SelectGameDialog d(i18n("Select Sprites"),this);
 	if (!d.exec()) return;
 	const Episode *e = d.selectedItem();
-	kDebug() << "selected = '" << e->getName() << "'";
+	qDebug() << "selected = '" << e->getName() << "'";
 
 	const QString status = prepareGame(e,true);
 	if (!status.isNull())
@@ -561,27 +562,27 @@ void MainWindow::slotLoadSprites()
 
 void MainWindow::slotPauseGame()
 {
-	kDebug();
+	qDebug();
 	game->pauseAction();
 }
 
 
 void MainWindow::slotSuicide()
 {
-	kDebug();
+	qDebug();
 	game->suicideAction();
 }
 
 
 void MainWindow::slotSelectGame()
 {
-	kDebug();
+	qDebug();
 	if (!queryClose()) return;
 
 	SelectGameDialog d(i18n("Select Game"),this);
 	if (!d.exec()) return;
 	const Episode *e = d.selectedItem();
-	kDebug() << "selected = '" << e->getName() << "'";
+	qDebug() << "selected = '" << e->getName() << "'";
 
 	loadGame(e);
 	if (edit!=NULL) passToEditor();
@@ -590,7 +591,7 @@ void MainWindow::slotSelectGame()
 
 void MainWindow::loadGame(const Episode *e)		// from GUI selection
 {
-	kDebug() << "name='" << e->getName() << "'";
+	qDebug() << "name='" << e->getName() << "'";
 
 	const QString status = prepareGame(e);
 	if (!status.isNull())
@@ -621,7 +622,7 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 
 void MainWindow::loadGame(const QString name)		// from command line
 {
-	kDebug() << "name='" << name << "'";
+	qDebug() << "name='" << name << "'";
 	const Episode *e = EpisodeList::list()->find(name);
 	if (e==NULL)
 	{
@@ -639,15 +640,15 @@ void MainWindow::loadGame(const QString name)		// from command line
 void MainWindow::slotSetMagnification()
 {
         const int selection = magnificationList->currentItem();
-	kDebug() << " selected=" << selection;
+	qDebug() << " selected=" << selection;
 	if (selection==static_cast<int>(Sprites::getMagnification())) return;
 
 	KMessageBox::information(this,
                                  i18n("This change will take effect when %1 is next started.",
-                                      KGlobal::mainComponent().aboutData()->programName()),
+                                      qApp->applicationDisplayName()),
 				 QString::null,"sizeChangeMessage");
 
-	KConfigGroup grp = KGlobal::config()->group("Options");
+	KConfigGroup grp = KSharedConfig::openConfig()->group("Options");
 	grp.writeEntry("Magnification", selection);
 }
 
@@ -655,7 +656,7 @@ void MainWindow::slotSetMagnification()
 const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
 {
 	if (e==NULL) return (QString::null);
-	kDebug() << "name=" << e->getName();
+	qDebug() << "name=" << e->getName();
 
 	if (spritesonly)
         {
@@ -671,7 +672,7 @@ const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
 
 void MainWindow::slotEdit()
 {
-	kDebug() << "edit=" << edit;
+	qDebug() << "edit=" << edit;
 
 	if (currentepisode==NULL) return;
 
@@ -725,7 +726,7 @@ case KMessageBox::Cancel:
 
 void MainWindow::closeEvent(QCloseEvent *e)
 {
-	kDebug();
+	qDebug();
 
 	if (edit!=NULL) edit->close();
 	saveOptions();
@@ -736,7 +737,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
 void MainWindow::fetchFromEditor()
 {
 	if (edit==NULL) return;
-	kDebug() << "mod=" << edit->isModified();
+	qDebug() << "mod=" << edit->isModified();
 
 	if (!edit->isModified()) return;		// nothing to do
 	if (game->inGame()) return;			// shouldn't happen
@@ -754,7 +755,7 @@ void MainWindow::fetchFromEditor()
 
 void MainWindow::passToEditor()
 {
-	kDebug();
+	qDebug();
 
 	setCursor(QCursor(Qt::WaitCursor));
 	edit->startEdit(currentepisode->getName(),game->getMaps(),game->getSprites());
@@ -804,7 +805,7 @@ void MainWindow::slotSaveAs()
 	SaveEpisodeDialog d(i18n("Save Episode"),this);
 	if (!d.exec()) return;
 
-	kDebug() << "name='" << d.name() << "' path='" << d.path() << "'";
+	qDebug() << "name='" << d.name() << "' path='" << d.path() << "'";
 
 	QDir dir(d.path());
 	if (dir.exists())
@@ -827,7 +828,7 @@ void MainWindow::slotSaveAs()
 
 void MainWindow::slotRemove()
 {
-	kDebug();
+	qDebug();
 
 	SelectGameDialog d(i18n("Remove Game"), this, true);
 	if (!d.exec()) return;
@@ -836,7 +837,7 @@ void MainWindow::slotRemove()
 	if (e->isGlobal()) return;			// shouldn't happen
 
 	const QString name = e->getName();
-	kDebug() << "selected = '" << e->getName() << "'";
+	qDebug() << "selected = '" << e->getName() << "'";
 
 	if (KMessageBox::warningContinueCancel(
 		    this,i18n("<qt>Are you sure you want to remove the episode <b>%2</b>,"
@@ -845,7 +846,7 @@ void MainWindow::slotRemove()
                               name),
 		    QString::null,KGuiItem(i18n("Remove")))!=KMessageBox::Continue) return;
 
-	kDebug() << "e=" << e << "current=" << currentepisode;
+	qDebug() << "e=" << e << "current=" << currentepisode;
 
 	const bool iscurrent = (currentepisode!=NULL && e==currentepisode);
 							// is it current episode?
@@ -863,7 +864,7 @@ void MainWindow::slotRemove()
 
 void MainWindow::slotImport()
 {
-	kDebug();
+	qDebug();
         ImportWizard wiz(i18n("Import Assistant"),this);
         if (wiz.exec())
 	{
@@ -877,21 +878,21 @@ void MainWindow::slotImport()
 
 void MainWindow::slotExport()
 {
-	kDebug();
+	qDebug();
 	KMessageBox::sorry(this,i18n("This option is not implemented yet.\nSee the TODO file for more information."));
 }
 
 
 void MainWindow::slotPrint()
 {
-	kDebug();
+	qDebug();
 	KMessageBox::sorry(this,i18n("This option is not implemented yet.\nSee the TODO file for more information."));
 }
 
 
 void MainWindow::updateEditLevels()
 {
-	kDebug();
+	qDebug();
 
 	fetchFromEditor();				// need to update 'lastlevel'
 	updatePlayState(false,false);
@@ -900,14 +901,14 @@ void MainWindow::updateEditLevels()
 
 void MainWindow::slotSelectCheats()
 {
-	kDebug() << "current" << cheats_used;
+	qDebug() << "current" << cheats_used;
 
 	CheatDialog d(i18n("Select Cheats"), this);
 	d.setCheats(cheats_used);
 	if (d.exec())
 	{
 		cheats_used = d.getCheats();
-		kDebug() << "new" << cheats_used;
+		qDebug() << "new" << cheats_used;
 	        game->setCheats(cheats_used);
         }
 }

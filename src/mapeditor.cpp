@@ -29,7 +29,7 @@
 #include <qgroupbox.h>
 #include <qgridlayout.h>
 
-#include <kdialog.h>
+#include <dialogbase.h>
 
 #include "krepton.h"
 #include "sprites.h"
@@ -47,7 +47,7 @@ const int default_height = 355;
 MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	: QWidget(parent)
 {
-	kDebug() << "sprites=" << *ss;
+	qDebug() << "sprites=" << *ss;
 
 	setWindowTitle("Level Editor");
 	setMinimumSize(default_width, default_height);
@@ -60,10 +60,10 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(1,9);
 	gl->setColumnStretch(5,9);
-	gl->setColumnMinimumWidth(1,KDialog::spacingHint());
-	gl->setColumnMinimumWidth(3,KDialog::spacingHint());
-	gl->setRowMinimumHeight(2,KDialog::spacingHint());
-	gl->setRowMinimumHeight(4,KDialog::marginHint());
+	gl->setColumnMinimumWidth(1,DialogBase::horizontalSpacing());
+	gl->setColumnMinimumWidth(3,DialogBase::horizontalSpacing());
+	gl->setRowMinimumHeight(2,DialogBase::verticalSpacing());
+	gl->setRowMinimumHeight(4,2*DialogBase::verticalSpacing());
 
 	sprite_list = new ObjectListBox(false,this);
 	sprite_list->setToolTip(i18n("The list of available objects to insert"));
@@ -110,13 +110,13 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
         sprite_list->setFocus();
 	selectedSprite(-1);
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 void MapEditor::setMap(MapEdit *mm)
 {
-	kDebug() << "pw='" << (mm?mm->getPassword():QString("NULL")) << "'";
+	qDebug() << "pw='" << (mm?mm->getPassword():QString("NULL")) << "'";
 
 	map = mm;
 	map_area->setMap(map);
@@ -125,7 +125,7 @@ void MapEditor::setMap(MapEdit *mm)
 
 void MapEditor::selectedSprite(int i)
 {
-	kDebug() << "i=" << i;
+	qDebug() << "i=" << i;
 
 	current_sprite = static_cast<Obj::Type>(i);
 	preview_sprite->setSprite(*sprites,current_sprite);

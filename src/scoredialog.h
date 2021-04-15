@@ -25,14 +25,13 @@
 #ifndef SCOREDIALOG_H
 #define SCOREDIALOG_H
 
-#include <kdialog.h>
+#include <dialogbase.h>
 #include <kconfiggroup.h>
-
 
 class QTreeWidget;
 
 
-class ScoreDialog : public KDialog
+class ScoreDialog : public DialogBase
 {
 	Q_OBJECT
 

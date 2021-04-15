@@ -25,20 +25,15 @@
 #ifndef SELECTLEVELDIALOG_H
 #define SELECTLEVELDIALOG_H
 
-
-#include <kdialog.h>
-
-#include <qvector.h>
-#include <qbytearray.h>
+#include <dialogbase.h>
 
 #include "gameplayer.h"
-
 
 class QListWidget;
 class QLineEdit;
 
 
-class SelectLevelDialog : public KDialog
+class SelectLevelDialog : public DialogBase
 {
     Q_OBJECT
 

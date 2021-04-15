@@ -25,8 +25,8 @@
 #ifndef KREPTON_H
 #define KREPTON_H
 
-#include <kdebug.h>
-#include <klocale.h>
+#include <qdebug.h>
+#include <klocalizedstring.h>
 
 
 class Obj

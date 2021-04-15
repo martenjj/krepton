@@ -22,11 +22,11 @@ include(CheckIncludeFiles)
 #########################################################################
 
 find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Gui Widgets)
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash)
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash CoreAddons KIO IconThemes Auth)
 find_package(Phonon4Qt5 NO_POLICY_SCOPE)
 set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Required for playback of audio/video notes")
-#find_package(DialogUtil REQUIRED NO_POLICY_SCOPE)
-#set_package_properties("DialogUtil" PROPERTIES DESCRIPTION "Dialogue utility library" TYPE REQUIRED PURPOSE "Required to build the project")
+find_package(DialogUtil REQUIRED NO_POLICY_SCOPE)
+set_package_properties("DialogUtil" PROPERTIES DESCRIPTION "Dialogue utility library" TYPE REQUIRED PURPOSE "Required to build the project")
 
 check_library_exists(m fabs "" HAVE_LIBM)
 if (HAVE_LIBM)
@@ -144,7 +144,20 @@ set(krepton_SRCS
 )
 
 add_executable(krepton ${krepton_SRCS})
-target_link_libraries(krepton ${KDE4_KDEUI_LIBS} ${KDE4_KFILE_LIBS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)
+target_link_libraries(krepton
+  Qt5::Core
+  Qt5::Gui
+  Qt5::Widgets
+  KF5::CoreAddons
+  KF5::Crash
+  KF5::I18n
+  KF5::XmlGui
+  KF5::KIOCore KF5::KIOWidgets
+  KF5::IconThemes
+  ${DIALOGUTIL_LIBRARIES}
+)
+
 if (SOUND_TYPE STREQUAL "phonon")
   add_definitions("-DHAVE_PHONON=1")
   include_directories(${PHONON_INCLUDES})

@@ -27,9 +27,8 @@
 
 #include <qtreewidget.h>
 
-#include <kglobal.h>
-#include <kconfig.h>
 #include <kmessagebox.h>
+#include <ksharedconfig.h>
 
 #include "krepton.h"
 #include "episodes.h"
@@ -60,19 +59,19 @@ bool ScoreListItem::operator<(const QTreeWidgetItem &other) const
 // TODO: save/restore dialogue size and column layout
 
 ScoreDialog::ScoreDialog(QWidget *parent)
-        : KDialog(parent)
+        : DialogBase(parent)
 {
         setObjectName("ScoreDialog");
-        setCaption(i18n("High Scores"));
-        setButtons(KDialog::Close|KDialog::User1);
-        setButtonGuiItem(KDialog::User1,KStandardGuiItem::clear());
-        setDefaultButton(KDialog::Close);
+        setWindowTitle(i18n("High Scores"));
+        // TODO: port "Clear"
+        setButtons(QDialogButtonBox::Close);
+//        setButtons(QDialogButtonBox::Close|QDialogButtonBox::User1);
+//         setButtonGuiItem(QDialogButtonBox::User1,KStandardGuiItem::clear());
         setModal(true);
-        showButtonSeparator(true);
 
-        connect(this,SIGNAL(user1Clicked()),SLOT(slotUser1()));
+//         connect(this,SIGNAL(user1Clicked()),SLOT(slotUser1()));
 
-	configGrp = KGlobal::config()->group(groupname);
+	configGrp = KSharedConfig::openConfig()->group(groupname);
 
 	list = new QTreeWidget(this);
 	list->setSelectionMode(QAbstractItemView::NoSelection);
@@ -125,7 +124,8 @@ ScoreDialog::ScoreDialog(QWidget *parent)
         }
         else						// nothing in the list
         {
-            enableButton(KDialog::User1,false);		// no point in this button
+                // TODO: port to Qt5
+//             enableButton(QDialogButtonBox::User1,false);		// no point in this button
         }
 }
 
@@ -139,5 +139,6 @@ void ScoreDialog::slotUser1()
 	configGrp.config()->deleteGroup(groupname);	// deep delete group
 
 	list->clear();					// nothing now to display
-	enableButton(KDialog::User1,false);		// can't clear again
+                // TODO: port to Qt5
+// 	enableButton(QDialogButtonBox::User1,false);		// can't clear again
 }

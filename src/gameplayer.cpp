@@ -23,9 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include <kmessagebox.h>
-#include <kglobal.h>
 #include <kconfiggroup.h>
-#include <kstandarddirs.h>
+#include <ksharedconfig.h>
 
 #include <qbitmap.h>
 #include <qpainter.h>
@@ -78,12 +77,12 @@ GamePlayer::~GamePlayer()
 	if (currentmap!=NULL) delete currentmap;
 	if (sprites!=NULL) delete sprites;
 
-        kDebug() << "done";
+        qDebug() << "done";
 }
 
 const QString GamePlayer::loadEpisode(const Episode *e)
 {
-	kDebug() << "name" << e->getName();
+	qDebug() << "name" << e->getName();
 
 	QString status = loadSprites(e);
 	if (!status.isNull()) return (status);
@@ -98,7 +97,7 @@ const QString GamePlayer::loadEpisode(const Episode *e)
 
 const QString GamePlayer::loadSprites(const Episode *e)
 {
-	kDebug() << "name" << e->getName();
+	qDebug() << "name" << e->getName();
 
 	setCursor(QCursor(Qt::WaitCursor));
 	if (sprites!=NULL) delete sprites;
@@ -111,7 +110,7 @@ const QString GamePlayer::loadSprites(const Episode *e)
 
 const QString GamePlayer::loadMaps(const Episode *e)
 {
-	kDebug() << "name" << e->getName();
+	qDebug() << "name" << e->getName();
 
 	const QString status = e->loadMaps(&maps);
 	if (!status.isNull()) return (status);
@@ -124,14 +123,14 @@ const QString GamePlayer::loadMaps(const Episode *e)
 
 const Episode *GamePlayer::saveEpisode(const QString name, const QString path)
 {
-	kDebug() << "name" << name << "path" << path;
+	qDebug() << "name" << name << "path" << path;
 
 	Episode *e = new Episode(name,false,path);	// construct new episode
 
 	if (!(e->saveInfoAndMaps(&maps) && sprites->save(e)))
 	{
 		delete e;
-		return (false);
+		return (NULL);
 	}
 
 	EpisodeList::list()->add(e);			// add to episode list
@@ -140,7 +139,7 @@ const Episode *GamePlayer::saveEpisode(const QString name, const QString path)
 
 const Episode *GamePlayer::saveEpisode(const Episode *e)
 {
-	kDebug() << "name" << e->getName();
+	qDebug() << "name" << e->getName();
 	if (!(e->saveInfoAndMaps(&maps) && sprites->save(e))) return (NULL);
 
 	EpisodeList::list()->add(e);			// ensure still in list
@@ -149,7 +148,7 @@ const Episode *GamePlayer::saveEpisode(const Episode *e)
 
 void GamePlayer::setSprites(const Sprites *ss)
 {
-	kDebug() << "sprites=" << sprites << " ss=" << ss;
+	qDebug() << "sprites=" << sprites << " ss=" << ss;
 
 	if (sprites!=NULL) delete sprites;
 	sprites = new Sprites(*ss);
@@ -157,7 +156,7 @@ void GamePlayer::setSprites(const Sprites *ss)
 
 void GamePlayer::setMaps(const MapList ml)
 {
-	kDebug() << "count=" << ml.count();
+	qDebug() << "count=" << ml.count();
 
         qDeleteAll(maps);
 	maps.clear();
@@ -170,7 +169,7 @@ void GamePlayer::setMaps(const MapList ml)
 	}
 
 // check how many levels now, may need to trim 'lastlevel'
-	kDebug() << "count=" << maps.count() <<
+	qDebug() << "count=" << maps.count() <<
 		" last=" << currentlevel;
 	if (currentlevel>static_cast<int>((maps.count()-1))) currentlevel = -1;
 	if (currentmap!=NULL) delete currentmap;
@@ -196,7 +195,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 		emit changedGameState(true);
 	}
 
-	kDebug() << "name='" << episodeName << "' level=" << level;
+	qDebug() << "name='" << episodeName << "' level=" << level;
 	if (level>=int(maps.count())) return;
 
 	if (currentmap!=NULL) delete currentmap;
@@ -231,7 +230,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 void GamePlayer::recordLevel(GamePlayer::State state)
 {
         QString cg = "Episode "+Episode::sanitisedName(episodeName);
-	KConfigGroup grp = KGlobal::config()->group(cg);
+	KConfigGroup grp = KSharedConfig::openConfig()->group(cg);
 
 	QString levelKey = QString::number(currentlevel);
 	int oldstate = grp.readEntry(levelKey, -1);
@@ -248,10 +247,10 @@ void GamePlayer::recordLevel(GamePlayer::State state)
 // each is string of form "status level password"
 QStringList GamePlayer::listLevels(const Episode *e)
 {
-	kDebug();
+	qDebug();
 
         QString cg = "Episode "+Episode::sanitisedName(e->getName());
-	KConfigGroup grp = KGlobal::config()->group(cg);
+	const KConfigGroup grp = KSharedConfig::openConfig()->group(cg);
 	int playing = grp.readEntry("Playing", -1);
 
 	QStringList result;
@@ -452,7 +451,7 @@ default:	e->ignore();
 
 void GamePlayer::endedGame(const QString &how,bool suicide)
 {
-	kDebug() << "level=" << currentlevel;
+	qDebug() << "level=" << currentlevel;
 
 	in_game = false;
 	in_pause = false;
@@ -514,7 +513,7 @@ void GamePlayer::suicideAction()
 
 void GamePlayer::setCheats(Cheat::Options cheats)
 {
-	kDebug() << "cheats" << cheats;
+	qDebug() << "cheats" << cheats;
 	cheats_used = cheats;
 	if (cheats!=Cheat::NoCheats) cheats_ever_used = true;
 

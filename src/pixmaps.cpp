@@ -28,13 +28,14 @@
 #include <qbitmap.h>
 #include <qpixmapcache.h>
 
-#include <kdebug.h>
-#include <kstandarddirs.h>
+#include <kiconloader.h>
+
+#include "krepton.h"
 
 
 const QString Pixmaps::path(const char *key)
 {
-	return (KGlobal::dirs()->findResource("graphics",(QString(key)+".png")));
+    return (KIconLoader::global()->iconPath(key, KIconLoader::User, true));
 }
 
 
@@ -46,11 +47,11 @@ const QPixmap getPixmap(const char *key)
 {
 	QPixmap pm;
 
-	if (QPixmapCache::find(key,pm)) return (pm);
+	if (QPixmapCache::find(key, &pm)) return (pm);
 
 	if (!pm.load(Pixmaps::path(key)))
         {
-		kDebug() << "cannot load pixmap" << QString(key);
+		qDebug() << "cannot load pixmap" << QString(key);
 		pm = QPixmap(16,16); pm.fill(Qt::red);
         }
 	else pm.setMask(pm.createHeuristicMask());
@@ -89,5 +90,5 @@ const QPixmap Pixmaps::findLives(int l)
 	if (l>3) l = 3;
 
 	const QString key = QString("lives%1").arg(l);
-	return (getPixmap(key.toAscii()));
+	return (getPixmap(key.toLocal8Bit().constData()));
 }

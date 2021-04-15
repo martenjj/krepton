@@ -21,9 +21,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <kdebug.h>
-#include <klocale.h>
-
 #include <qfile.h>
 #include <qfileinfo.h>
 
@@ -31,6 +28,7 @@
 #include "sprites.h"
 #include "map.h"
 #include "checkmap.h"
+#include "krepton.h"
 
 #include "importerbase.h"
 
@@ -56,7 +54,7 @@ ImporterBase::~ImporterBase()
 
 bool ImporterBase::import(const QString &source,const QString &newName,QString *results)
 {
-    kDebug() << "src=" << source << " name=" << newName;
+    qDebug() << "src=" << source << " name=" << newName;
 
     QFile f(source);
     QFileInfo fi(f);

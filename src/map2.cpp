@@ -29,18 +29,18 @@
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
 {
-	kDebug() << "pw='" << getPassword() << "'";
+	qDebug() << "pw='" << getPassword() << "'";
 }
 
 MapEdit::MapEdit(int sx,int sy,const QByteArray &pw) : Map(sx,sy,pw)
 {
-	kDebug() << "sx=" << sx << " sy=" << sy;
+	qDebug() << "sx=" << sx << " sy=" << sy;
 }
 
 
 MapEdit::~MapEdit()
 {
-	kDebug() << "pw='" << getPassword() << "'";
+	qDebug() << "pw='" << getPassword() << "'";
 }
 
 TransporterList MapEdit::getTransportersList()
@@ -149,7 +149,7 @@ void MapEditList::mapMoveDown(int item)
 
 MapEditList::operator MapList()
 {
-	kDebug();
+	qDebug();
 
 	MapList ml;
 	for (MapEditList::const_iterator it = constBegin();
@@ -159,6 +159,6 @@ MapEditList::operator MapList()
 		ml.append(const_cast<Map *>(mm));
 	}
 
-	kDebug() << "done count=" << ml.count();
+	qDebug() << "done count=" << ml.count();
 	return (ml);
 }

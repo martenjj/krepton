@@ -34,15 +34,15 @@
 #include <qcheckbox.h>
 #include <qcursor.h>
 #include <qscrollbar.h>
+#include <qfiledialog.h>
+#include <qtextedit.h>
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
 #include <kassistantdialog.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kurlrequester.h>
-#include <kfiledialog.h>
-#include <ktextedit.h>
+
+#include <dialogbase.h>
 
 #include "episodes.h"
 #include "importmanager.h"
@@ -93,7 +93,7 @@ static const KLocalizedString page5text = ki18n("<qt><p>Use <b>Finish</b> to exi
 ImportWizard::ImportWizard(const QString &title,QWidget *parent)
 	: KAssistantDialog(parent)
 {
-	kDebug();
+	qDebug();
 
         format = NULL;					// none selected yet
         manager = ImportManager::self();		// we'll use this a lot
@@ -105,7 +105,8 @@ ImportWizard::ImportWizard(const QString &title,QWidget *parent)
 	setupPage3();
 	setupPage4();
 	setupPage5();
-	showButton(KDialog::Help,false);
+	// TODO: port to KF5
+// 	showButton(QDialogButtonBox::Help,false);
 
         connect(this,SIGNAL(currentPageChanged(KPageWidgetItem *,KPageWidgetItem *)),
                 SLOT(slotShowPage(KPageWidgetItem *)));
@@ -122,14 +123,15 @@ ImportWizard::ImportWizard(const QString &title,QWidget *parent)
 
 void ImportWizard::slotShowPage(KPageWidgetItem *page)
 {
-	kDebug() << "new page" << page->name();
+	qDebug() << "new page" << page->name();
 
 	if (page==page1)
 	{
 #ifdef TESTING
 		page1list->setCurrentItem(TEST_FORMAT);
 #endif
-                setButtonText(KDialog::User2,i18n("Next"));
+	// TODO: port to KF5
+//                 setButtonText(KDialog::User2,i18n("Next"));
 		slotPage1FormatSelected();
 	}
 	else if (page==page2)
@@ -141,14 +143,15 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
 #ifdef TESTING
 		page2source->setURL(TEST_SOURCE);
 #endif
-                setButtonText(KDialog::User2,i18n("Next"));
+	// TODO: port to KF5
+//                 setButtonText(KDialog::User2,i18n("Next"));
 		slotPage2SourceSelected();
 	}
 	else if (page==page3)
 	{
 		if (format!=NULL)
                 {
-			const KUrl u = page2source->url();
+			const QUrl u = page2source->url();
 			if (!u.isEmpty() && page3name->text().isEmpty())
 			{
 				QString f = u.fileName().section('.',0,0);
@@ -159,7 +162,8 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
                 page3name->setText(TEST_NAME);
 		page3over->setChecked(true);
 #endif
-                setButtonText(KDialog::User2,i18n("Next"));
+	// TODO: port to KF5
+//                 setButtonText(KDialog::User2,i18n("Next"));
 		slotPage3NameChanged();
 	}
 	else if (page==page4)
@@ -168,11 +172,12 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
                 {
 			QString t = "<qt><dl>";
 			t += i18n("<dt>Format:<dd><b>%1</b>", format->name);
-			t += i18n("<dt>Source file:<dd><b>%1</b>", page2source->url().prettyUrl());
+			t += i18n("<dt>Source file:<dd><b>%1</b>", page2source->url().toDisplayString());
 			t += i18n("<dt>New episode name:<dd><b>%1</b>", page3name->text());
                         t += "</dl>";
                         page4disp->setText(t);
-			setButtonText(KDialog::User2,i18n("Import"));
+	// TODO: port to KF5
+// 			setButtonText(KDialog::User2,i18n("Import"));
                 }
         }
         else if (page==page5)
@@ -183,7 +188,7 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
 		if (importer==NULL)
 		{
 			reportError(ki18n("Cannot create importer for '%1'"),format->key,false);
-			enableButton(KDialog::User1,false);		// "Finish"
+// 			enableButton(KDialog::User1,false);		// "Finish"
 			page5disp->setText(i18n("Error while importing"));
 		}
 		else
@@ -193,7 +198,7 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
                         if (!importer->import(page2source->url().path(), episodeName,&status))
                         {
 				if (status.isEmpty()) status = i18n("Import failed");
-                                enableButton(KDialog::User1,false);	// "Finish"
+//                                 enableButton(KDialog::User1,false);	// "Finish"
 				page5load->setChecked(false);
 				page5load->setEnabled(false);
                         }
@@ -205,20 +210,20 @@ void ImportWizard::slotShowPage(KPageWidgetItem *page)
 			page5disp->setText(status);
                 }
 		unsetCursor();
-                enableButton(KDialog::User3,false);
-                enableButton(KDialog::Cancel,false);
+//                 enableButton(KDialog::User3,false);
+//                 enableButton(KDialog::Cancel,false);
         }
 }
 
 
 void ImportWizard::next()
 {
-	kDebug() << "current page" << currentPage()->name();
+	qDebug() << "current page" << currentPage()->name();
 	bool ok = true;
 
 	if (currentPage()==page2)
 	{
-		KUrl src = page2source->url();
+		QUrl src = page2source->url();
 		ok = src.isValid();
 		if (ok)
 		{
@@ -240,8 +245,9 @@ void ImportWizard::next()
 
                                 if (ok)
                                 {
-                                        KConfigGroup grp = KGlobal::config()->group("Importer");
-                                        grp.writeEntry("LastLocation", page2source->fileDialog()->baseUrl());
+                                        KConfigGroup grp = KSharedConfig::openConfig()->group("Importer");
+					// TODO: port to KF5
+//                                         grp.writeEntry("LastLocation", page2source->fileDialog()->baseUrl());
                                 }
                         }
                         else
@@ -377,10 +383,10 @@ void ImportWizard::setupPage2()
 	page2source = new KUrlRequester(w);
 	page2source->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
 
-	page2source->fileDialog()->setCaption(page2caption.toString());
+	page2source->fileDialog()->setWindowTitle(page2caption.toString());
 
-        KConfigGroup grp = KGlobal::config()->group("Importer");
-	KUrl lastloc = grp.readEntry("LastLocation", KUrl());
+        KConfigGroup grp = KSharedConfig::openConfig()->group("Importer");
+	QUrl lastloc = grp.readEntry("LastLocation", QUrl());
 	if (lastloc.isValid()) page2source->setStartDir(lastloc);
 
 	connect(page2source,SIGNAL(textChanged(const QString &)),this,SLOT(slotPage2SourceSelected()));
@@ -396,7 +402,7 @@ void ImportWizard::setupPage2()
 
 void ImportWizard::slotPage2SourceSelected()
 {
-	kDebug() << " url=" << page2source->url();
+	qDebug() << " url=" << page2source->url();
         setValid(page2,!page2source->url().isEmpty());
 }
 
@@ -452,7 +458,7 @@ void ImportWizard::setupPage4()
         info->setWordWrap(true);
 	l->addWidget(info,1,Qt::AlignTop);
 
-        page4disp = new KTextEdit(w);
+        page4disp = new QTextEdit(w);
         page4disp->setReadOnly(true);
         page4disp->setText("?");
         l->addWidget(page4disp,1);
@@ -477,10 +483,9 @@ void ImportWizard::setupPage5()
 
         page5load = new QCheckBox(i18n("Load the new episode"),w);
         l->addWidget(page5load,0,Qt::AlignLeft);
+        l->addSpacing(DialogBase::verticalSpacing());
 
-        l->addSpacing(KDialog::spacingHint());
-
-        page5disp = new KTextEdit(w);
+        page5disp = new QTextEdit(w);
         page5disp->setReadOnly(true);
         page5disp->setText("?");
         l->addWidget(page5disp,1);

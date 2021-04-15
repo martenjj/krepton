@@ -25,20 +25,15 @@
 #include <qlistwidget.h>
 #include <qgridlayout.h>
 #include <qtabwidget.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qspinbox.h>
 
 #include <kxmlguiwindow.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
-#include <kaction.h>
-#include <kstdaction.h>
-#include <kglobal.h>
 #include <kconfig.h>
-#include <klineedit.h>
-#include <knuminput.h>
-#include <kpushbutton.h>
-#include <kmenubar.h>
 #include <ktoolbar.h>
-#include <kstatusbar.h>
 
 #include "krepton.h"
 
@@ -57,7 +52,7 @@
 GameEditor::GameEditor(QWidget *parent)
 	: KXmlGuiWindow(parent)
 {
-	kDebug();
+	qDebug();
 
         setObjectName("GameEditor");
         setAttribute(Qt::WA_DeleteOnClose, false);	// we persist once opened
@@ -70,30 +65,31 @@ GameEditor::GameEditor(QWidget *parent)
 
 	KStandardAction::close(this, SLOT(close()), actionCollection());
 
-        spriteAction = new KAction(i18n("Sprite Page"), this);
+        spriteAction = new QAction(i18n("Sprite Page"), this);
         spriteAction->setShortcut(Qt::Key_F2);
         connect(spriteAction, SIGNAL(triggered()), SLOT(showSpriteEditor()));
         actionCollection()->addAction("window_spriteeditor", spriteAction);
 
-        mapAction = new KAction(i18n("Map Page"), this);
+        mapAction = new QAction(i18n("Map Page"), this);
         mapAction->setShortcut(Qt::Key_F3);
         connect(mapAction, SIGNAL(triggered()), SLOT(showLevelEditor()));
         actionCollection()->addAction("window_leveleditor", mapAction);
 
-        dataAction = new KAction(i18n("Episode Page"), this);
+        dataAction = new QAction(i18n("Episode Page"), this);
         dataAction->setShortcut(Qt::Key_F4);
         connect(dataAction, SIGNAL(triggered()), SLOT(showDataEditor()));
         actionCollection()->addAction("window_dataeditor", dataAction);
 
-        checkAction = new KAction(i18n("Check Consistency"), this);
+        checkAction = new QAction(i18n("Check Consistency"), this);
         checkAction->setShortcut(Qt::Key_F10);
         connect(checkAction, SIGNAL(triggered()), SLOT(menuStrictCheck()));
         actionCollection()->addAction("edit_check", checkAction);
 
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonedui.rc");
 
-	KStatusBar *status = statusBar();
-	status->insertPermanentFixedItem(formatCoordinates(9999,9999), 1);
+	// TODO: port to Qt5
+// 	KStatusBar *status = statusBar();
+// 	status->insertPermanentFixedItem(formatCoordinates(9999,9999), 1);
 
 	QWidget *mw = new QWidget(this);
 	QGridLayout *l = new QGridLayout(mw);
@@ -114,18 +110,19 @@ GameEditor::GameEditor(QWidget *parent)
         connect(mapwin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
 	mapIndex = tabs->addTab(mapwin,"Map");
 
-	checkPushButton = new KPushButton("Check Consistency",mw);
+	checkPushButton = new QPushButton("Check Consistency",mw);
 	l->addWidget(checkPushButton,2,1,Qt::AlignCenter);
 
-	closePushButton = new KPushButton(KStandardGuiItem::close(),mw);
+	closePushButton = new QPushButton(mw);
+	KStandardGuiItem::assign(closePushButton, KStandardGuiItem::Close);
 	l->addWidget(closePushButton,2,3,Qt::AlignCenter);
 
 	l->setRowStretch(0,1);
 	l->setColumnStretch(2,1);
 
-	l->setRowMinimumHeight(1, KDialog::spacingHint());
-	l->setColumnMinimumWidth(0, KDialog::spacingHint());
-	l->setColumnMinimumWidth(4, KDialog::spacingHint());
+	l->setRowMinimumHeight(1, DialogBase::verticalSpacing());
+	l->setColumnMinimumWidth(0, DialogBase::horizontalSpacing());
+	l->setColumnMinimumWidth(4, DialogBase::horizontalSpacing());
 
 	setCentralWidget(mw);
 	tabs->setCurrentIndex(dataIndex);
@@ -167,7 +164,7 @@ GameEditor::GameEditor(QWidget *parent)
 	updateMapsList();
         slotShowCoordinates(-1,-1);
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
@@ -177,13 +174,13 @@ GameEditor::~GameEditor()
 	qDeleteAll(maps);
 	maps.clear();
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 void GameEditor::updateMapsList()
 {
-	kDebug();
+	qDebug();
 
 	view->mapsListBox->clear();
 	for (MapEditList::const_iterator it = maps.constBegin();
@@ -198,7 +195,7 @@ void GameEditor::updateMapsList()
 void GameEditor::updateTransportersList(int item)
 {
 	int level = view->mapsListBox->currentRow();
-	kDebug() << "level=" << level << " item=" << item;
+	qDebug() << "level=" << level << " item=" << item;
 	if (level<0) return;
 	MapEdit *map = maps.at(level);
 
@@ -229,7 +226,7 @@ void GameEditor::updateTransportersList(int item)
 void GameEditor::selectedTransporter()
 {
 	int item = view->transportListBox->currentRow();
-	kDebug() << "item=" << item;
+	qDebug() << "item=" << item;
 
 	view->removetransportPushButton->setEnabled(item>=0);
 	view->changetransportPushButton->setEnabled(item>=0);
@@ -240,7 +237,7 @@ void GameEditor::selectedTransporter()
 
 void GameEditor::selectLevel(int level)
 {
-	kDebug() << "level=" << level;
+	qDebug() << "level=" << level;
 
 	if (level<0)					// no selection
 	{
@@ -299,7 +296,7 @@ void GameEditor::selectLevel(int level)
 
 void GameEditor::mapInsert()
 {
-	kDebug();
+	qDebug();
 
 	NewMapDialog d(this);
 
@@ -334,7 +331,7 @@ void GameEditor::mapInsert()
 
 void GameEditor::mapRemove()
 {
-	kDebug();
+	qDebug();
 
 //	if (maps.count()==1)				// shouldn't happen, GUI disables
 //	{
@@ -361,7 +358,7 @@ void GameEditor::mapRemove()
 
 void GameEditor::mapMoveUp()
 {
-	kDebug();
+	qDebug();
 
 	int item = view->mapsListBox->currentRow();
 	if (item<=0)					// shouldn't happen, GUI disables
@@ -380,7 +377,7 @@ void GameEditor::mapMoveUp()
 
 void GameEditor::mapMoveDown()
 {
-	kDebug();
+	qDebug();
 
 	int item = view->mapsListBox->currentRow();
 	int last_item = maps.count()-1;
@@ -400,7 +397,7 @@ void GameEditor::mapMoveDown()
 
 void GameEditor::transporterInsert()
 {
-	kDebug();
+	qDebug();
 
 	int selm = view->mapsListBox->currentRow();
 	if (selm<0) return;				// shouldn't happen, GUI disables
@@ -421,7 +418,7 @@ void GameEditor::transporterInsert()
 
 void GameEditor::transporterChange()
 {
-	kDebug();
+	qDebug();
 
 	int item = view->transportListBox->currentRow();
 	int selm = view->mapsListBox->currentRow();
@@ -445,7 +442,7 @@ void GameEditor::transporterChange()
 
 void GameEditor::transporterRemove()
 {
-	kDebug();
+	qDebug();
 
 	int selm = view->mapsListBox->currentRow();
 	if (selm<0) return;				// shouldn't happen, GUI disables
@@ -504,7 +501,7 @@ void GameEditor::changedTime(int i)
 
 void GameEditor::changedSprite()
 {
-	kDebug();
+	qDebug();
 	if (spritewin!=NULL) spritewin->updateChilds();
 	if (mapwin!=NULL) mapwin->updateChilds();
 	setModified();
@@ -527,7 +524,7 @@ void GameEditor::showSpriteEditor()
 void GameEditor::showLevelEditor()
 {
 	int item = view->mapsListBox->currentRow();
-	kDebug() << "sel=" << item;
+	qDebug() << "sel=" << item;
 	mapwin->setMap(item<0 ? NULL : maps.at(item));
 
 	tabs->setCurrentIndex(mapIndex);
@@ -542,7 +539,7 @@ void GameEditor::showDataEditor()
 
 void GameEditor::setModified(bool mod)
 {
-	kDebug() << "mod=" << mod;
+	qDebug() << "mod=" << mod;
 
 	if (modified==mod) return;			// no change
 
@@ -560,7 +557,7 @@ void GameEditor::updateCaption()
 
 void GameEditor::closeEvent(QCloseEvent *e)
 {
-	kDebug();
+	qDebug();
 
 //	saveOptions();
 	KXmlGuiWindow::closeEvent(e);
@@ -569,7 +566,7 @@ void GameEditor::closeEvent(QCloseEvent *e)
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
 {
-	kDebug() << "name='" << name << "'";
+	qDebug() << "name='" << name << "'";
 
 	epname = name;
 
@@ -594,14 +591,15 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	if (spritewin!=NULL) spritewin->updateChilds();
 	if (mapwin!=NULL) mapwin->updateChilds();
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 void GameEditor::slotShowCoordinates(int x,int y)
 {
-	KStatusBar *status = statusBar();
-	status->changeItem(formatCoordinates(x,y), 1);
+	// TODO: port to Qt5
+// 	KStatusBar *status = statusBar();
+// 	status->changeItem(formatCoordinates(x,y), 1);
 }
 
 

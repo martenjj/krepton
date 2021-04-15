@@ -26,18 +26,16 @@
 #include <errno.h>
 #endif
 
-#include <kapplication.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kmessagebox.h>
 
-#include <qstringlist.h>
+#include <qapplication.h>
 #include <qdir.h>
 #include <qfile.h>
 #include <qfileinfo.h>
 #include <qtextstream.h>
 #include <qregexp.h>
 #include <qalgorithms.h>
+#include <qstandardpaths.h>
 
 #include "krepton.h"
 #include "map.h"
@@ -90,7 +88,7 @@ static void removeMapFiles(const QString& path)
              it!=list.constEnd(); ++it)
         {
                 QFileInfo fi = (*it);
-		kDebug() << "remove old " << fi.absoluteFilePath();
+		qDebug() << "remove old " << fi.absoluteFilePath();
 		dir.remove(fi.fileName());
 	}
 }
@@ -98,12 +96,12 @@ static void removeMapFiles(const QString& path)
 
 bool Episode::saveInfoAndMaps(const MapList *maps) const
 {
-	kDebug() << "name='" << name << "'";
+	qDebug() << "name='" << name << "'";
 
 	QString path = getFilePath(QString::null);	// containing directory
 	if (!QDir(path).exists())
 	{
-		if (!KStandardDirs::makeDir(path))
+		if (!QDir::root().mkpath(path))
 		{
 			reportError(ki18n("Cannot create directory '%1'"), path);
 			return (false);
@@ -141,7 +139,7 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 
 bool Episode::removeFiles() const
 {
-	kDebug() << "path='" << path << "'";
+	qDebug() << "path='" << path << "'";
 
 	QDir dir(path);
 	if (!dir.exists())
@@ -212,8 +210,9 @@ const QString Episode::getFilePath(const QString file) const
 
 QString Episode::savePath(const QString &name)
 {
-	return (KGlobal::dirs()->saveLocation("episodes",QString::null,false)+
-		sanitisedName(name)+"/");
+	return (QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)
+		+"/episodes/"
+		+sanitisedName(name)+"/");
 }
 
 
@@ -221,7 +220,7 @@ bool episodeLessThan(const Episode *item1,const Episode *item2)
 {
 	const QString n1 = item1->getName();
 	const QString n2 = item2->getName();
-	//kDebug() << n1 << "-" << n2;
+	//qDebug() << n1 << "-" << n2;
 
 	if (n1=="blank") return (false);		// always force to end
 	if (n2=="blank") return (true);
@@ -231,22 +230,16 @@ bool episodeLessThan(const Episode *item1,const Episode *item2)
 
 EpisodeList::EpisodeList()
 {
-	const QString localdir = QDir(KGlobal::dirs()->localkdedir()).canonicalPath()+"/";
-	kDebug() << "local='" << localdir << "'";
-
-	QStringList dirs = KGlobal::dirs()->findDirs("episodes","");
-	for (QStringList::Iterator di = dirs.begin(); di!=dirs.end(); ++di)
+	QStringList dirs = QStandardPaths::locateAll(QStandardPaths::AppDataLocation,
+	                                                   "episodes", QStandardPaths::LocateDirectory);
+	for (const QString &d : qAsConst(dirs))
 	{
-		QString di1 = *di;
+		qDebug() << "episode dir" << d;
 
-		kDebug() << "dir='" << di1 << "'";
-		if (di1==QString::null) continue;
-		di1 = QDir(di1).canonicalPath();
-
-		QDir dir(di1);
+		QDir dir(d);
 		if (!dir.exists())
 		{
-			reportError(ki18n("Episode directory '%1' not found"), di1);
+			reportError(ki18n("Episode directory '%1' not found"), d);
 			continue;
 		}
  
@@ -282,14 +275,15 @@ EpisodeList::EpisodeList()
 			name = t.readLine().trimmed();
 			f.close();
 
-			bool global = !di1.startsWith(localdir);
+			// TODO: port to Qt5
+// 			bool global = !di.startsWith(localdir);
+			bool global = true;
 			append(new Episode(name,global,dirname));
 		}
 	}
 
 	if (isEmpty())
 	{
-		dirs = KGlobal::dirs()->findDirs("episodes","");
                 if (dirs.isEmpty()) dirs = QStringList(i18n("(none)"));
 
                 // Not proper I18N here, but then the user should never see this message
@@ -302,7 +296,7 @@ EpisodeList::EpisodeList()
 	}
 
 	qSort(begin(),end(),&episodeLessThan);		// alphabetical by names
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
@@ -316,7 +310,7 @@ EpisodeList *EpisodeList::list()
 
 const Episode *EpisodeList::find(const QString &name)
 {
-	kDebug() << "name='" << name << "'";
+	qDebug() << "name='" << name << "'";
 
         for (EpisodeList::const_iterator it = constBegin();
 		it!=constEnd(); ++it)
@@ -330,7 +324,7 @@ const Episode *EpisodeList::find(const QString &name)
 
 void EpisodeList::add(const Episode *e)
 {
-	kDebug() << "name" << e->getName();
+	qDebug() << "name" << e->getName();
 
 	const Episode *old = find(e->getName());	// name already exists?
 	if (old!=NULL) removeOne(old);			// yes, remove the old one
@@ -342,7 +336,7 @@ void EpisodeList::add(const Episode *e)
 
 void EpisodeList::remove(const Episode *e,bool noDelete)
 {
-	kDebug() << "name='" << e->getName() << "'";
+	qDebug() << "name='" << e->getName() << "'";
         if (!noDelete) delete e;
 	removeOne(e);
 }

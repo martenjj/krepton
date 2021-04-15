@@ -29,8 +29,9 @@
 #include <qcolor.h>
 #include <qlayout.h>
 
+#include <dialogbase.h>
+
 #include <kcolorbutton.h>
-#include <kdialog.h>
 
 #include "krepton.h"
 #include "spritepreview.h"
@@ -44,7 +45,7 @@
 SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 	: QWidget(parent)
 {
-	kDebug();
+	qDebug();
 
         setObjectName("SpriteEditor");
 	setWindowTitle(i18n("Sprite Editor"));
@@ -55,12 +56,12 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(5,5);
 	gl->setColumnStretch(8,5);
-	gl->setColumnMinimumWidth(1,KDialog::spacingHint());
-	gl->setColumnMinimumWidth(3,KDialog::spacingHint());
-	gl->setColumnMinimumWidth(5,KDialog::spacingHint());
-	gl->setRowMinimumHeight(2,KDialog::spacingHint());
-	gl->setRowMinimumHeight(5,KDialog::spacingHint());
-	gl->setRowMinimumHeight(6,KDialog::marginHint());
+	gl->setColumnMinimumWidth(1,DialogBase::horizontalSpacing());
+	gl->setColumnMinimumWidth(3,DialogBase::horizontalSpacing());
+	gl->setColumnMinimumWidth(5,DialogBase::horizontalSpacing());
+	gl->setRowMinimumHeight(2,DialogBase::verticalSpacing());
+	gl->setRowMinimumHeight(5,DialogBase::verticalSpacing());
+	gl->setRowMinimumHeight(6,2*DialogBase::verticalSpacing());
 
 	sprite_list = new ObjectListBox(true,this);
 	sprite_list->setToolTip(i18n("The list of available sprites to edit"));

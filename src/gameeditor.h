@@ -35,9 +35,10 @@
 class DataEditor;
 class SpriteEditor;
 class MapEditor;
-class QTabWidget;
 
-class KPushButton;
+class QTabWidget;
+class QAction;
+class QPushButton;
 
 
 class GameEditor : public KXmlGuiWindow
@@ -88,16 +89,16 @@ private:
 	MapEditor *mapwin;
 
 	QTabWidget *tabs;
-	KPushButton* checkPushButton;
-	KPushButton* closePushButton;
+	QPushButton* checkPushButton;
+	QPushButton* closePushButton;
         int dataIndex;
         int mapIndex;
         int spriteIndex;
 
-	KAction *spriteAction;
-	KAction *mapAction;
-	KAction *dataAction;
-	KAction *checkAction;
+	QAction *spriteAction;
+	QAction *mapAction;
+	QAction *dataAction;
+	QAction *checkAction;
 
 	QString epname;
 	MapEditList maps;

@@ -33,9 +33,9 @@ class QListWidget;
 class QLineEdit;
 class QLabel;
 class QCheckBox;
+class QTextEdit;
 
 class KUrlRequester;
-class KTextEdit;
 
 
 class ImportWizard : public KAssistantDialog
@@ -79,11 +79,11 @@ private:
 
 	void setupPage4();
 	KPageWidgetItem *page4;
-	KTextEdit *page4disp;
+	QTextEdit *page4disp;
 
 	void setupPage5();
 	KPageWidgetItem *page5;
-	KTextEdit *page5disp;
+	QTextEdit *page5disp;
 	QCheckBox *page5load;
 };
 

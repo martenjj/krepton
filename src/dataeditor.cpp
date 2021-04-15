@@ -25,11 +25,11 @@
 #include <qlabel.h>
 #include <qgridlayout.h>
 #include <qlistwidget.h>
+#include <qpushbutton.h>
+#include <qlineedit.h>
+#include <qspinbox.h>
 
-#include <kpushbutton.h>
-#include <kdialog.h>
-#include <klineedit.h>
-#include <knuminput.h>
+#include <dialogbase.h>
 
 #include "krepton.h"
 #include "dataeditor.h"
@@ -51,25 +51,25 @@ DataEditor::DataEditor(QWidget* parent)
     levelsLabel->setBuddy(mapsListBox);
     l->addWidget(mapsListBox,2,1,6,2);
 
-    newlevelPushButton = new KPushButton("&New...",this);
+    newlevelPushButton = new QPushButton("&New...",this);
     l->addWidget(newlevelPushButton,2,4);
 
-    removelevelPushButton = new KPushButton("&Remove",this);
+    removelevelPushButton = new QPushButton("&Remove",this);
     l->addWidget(removelevelPushButton,2,6);
 
-    levelupPushButton = new KPushButton("Move &Up",this);
+    levelupPushButton = new QPushButton("Move &Up",this);
     l->addWidget(levelupPushButton,3,4);
 
-    leveldownPushButton = new KPushButton("Move Do&wn",this);
+    leveldownPushButton = new QPushButton("Move Do&wn",this);
     l->addWidget(leveldownPushButton,3,6);
 
-    l->setRowMinimumHeight(4,KDialog::marginHint());
+    l->setRowMinimumHeight(4, 2*DialogBase::verticalSpacing());
 
     QLabel *passwordLabel = new QLabel("&Password:",this);
     passwordLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
     l->addWidget(passwordLabel,5,4,Qt::AlignRight);
 
-    passwordLineEdit = new KLineEdit(this);
+    passwordLineEdit = new QLineEdit(this);
     passwordLineEdit->setMaxLength(20);
     passwordLabel->setBuddy(passwordLineEdit);
     l->addWidget(passwordLineEdit,5,5,1,2,Qt::AlignLeft);
@@ -78,7 +78,7 @@ DataEditor::DataEditor(QWidget* parent)
     timeLabel->setAlignment(Qt::AlignVCenter|Qt::AlignRight);
     l->addWidget(timeLabel,6,4,Qt::AlignRight);
 
-    timeSpinBox = new KIntSpinBox(this);
+    timeSpinBox = new QSpinBox(this);
     timeSpinBox->setMaximum( 999 );
     timeSpinBox->setMinimum( 30 );
     timeSpinBox->setSingleStep( 10 );
@@ -95,13 +95,13 @@ DataEditor::DataEditor(QWidget* parent)
     transportLabel->setBuddy(transportListBox);
     l->addWidget(transportListBox,11,1,3,2);
 
-    newtransportPushButton = new KPushButton("N&ew...",this);
+    newtransportPushButton = new QPushButton("N&ew...",this);
     l->addWidget(newtransportPushButton,11,4);
 
-    removetransportPushButton = new KPushButton("Rem&ove",this);
+    removetransportPushButton = new QPushButton("Rem&ove",this);
     l->addWidget(removetransportPushButton,11,6);
 
-    changetransportPushButton = new KPushButton("C&hange...",this);
+    changetransportPushButton = new QPushButton("C&hange...",this);
     l->addWidget(changetransportPushButton,12,4);
 
     l->setRowStretch(13,1);

@@ -30,12 +30,11 @@
 #include <errno.h>
 #endif
 
-#include <kapplication.h>
-#include <kcmdlineargs.h>
+#include <qapplication.h>
+#include <qcommandlineparser.h>
+
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kstandarddirs.h>
-#include <kglobal.h>
+#include <kcrash.h>
 #include <kmessagebox.h>
 
 #include "krepton.h"
@@ -43,58 +42,61 @@
 #include "version.h"
 
 
-int main(int argc,char *argv[])
+int main(int argc, char *argv[])
 {
-    KAboutData aboutData("krepton",				// appName
-                         NULL,					// catalogName
-                         ki18n("KRepton"),			// programName
+    QApplication app(argc, argv);
+
+    KAboutData aboutData("krepton",				// componentName
+                         i18n("KRepton"),			// displayName
 #ifdef VCS_HAVE_VERSION
                          ( VERSION " (" VCS_TYPE_STRING " " VCS_REVISION_STRING ")" ),
 #else
                          VERSION,				// version
 #endif
-                         ki18n("The Repton game for KDE"),
-                         KAboutData::License_GPL,
-                         ki18n("Copyright (C) 1998 Sandro Sigala, 2003-2010 Jonathan Marten"),
-                         KLocalizedString(),			// text
+                         i18n("The Repton game for KDE"),
+                         KAboutLicense::GPL,
+                         i18n("Copyright (C) 1998 Sandro Sigala, 2003-2010 Jonathan Marten"),
+                         "",					// otherText
                          "http://www.keelhaul.me.uk/krepton/",	// homePageAddress
                         "jjm@keelhaul.me.uk");			// bugsEmailAddress
-    aboutData.addAuthor(ki18n("Jonathan Marten"),
-                        ki18n("KDE3 and KDE4 conversion"),
+
+    aboutData.addAuthor(i18n("Jonathan Marten"),
+                        i18n("KDE3 and KDE4 conversion"),
                         "jjm@keelhaul.me.uk",
                         "http://www.keelhaul.me.uk");
-    aboutData.addAuthor(ki18n("Sandro Sigala"),
-                         ki18n("Original author"),
+    aboutData.addAuthor(i18n("Sandro Sigala"),
+                         i18n("Original author"),
                         "ssigala@globalnet.it");
-    aboutData.addCredit(ki18n("Jasper Renow-Clarke"),
-                        ki18n("BBC format and maps"),
+    aboutData.addCredit(i18n("Jasper Renow-Clarke"),
+                        i18n("BBC format and maps"),
                         "cm5hdjjr@bs41.staffs.ac.uk");
-    aboutData.addCredit(ki18n("George Russell"),
-                        ki18n("Feature suggestions"),
+    aboutData.addCredit(i18n("George Russell"),
+                        i18n("Feature suggestions"),
                         "george.russell@clara.net");
-    aboutData.addCredit(ki18n("Stairway to Hell contributors"),
-                        ki18n("Compatibility questions"),
+    aboutData.addCredit(i18n("Stairway to Hell contributors"),
+                        i18n("Compatibility questions"),
                         "",
                         "http://www.stairwaytohell.com");
 
-    KCmdLineOptions opts;
-    // TODO: options for mode (start game or editor), sound scheme
-    opts.add("l <episode>", ki18n("Name of episode to load"));
-    KCmdLineArgs::addCmdLineOptions(opts);
+    KAboutData::setApplicationData(aboutData);
+    KCrash::setDrKonqiEnabled(true);
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KApplication app;
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    QCommandLineParser parser;
+    parser.setApplicationDescription(aboutData.shortDescription());
 
-    QString name;					// '-l' -> load episode
-    if (args->isSet("l")) name = args->getOption("l");
-    args->clear();
+    parser.addPositionalArgument("episode", i18n("Name of episode to load"), i18n("[episode]"));
+
+    aboutData.setupCommandLine(&parser);
+    parser.process(app);
+    aboutData.processCommandLine(&parser);
+
+    const QString name = parser.positionalArguments().value(0);
 
     srand(time(NULL));
 
-    KGlobal::dirs()->addResourceType("episodes", "appdata", "episodes");
-    KGlobal::dirs()->addResourceType("graphics", "appdata", "pics");
-    KGlobal::dirs()->addResourceType("appsound", "appdata", "sounds");
+//     KGlobal::dirs()->addResourceType("episodes", "appdata", "episodes");
+//     KGlobal::dirs()->addResourceType("graphics", "appdata", "pics");
+//     KGlobal::dirs()->addResourceType("appsound", "appdata", "sounds");
 
     MainWindow *w = new MainWindow(NULL);
     w->show();
@@ -127,7 +129,7 @@ void reportError(const KLocalizedString &message,
 	if (fatal)
 	{
 		KMessageBox::error(NULL, s);
-		kapp->exit(1);
+                qApp->exit(1);
 	}
 	else KMessageBox::sorry(NULL, s);
 }

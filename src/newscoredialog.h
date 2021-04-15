@@ -25,13 +25,12 @@
 #ifndef NEWSCOREDIALOG_H
 #define NEWSCOREDIALOG_H
 
-#include <kdialog.h>
-
+#include <dialogbase.h>
 
 class QLineEdit;
 
 
-class NewScoreDialog : public KDialog
+class NewScoreDialog : public DialogBase
 {
 	Q_OBJECT
 

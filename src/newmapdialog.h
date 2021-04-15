@@ -25,22 +25,22 @@
 #ifndef NEWMAPDIALOG_H
 #define NEWMAPDIALOG_H
 
-#include <qlineedit.h>
-#include <qspinbox.h>
+#include <dialogbase.h>
 
-#include <kdialog.h>
+class QLineEdit;
+class QSpinBox;
 
 
-class NewMapDialog : public KDialog
+class NewMapDialog : public DialogBase
 {
 	Q_OBJECT
 
 public:
 	NewMapDialog(QWidget *parent = NULL);
 
-	int mapWidth() const		{ return (mSizeXBox->value()); }
-	int mapHeight() const		{ return (mSizeYBox->value()); }
-	QByteArray mapPassword() const	{ return (mNameEdit->text().toLocal8Bit()); }
+	int mapWidth() const;
+	int mapHeight() const;
+	QByteArray mapPassword() const;
 
 protected slots:
 	void slotNameChanged(const QString &s);

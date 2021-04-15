@@ -24,13 +24,13 @@
 #ifndef CHEATDIALOG_H
 #define CHEATDIALOG_H
 
-#include <kdialog.h>
-
+#include <dialogbase.h>
+#include "krepton.h"
 
 class QCheckBox;
 
 
-class CheatDialog : public KDialog
+class CheatDialog : public DialogBase
 {
 	Q_OBJECT
 

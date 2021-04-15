@@ -37,7 +37,7 @@
 
 Map::Map(const QString &path)				// create from file
 {
-	kDebug() << "path='" << path << "'";
+	qDebug() << "path='" << path << "'";
 
 	QFile f(path);
 	if (!f.open(QIODevice::ReadOnly))
@@ -80,7 +80,7 @@ Map::Map(const QString &path)				// create from file
 
 Map::Map(const Map &m)					// copy constructor
 {
-	kDebug() << "pw='" << m.password << "'";
+	qDebug() << "pw='" << m.password << "'";
 
 	width = m.width; height = m.height;
 	password = m.password;
@@ -101,7 +101,7 @@ Map::Map(const Map &m)					// copy constructor
 
 Map::Map(int sx,int sy,const QByteArray &pw)		// create with size
 {
-	kDebug() << "sx=" << sx << " sy=" << sy;
+	qDebug() << "sx=" << sx << " sy=" << sy;
 
 	width = sx; height = sy;
 	password = pw;
@@ -115,7 +115,7 @@ Map::Map(int sx,int sy,const QByteArray &pw)		// create with size
 
 Map::~Map()
 {
-	kDebug() << "pw='" << password << "'";
+	qDebug() << "pw='" << password << "'";
 
 	qDeleteAll(transporters);
 	transporters.clear();
@@ -126,7 +126,7 @@ Map::~Map()
 
 bool Map::save(const QString &path) const
 {
-	kDebug() << "pw='" << password << "' to='" << path << "'";
+	qDebug() << "pw='" << password << "' to='" << path << "'";
 
 	QFile f(path);
 	if (!f.open(QIODevice::WriteOnly))
@@ -163,7 +163,7 @@ bool Map::save(const QString &path) const
 
 inline void Map::addTransporter(int ox,int oy,int dx,int dy)
 {
-	kDebug() << "oxy=" <<ox << "," << oy << " dxy=" << dx << "," << dy;
+	qDebug() << "oxy=" <<ox << "," << oy << " dxy=" << dx << "," << dy;
 	transporters.append(new Transporter(ox,oy,dx,dy));
 }
 

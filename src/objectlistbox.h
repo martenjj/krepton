@@ -25,10 +25,10 @@
 #ifndef OBJECTLISTBOX_H
 #define OBJECTLISTBOX_H
 
-#include <klistwidget.h>
+#include <qlistwidget.h>
 
 
-class ObjectListBox : public KListWidget
+class ObjectListBox : public QListWidget
 {
 	Q_OBJECT
 

@@ -31,9 +31,6 @@
 #include <qgridlayout.h>
 #include <qtooltip.h>
 
-#include <klocale.h>
-#include <kstandarddirs.h>
-
 #include "krepton.h"
 
 #include "gameplayer.h"
@@ -53,15 +50,13 @@ const QString tableRow(const char *imageKey, const QString &text)
 
 SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &msg,
                                      QWidget *parent)
-    : KDialog(parent)
+    : DialogBase(parent)
 {
     setObjectName("SelectLevelDialog");
-    setCaption(i18n("Select Level"));
-    setButtons(KDialog::Ok|KDialog::Cancel);
-    setDefaultButton(KDialog::Ok);
+    setWindowTitle(i18n("Select Level"));
+    setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
     setModal(true);
-    showButtonSeparator(true);
-    setButtonText(KDialog::Ok,i18n("Play"));
+    setButtonText(QDialogButtonBox::Ok,i18n("Play"));
 
     QWidget *mw = new QWidget(this);
     QGridLayout *gl = new QGridLayout(mw);
@@ -69,7 +64,7 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
     QLabel *l = new QLabel(msg,mw);
     gl->addWidget(l,0,0,1,2);
 
-    gl->setRowMinimumHeight(1,KDialog::spacingHint());
+    gl->setRowMinimumHeight(1,DialogBase::verticalSpacing());
 
     wListBox = new QListWidget(mw);
     wListBox->setSelectionMode(QAbstractItemView::SingleSelection);
@@ -139,8 +134,8 @@ default:			pix = Pixmaps::Unknown;						break;
 
 void SelectLevelDialog::slotCheckButtonOk()
 {
-    enableButtonOk(wListBox->selectedItems().count()!=0 &&
-                   (!wPasswdEdit->isEnabled() || wPasswdEdit->text().length()>0));
+    setButtonEnabled(QDialogButtonBox::Ok, wListBox->selectedItems().count()!=0 &&
+                     (!wPasswdEdit->isEnabled() || wPasswdEdit->text().length()>0));
 }
 
 

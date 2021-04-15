@@ -35,14 +35,14 @@
 
 
 SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool useronly)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
     setObjectName("SelectGameDialog");
-    setCaption(title);
-    setButtons(KDialog::Ok|KDialog::Cancel);
-    setDefaultButton(KDialog::Ok);
+    setWindowTitle(title);
+    setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
+//     setDefaultButton(QDialogButtonBox::Ok);
     setModal(true);
-    showButtonSeparator(true);
+//     showButtonSeparator(true);
 
     wEpisodeIconView = new QListWidget(this);
     setMainWidget(wEpisodeIconView);
@@ -61,7 +61,7 @@ SelectGameDialog::SelectGameDialog(const QString title, QWidget *parent, bool us
          it!=episodes->constEnd(); ++it)
     {
         const Episode *e = (*it);
-        QListWidgetItem *item = new QListWidgetItem(KIcon("folder-grey"),e->getName());
+        QListWidgetItem *item = new QListWidgetItem(QIcon::fromTheme("folder-grey"),e->getName());
         if (useronly && e->isGlobal()) item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
         wEpisodeIconView->addItem(item);
     }
@@ -97,7 +97,7 @@ int SelectGameDialog::exec()
 void SelectGameDialog::slotSelectionChanged()
 {
     const QListWidgetItem *sel = wEpisodeIconView->currentItem();
-    enableButtonOk(sel!=NULL && sel->isSelected());
+    setButtonEnabled(QDialogButtonBox::Ok, sel!=NULL && sel->isSelected());
 }
 
 

@@ -21,14 +21,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <kdebug.h>
-
 #include <qcolor.h>
 #include <qfile.h>
 #include <qbytearray.h>
 
 #include "map2.h"
 #include "sprites.h"
+#include "krepton.h"
 
 #include "importerbbc.h"
 
@@ -142,7 +141,7 @@ ImporterBBC::~ImporterBBC()
 
 bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *maplist,QString *results)
 {
-    kDebug();
+    qDebug();
 
     QByteArray data = f.readAll();			// grab the complete file
     int ptr;						// data pointer into that
@@ -168,7 +167,7 @@ bool ImporterBBC::doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *m
                 break;					// no need to check any more
             }
         }
-	kDebug() << "same palette for level " << i << "? " << samepal[i];
+	qDebug() << "same palette for level " << i << "? " << samepal[i];
     }
 
     for (int i = 0; i<BBC_NUM_MAPS; ++i)

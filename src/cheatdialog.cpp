@@ -30,20 +30,17 @@
 #include <qcheckbox.h>
 #include <qlabel.h>
 
-#include <kdialog.h>
-#include <kiconloader.h>
 #include <kseparator.h>
+#include <kiconloader.h>
 
 
 CheatDialog::CheatDialog(const QString &title, QWidget *parent)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
 	setObjectName("CheatDialog");
-	setCaption(title);
-	setButtons(KDialog::Ok|KDialog::Cancel);
-	setDefaultButton(KDialog::Ok);
+	setWindowTitle(title);
+	setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
 	setModal(true);
-	showButtonSeparator(true);
 
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *vl = new QVBoxLayout;
@@ -61,9 +58,9 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	hl->addWidget(l);
 	vl->addLayout(hl);
 
-	vl->addSpacing(KDialog::spacingHint());
+	vl->addSpacing(DialogBase::verticalSpacing());
 	vl->addWidget(new KSeparator(Qt::Horizontal));
-	vl->addSpacing(KDialog::spacingHint());
+	vl->addSpacing(DialogBase::verticalSpacing());
 
 	noCrushCheck = new QCheckBox(i18n("Immune from &falling objects"), w);
 	noCrushCheck->setToolTip(i18n("If this option is turned on, Repton will not be crushed by falling objects (rocks or eggs)."));
@@ -102,7 +99,7 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 
 void CheatDialog::setCheats(Cheat::Options cheats)
 {
-	kDebug() << "cheats" << cheats;
+	qDebug() << "cheats" << cheats;
 
 	noCrushCheck->setChecked(cheats & Cheat::CannotBeCrushed);
 	noTimeCheck->setChecked(cheats & Cheat::NoTimeLimit);
@@ -126,6 +123,6 @@ Cheat::Options CheatDialog::getCheats() const
 	if (harmlessMonsterCheck->isChecked()) cheats |= Cheat::HarmlessMonster;
 	if (harmlessSpiritCheck->isChecked()) cheats |= Cheat::HarmlessSpirit;
 
-	kDebug() << "cheats" << cheats;
+	qDebug() << "cheats" << cheats;
 	return (cheats);
 }

@@ -21,12 +21,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <klocale.h>
-#include <kdialog.h>
 #include <kurlrequester.h>
-#include <kactivelabel.h>
 
 #include <qlabel.h>
 #include <qlayout.h>
@@ -35,6 +30,7 @@
 #include <qfileinfo.h>
 #include <qpushbutton.h>
 
+#include "krepton.h"
 #include "importmanager.h"
 
 //////////////////////////////////////////////////////////////////////////
@@ -76,7 +72,7 @@ ImportManager::~ImportManager()
 
 void ImportManager::add(const ImportManager::formatInfo *inf)
 {
-	kDebug() << "add '" << inf->key << "' = '" << inf->name << "'";
+	qDebug() << "add '" << inf->key << "' = '" << inf->name << "'";
 	formats->append(inf);
 }
 
@@ -88,7 +84,7 @@ void ImportManager::add(const ImportManager::formatInfo *inf)
 
 ImporterBase *ImportManager::createImporter(const QString &key)
 {
-	kDebug() << "for '" << key << "'";
+	qDebug() << "for '" << key << "'";
 
 	const ImportManager::formatInfo *inf = ImportManager::findInfo(key);
 	if (inf==NULL) return (NULL);

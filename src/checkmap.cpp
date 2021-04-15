@@ -103,7 +103,7 @@ void CheckMap::strictCheckTransporters(const QString maploc,const Map *mm)
 
 CheckMap::CheckMap(const MapList maps)
 {
-	kDebug();
+	qDebug();
 
 	msgs.clear();
 	severity = CheckMap::Ok;
@@ -213,13 +213,13 @@ default:				;		// Avoid warnings
 		}
 	}
 
-	kDebug() << "done sev=" << severity;
+	qDebug() << "done sev=" << severity;
 }
 
 
 const QString CheckMap::detail(const QString s1,const QString s2)
 {
-	return (msgs.empty() ? QString::null : s1+msgs.join(s2+s1)+s2);
+	return (msgs.empty() ? QString::null : QString(s1+msgs.join(s2+s1)+s2));
 }
 
 

@@ -28,9 +28,10 @@
 #include <qwidget.h>
 
 class QListWidget;
-class KPushButton;
-class KLineEdit;
-class KIntSpinBox;
+class QPushButton;
+class QLineEdit;
+class QSpinBox;
+
 
 class DataEditor : public QWidget
 {
@@ -42,17 +43,17 @@ public:
     QListWidget *mapsListBox;
     QListWidget *transportListBox;
 
-    KPushButton *newlevelPushButton;
-    KPushButton *removelevelPushButton;
-    KPushButton *levelupPushButton;
-    KPushButton *leveldownPushButton;
+    QPushButton *newlevelPushButton;
+    QPushButton *removelevelPushButton;
+    QPushButton *levelupPushButton;
+    QPushButton *leveldownPushButton;
 
-    KIntSpinBox *timeSpinBox;
-    KLineEdit *passwordLineEdit;
+    QSpinBox *timeSpinBox;
+    QLineEdit *passwordLineEdit;
 
-    KPushButton *newtransportPushButton;
-    KPushButton *changetransportPushButton;
-    KPushButton *removetransportPushButton;
+    QPushButton *newtransportPushButton;
+    QPushButton *changetransportPushButton;
+    QPushButton *removetransportPushButton;
 };
 
 #endif							// DATAEDITOR_H

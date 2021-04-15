@@ -39,7 +39,7 @@
 MapGrid::MapGrid(QWidget *parent)
 	: QScrollArea(parent)
 {
-	kDebug();
+	qDebug();
 
         mWidget = new MapGridWidget(this);
 	mWidget->setMouseTracking(true);
@@ -54,14 +54,14 @@ MapGrid::MapGrid(QWidget *parent)
 	horizontalScrollBar()->setSingleStep(Sprites::base_width);
 	verticalScrollBar()->setSingleStep(Sprites::base_width);
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 MapGridWidget::MapGridWidget(QWidget *parent)
 	: QWidget(parent)
 {
-	kDebug();
+	qDebug();
 
 	sprites = NULL;
 	map = NULL;
@@ -106,7 +106,7 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 		return;
 	}
 
-//	kDebug() << "showtrans=" << showtrans;
+//	qDebug() << "showtrans=" << showtrans;
 
 	const int mapwidth = map->getWidth();
 	const int mapheight = map->getHeight();
@@ -229,7 +229,7 @@ void MapGrid::selectedTransporter(int item)
 
 void MapGridWidget::selectedTransporter(int item)
 {
-	kDebug() << "item=" << item;
+	qDebug() << "item=" << item;
 
 	int ox = 0;
 	int oy = 0;

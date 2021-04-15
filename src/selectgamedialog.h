@@ -25,17 +25,15 @@
 #ifndef SELECTGAMEDIALOG_H
 #define SELECTGAMEDIALOG_H
 
-
-#include <kdialog.h>
-
-#include "episodes.h"
-
+#include <dialogbase.h>
 
 class QListWidget;
 class QListWidgetItem;
+class Episode;
+class EpisodeList;
 
 
-class SelectGameDialog : public KDialog
+class SelectGameDialog : public DialogBase
 {
     Q_OBJECT
 

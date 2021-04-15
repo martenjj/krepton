@@ -93,12 +93,12 @@ static const QString objnames =				// display names of objects
 
 ObjectList::ObjectList(const QString &s)
 {
-	kDebug();
+	qDebug();
 
 	lSprites = s.split(',', QString::SkipEmptyParts);
 	lMaps = s.section(",,",0,0).split(',');
 
-	kDebug() << "done, n1=" << lSprites.count() << "l2=" << lMaps.count();
+	qDebug() << "done, n1=" << lSprites.count() << "l2=" << lMaps.count();
 }
 
 

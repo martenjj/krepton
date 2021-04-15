@@ -27,9 +27,7 @@
 
 #include <qdir.h>
 #include <qfile.h>
-
-#include <kglobal.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 
 #ifdef SND_PHONON
 #include <Phonon/MediaSource>
@@ -84,7 +82,7 @@ void Sound::playSound(Sound::Type s)
 	if (!mEnabled) return;				// sounds not enabled
 	if (mSoundDir.isEmpty()) return;		// no media to play
 
-	kDebug() << "type" << s;
+	qDebug() << "type" << s;
 
 #ifdef SND_PHONON
 	if (s==mLastPlayed)				// same as last sound
@@ -114,32 +112,32 @@ default:						return;
 		}
 
 		// First try the named sound file from the scheme
-		QString fname = mSoundDir+name+SOUND_FILE_EXT;
+		QString fname = mSoundDir+'/'+name+SOUND_FILE_EXT;
 		if (!QFile::exists(fname))
 		{
 			// Fallback from the 'start' sound to 'transport'
 			if (s==Sound::Start) name = "transport";
-			fname = mSoundDir+name+SOUND_FILE_EXT;
+			fname = mSoundDir+'/'+name+SOUND_FILE_EXT;
 		}
 
 		// Fallback from the current scheme to the default
 		if (!QFile::exists(fname) && !mFallbackSoundDir.isEmpty())
 		{
 			if (s==Sound::Start) name = "start";
-			fname = mFallbackSoundDir+name+SOUND_FILE_EXT;
+			fname = mFallbackSoundDir+'/'+name+SOUND_FILE_EXT;
 
 			if (!QFile::exists(fname))
 			{
 				// Fallback from the 'start' sound to 'transport'
 				if (s==Sound::Start) name = "transport";
-				fname = mFallbackSoundDir+name+SOUND_FILE_EXT;
+				fname = mFallbackSoundDir+'/'+name+SOUND_FILE_EXT;
 			}
 		}
 
 		// Have now tried all possibilities
 		if (!QFile::exists(fname))
 		{
-			kWarning() << "Sound file does not exist" << fname;
+			qWarning() << "Sound file does not exist" << fname;
 			return;
 		}
 
@@ -150,7 +148,7 @@ default:						return;
 			// Create a dummy (empty) media object,
 			// to simplify the caching and repeat logic
 			src = new Phonon::MediaSource();
-			kDebug() << "created empty media object for" << fname;
+			qDebug() << "created empty media object for" << fname;
 			mSourceMap[s] = src;
 #else
 			return;				// ignore for external player
@@ -159,7 +157,7 @@ default:						return;
 
 #ifdef SND_PHONON
 		src = new Phonon::MediaSource(fname);
-		kDebug() << "created media object for" << fname;
+		qDebug() << "created media object for" << fname;
 		mSourceMap[s] = src;
 	}
 
@@ -195,23 +193,23 @@ bool Sound::setSchemeName(const QString &name)
 
 	mSoundScheme = name;
 	if (mSoundScheme.isEmpty()) mSoundScheme = SOUND_DEFAULT_SCHEME;
-	kDebug() << "set to" << mSoundScheme;
+	qDebug() << "set to" << mSoundScheme;
 
-	QString resfile = (QString(mSoundScheme)+"/info");
-	QString resource = KGlobal::dirs()->findResourceDir("appsound", resfile);
+ 	QString resfile = mSoundScheme;
+	QString resource = QStandardPaths::locate(QStandardPaths::AppDataLocation, "sounds/"+resfile, QStandardPaths::LocateDirectory);
 	if (resource.isEmpty())
 	{
-		kDebug() << "Cannot find sound resource for" << resfile << "- check installation!";
+		qDebug() << "Cannot find sound resource for" << resfile << "- check installation!";
 		return (false);
 	}
 
-	resource += mSoundScheme+"/";
-	QDir d(resource);
-	if (!d.exists())
-	{
-		kDebug() << "Sound scheme directory" << resource << "not found - check installation!";
-		return (false);
-	}
+// 	resource += mSoundScheme+"/";
+// 	QDir d(resource);
+// 	if (!d.exists())
+// 	{
+// 		qDebug() << "Sound scheme directory" << resource << "not found - check installation!";
+// 		return (false);
+// 	}
 
 	mSoundDir = resource;				// sound directory in use
 
@@ -219,15 +217,15 @@ bool Sound::setSchemeName(const QString &name)
 	{
 		mDefaultSoundDir = mSoundDir;		// record for use as fallback
 		mFallbackSoundDir = QString::null;	// but no fallback for this
-		kDebug() << "default sounds at" << mDefaultSoundDir;
+		qDebug() << "default sounds at" << mDefaultSoundDir;
 	}
 	else						// setting another...
 	{
 		mFallbackSoundDir = mDefaultSoundDir;	// fallback to the default
 	}
 
-	kDebug() << "sounds at" << mSoundDir;
-	kDebug() << "fallback at" << mFallbackSoundDir;
+	qDebug() << "sounds at" << mSoundDir;
+	qDebug() << "fallback at" << mFallbackSoundDir;
 
 #ifdef SND_PHONON
 	qDeleteAll(mSourceMap);				// throw away media objects
@@ -243,23 +241,19 @@ QMap<QString,QString> Sound::allSchemesList()
 {
 	QMap<QString,QString> res;
 
-	QStringList dirs = KGlobal::dirs()->findDirs("appsound", "");
-	for (QStringList::const_iterator di = dirs.constBegin();
-	     di!=dirs.constEnd(); ++di)
+	QStringList dirs = QStandardPaths::locateAll(QStandardPaths::AppDataLocation,
+	                                                   "sounds", QStandardPaths::LocateDirectory);
+	for (const QString &d : qAsConst(dirs))
 	{
-		QString dir = (*di);
+		qDebug() << "sound dir" << d;
 
-		//kDebug() << "trying sound dir" << dir;
-		if (dir.isEmpty()) continue;
-		dir = QDir(dir).canonicalPath();
-
-		QDir qd(dir);
+		QDir qd(d);
 		if (!qd.exists())
 		{
-			kWarning() << "sound directory not found:" << dir;
+			reportError(ki18n("Sound directory '%1' not found"), d);
 			continue;
 		}
-
+ 
 		qd.setFilter(QDir::Dirs);
 		qd.setSorting(QDir::Name);
 		const QFileInfoList list = qd.entryInfoList();
@@ -271,7 +265,7 @@ QMap<QString,QString> Sound::allSchemesList()
 
 			if (!qd.cd(fi.fileName()))
 			{
-				kWarning() << "cannot access directory:" << qd.absoluteFilePath(fi.fileName());
+				qWarning() << "cannot access directory:" << qd.absoluteFilePath(fi.fileName());
 				continue;
 			}
 
@@ -283,7 +277,7 @@ QMap<QString,QString> Sound::allSchemesList()
 
 			if (!f.open(QIODevice::ReadOnly))
 			{
-				kWarning() << "cannot read info file:" << filename;
+				qWarning() << "cannot read info file:" << filename;
 				continue;
 			}
 
@@ -292,7 +286,7 @@ QMap<QString,QString> Sound::allSchemesList()
 			name = t.readLine().trimmed();
 			f.close();
 
-			kDebug() << "sound scheme at" << dirname << "-" << schemename << "=" << name;
+			qDebug() << "sound scheme at" << dirname << "-" << schemename << "=" << name;
 			res[schemename] = name;
 		}
 	}

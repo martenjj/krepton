@@ -25,12 +25,12 @@
 #ifndef NEWTRANSPORTERDIALOG_H
 #define NEWTRANSPORTERDIALOG_H
 
-#include <qspinbox.h>
+#include <dialogbase.h>
 
-#include <kdialog.h>
+class QSpinBox;
 
 
-class NewTransporterDialog : public KDialog
+class NewTransporterDialog : public DialogBase
 {
 	Q_OBJECT
 
@@ -39,10 +39,10 @@ public:
 	void setValues(int ox,int oy,int dx,int dy);
 	void setLimits(int x,int y);
 
-	int xorig() const	{ return (mOrigXBox->value()); }
-	int yorig() const	{ return (mOrigYBox->value()); }
-	int xdest() const	{ return (mDestXBox->value()); }
-	int ydest() const	{ return (mDestYBox->value()); }
+	int xorig() const;
+	int yorig() const;
+	int xdest() const;
+	int ydest() const;
 
 private:
         QSpinBox *mOrigXBox;

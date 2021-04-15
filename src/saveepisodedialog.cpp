@@ -28,7 +28,6 @@
 #include <qlineedit.h>
 #include <qformlayout.h>
 
-#include <kdialog.h>
 #include <kstandardguiitem.h>
 #include <ksqueezedtextlabel.h>
 
@@ -37,14 +36,12 @@
 
 
 SaveEpisodeDialog::SaveEpisodeDialog(const QString &title, QWidget *parent)
-	: KDialog(parent)
+	: DialogBase(parent)
 {
 	setObjectName("SaveEpisodeDialog");
-        setCaption(title);
-        setButtons(KDialog::Ok|KDialog::Cancel);
-        setDefaultButton(KDialog::Ok);
+        setWindowTitle(title);
+        setButtons(QDialogButtonBox::Ok|QDialogButtonBox::Cancel);
         setModal(true);
-        showButtonSeparator(true);
 
         QWidget *w = new QWidget(this);
         QFormLayout *fl = new QFormLayout;
@@ -61,11 +58,11 @@ SaveEpisodeDialog::SaveEpisodeDialog(const QString &title, QWidget *parent)
 	setMainWidget(w);
 	setMinimumSize(420, 120);
 
-	setButtonGuiItem(KDialog::Ok, KStandardGuiItem::save());
+	setButtonGuiItem(QDialogButtonBox::Ok, KStandardGuiItem::save());
 
 	mNameEdit->clear();
 	slotNameChanged("");
-	enableButtonOk(false);
+	setButtonEnabled(QDialogButtonBox::Ok, false);
         mNameEdit->setFocus();
 }
 
@@ -77,5 +74,9 @@ void SaveEpisodeDialog::slotNameChanged(const QString &s)
         mSaveLocation->setText(path);
 
         mSaveLocation->setEnabled(!s.isEmpty());
-        enableButtonOk(!s.isEmpty());
+        setButtonEnabled(QDialogButtonBox::Ok, !s.isEmpty());
 }
+
+
+const QString SaveEpisodeDialog::name() const	{ return (mNameEdit->text()); }
+const QString SaveEpisodeDialog::path() const	{ return (mSaveLocation->fullText()); }

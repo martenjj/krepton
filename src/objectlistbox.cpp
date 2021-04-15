@@ -22,8 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <klistwidget.h>
-
 #include "krepton.h"
 #include "objectlist.h"
 
@@ -31,11 +29,11 @@
 
 
 ObjectListBox::ObjectListBox(bool all, QWidget *parent)
-	: KListWidget(parent)
+	: QListWidget(parent)
 {
         setObjectName("ObjectListBox");
 
-	kDebug() << "all" << all;
+	qDebug() << "all" << all;
 
 	setFixedWidth(150);
 	if (all) addItems(ObjectList::allSpriteNames());

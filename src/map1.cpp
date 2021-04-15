@@ -50,7 +50,7 @@
 
 MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 {
-	kDebug() << "pw='" << m.getPassword() << "'";
+	qDebug() << "pw='" << m.getPassword() << "'";
 
 	num_diamonds = 0;
 	have_key = have_crown = false;
@@ -60,24 +60,24 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	plant_inhibit = BEGIN_PLANT_GRACE;
 	cheats_used = Cheat::NoCheats;
 
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 
 MapPlay::~MapPlay()
 {
-	kDebug() << "pw='" << getPassword() << "'";
+	qDebug() << "pw='" << getPassword() << "'";
 	qDeleteAll(monsters);
 	monsters.clear();
-	kDebug() << "done";
+	qDebug() << "done";
 }
 
 
 
 void MapPlay::setCheats(Cheat::Options cheats)
 {
-	kDebug() << "cheats" << cheats;
+	qDebug() << "cheats" << cheats;
 	cheats_used = cheats;
 }
 
@@ -116,14 +116,14 @@ const Transporter *MapPlay::findTransporter(int x,int y)
 		if (tr->orig_x==x && tr->orig_y==y) return (tr);
 	}
 
-	kDebug() << "Inconsistent map, no transporter at " << x << "," << y;
+	qDebug() << "Inconsistent map, no transporter at " << x << "," << y;
 	return (NULL);
 }
 
 
 void MapPlay::prepareMap()
 {
-	kDebug();
+	qDebug();
 
 	findStart();
 	xpos = xstart; ypos = ystart;			// set start position
@@ -168,7 +168,7 @@ default:			;			// Avoid warning
 		else if (!isempty(x+1,y) && isempty(x,y+1)) m->orientation = Orientation::South;
 	}
 
-	kDebug() << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds;
+	qDebug() << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds;
 }
 
 
@@ -187,7 +187,7 @@ Monster *MapPlay::findMonster(int x,int y)
 
 void MapPlay::addMonster(int x, int y, Obj::Type type)
 {
-	kDebug() << "xy=" << x << "," << y << " type=" << type;
+	qDebug() << "xy=" << x << "," << y << " type=" << type;
 
 	Monster *m = new Monster(x,y,type);
         if (type==Obj::Monster) m->hold = BEGIN_MONSTER_GRACE;
@@ -408,7 +408,7 @@ bool MapPlay::updateBlip(Monster *m)
 	if (!isempty(mx, my+1) && !isempty(mx+1, my) &&
 	    !isempty(mx, my-1) && !isempty(mx-1, my))
 	{
-		kDebug() << "spirit surrounded at" << mx << my;
+		qDebug() << "spirit surrounded at" << mx << my;
 		return (false);				// nothing we can do
 	}
 
@@ -418,7 +418,7 @@ bool MapPlay::updateBlip(Monster *m)
 	    isempty(mx-1, my-1) && isempty(mx-1, my+1) &&
 	    isempty(mx+1, my-1) && isempty(mx+1, my+1))
 	{
-		kDebug() << "spirit confused at" << mx << my << showDirection(m->orientation);
+		qDebug() << "spirit confused at" << mx << my << showDirection(m->orientation);
 		blipGoDirection(m);			// just go straight on
 	}
 	else
@@ -431,7 +431,7 @@ case Orientation::North:
 			    blipTryDirection(m, Orientation::East) &&
 			    isempty(mx-1, my+1))
 			{
-				kDebug() << "reorient at" << mx << my << "N, try E";
+				qDebug() << "reorient at" << mx << my << "N, try E";
 				if (blipGoDirection(m, Orientation::East)) break;
 			}
 
@@ -449,7 +449,7 @@ case Orientation::East:
 			    blipTryDirection(m, Orientation::South) &&
 			    isempty(mx-1, my-1))
 			{
-				kDebug() << "reorient at" << mx << my << "E, try S";
+				qDebug() << "reorient at" << mx << my << "E, try S";
 				if (blipGoDirection(m, Orientation::South)) break;
 			}
 
@@ -467,7 +467,7 @@ case Orientation::South:
 			    blipTryDirection(m, Orientation::West) &&
 			    isempty(mx+1, my-1))
 			{
-				kDebug() << "reorient at" << mx << my << "S, try W";
+				qDebug() << "reorient at" << mx << my << "S, try W";
 				if (blipGoDirection(m, Orientation::West)) break;
 			}
 
@@ -485,7 +485,7 @@ case Orientation::West:
 			    blipTryDirection(m, Orientation::North) &&
 			    isempty(mx+1, my+1))
 			{
-				kDebug() << "reorient at" << mx << my << "W, try N";
+				qDebug() << "reorient at" << mx << my << "W, try N";
 				if (blipGoDirection(m, Orientation::North)) break;
 			}
 
@@ -1137,7 +1137,7 @@ void MapPlay::cageBlip(Monster *m, int x, int y)
 
 void MapPlay::die(const QString &how)
 {
-	kDebug() << "how" << how;
+	qDebug() << "how" << how;
 
 	how_died = how;
 	Sound::self()->playSound(Sound::Die);
