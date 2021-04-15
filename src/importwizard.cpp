@@ -312,7 +312,7 @@ void ImportWizard::setupPage1()
 		QString s = fmt->name;
 
                 QFontMetrics fm = page1list->fontMetrics();
-                int thislen = fm.width(s);
+                int thislen = fm.horizontalAdvance(s);
                 if (thislen>maxlen) maxlen = thislen;
 
 		page1list->addItem(s);
