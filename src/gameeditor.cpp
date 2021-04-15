@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "gameeditor.h"
+
 #include <qlistwidget.h>
 #include <qgridlayout.h>
 #include <qtabwidget.h>
@@ -36,7 +38,6 @@
 #include <ktoolbar.h>
 
 #include "krepton.h"
-
 #include "map2.h"
 #include "dataeditor.h"
 #include "spriteeditor.h"
@@ -44,9 +45,6 @@
 #include "newmapdialog.h"
 #include "newtransporterdialog.h"
 #include "checkmap.h"
-
-#include "gameeditor.h"
-#include "gameeditor.moc"
 
 
 GameEditor::GameEditor(QWidget *parent)

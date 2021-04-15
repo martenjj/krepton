@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "dataeditor.h"
+
 #include <qlabel.h>
 #include <qgridlayout.h>
 #include <qlistwidget.h>
@@ -32,8 +34,6 @@
 #include <dialogbase.h>
 
 #include "krepton.h"
-#include "dataeditor.h"
-#include "dataeditor.moc"
 
 
 DataEditor::DataEditor(QWidget* parent)

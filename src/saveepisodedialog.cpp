@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "saveepisodedialog.h"
-#include "saveepisodedialog.moc"
 
 #include <qlineedit.h>
 #include <qformlayout.h>

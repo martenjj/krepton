@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "selectleveldialog.h"
-#include "selectleveldialog.moc"
 
 #include <qlistwidget.h>
 #include <qlineedit.h>

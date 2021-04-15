@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "gameplayer.h"
+
 #include <kmessagebox.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
@@ -37,9 +39,6 @@
 #include "sprites.h"
 #include "map1.h"
 #include "checkmap.h"
-
-#include "gameplayer.h"
-#include "gameplayer.moc"
 
 
 GamePlayer::GamePlayer(QWidget *parent)

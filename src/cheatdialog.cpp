@@ -21,9 +21,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "krepton.h"
 #include "cheatdialog.h"
-#include "cheatdialog.moc"
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -32,6 +30,8 @@
 
 #include <kseparator.h>
 #include <kiconloader.h>
+
+#include "krepton.h"
 
 
 CheatDialog::CheatDialog(const QString &title, QWidget *parent)

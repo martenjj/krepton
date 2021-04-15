@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "selectgamedialog.h"
-#include "selectgamedialog.moc"
 
 #include <qlistwidget.h>
 #include <qtimer.h>

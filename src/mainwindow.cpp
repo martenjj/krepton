@@ -24,7 +24,6 @@
 
 #include "krepton.h"
 #include "mainwindow.h"
-#include "mainwindow.moc"
 
 #include <kxmlguiwindow.h>
 #include <ksharedconfig.h>

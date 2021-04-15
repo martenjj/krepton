@@ -23,7 +23,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "newtransporterdialog.h"
-#include "newtransporterdialog.moc"
 
 #include <qgridlayout.h>
 #include <qlabel.h>

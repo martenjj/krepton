@@ -22,7 +22,6 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #include "importwizard.h"
-#include "importwizard.moc"
 
 #include <qlabel.h>
 #include <qlayout.h>
