@@ -340,7 +340,7 @@ void GameEditor::mapRemove()
 	int item = view->mapsListBox->currentRow();
 	QString msg = QString("Are you sure to remove the selected map #%1, '%2'?")
 		.arg(item+1).arg(view->mapsListBox->currentItem()->text());
-	if (KMessageBox::warningContinueCancel(this,msg,QString::null,
+	if (KMessageBox::warningContinueCancel(this,msg,QString(),
 					       KGuiItem("&Remove"))==KMessageBox::Continue)
 	{
 		maps.mapRemove(item);
@@ -455,7 +455,7 @@ void GameEditor::transporterRemove()
 	int item = view->transportListBox->currentRow();
 	QString msg = QString("Are you sure to remove the selected transporter #%1?").arg(item+1);
 
-	if (KMessageBox::warningContinueCancel(this,msg,QString::null,
+	if (KMessageBox::warningContinueCancel(this,msg,QString(),
 					       KGuiItem("&Remove"))==KMessageBox::Continue)
 	{
 		map->transporterRemove(item);
@@ -509,7 +509,7 @@ void GameEditor::changedSprite()
 void GameEditor::menuStrictCheck()
 {
 	CheckMap cm(maps);
-	cm.report(this,QString::null,true);
+	cm.report(this,QString(),true);
 }
 
 
@@ -603,6 +603,6 @@ void GameEditor::slotShowCoordinates(int x,int y)
 
 QString GameEditor::formatCoordinates(int x,int y)
 {
-	if (x<0) return (QString::null);
+	if (x<0) return ("");
 	return (i18n(" X: %1  Y: %2 ",QString::number(x),QString::number(y)));
 }

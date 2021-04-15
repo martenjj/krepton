@@ -123,7 +123,7 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(Cheat::Options)
 
 
 extern void reportError(const KLocalizedString &message,
-                        const QString &filename = QString::null,
+                        const QString &filename = QString(),
 			bool system = true, bool fatal = false);
 
 #endif							// !KREPTON_H

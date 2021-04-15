@@ -85,7 +85,7 @@ const ImportManager::formatInfo BBCFormatInfo::myinfo =
 {
     "bbc",						// key
     "BBC Repton 3",					// name
-    QString::null,					// url
+    "",							// url
     "BBC Repton 3 (and sequels) data files always contain eight episodes, each 28x24 in size. \
 The graphics are in four colours.\
 <p>\

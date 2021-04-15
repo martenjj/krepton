@@ -74,7 +74,7 @@ Map::Map(const QString &path)				// create from file
 	f.close();
 
 	findStart();
-	status = QString::null;				// map now OK
+	status.clear();					// map now OK
 }
 
 
@@ -106,7 +106,7 @@ Map::Map(int sx,int sy,const QByteArray &pw)		// create with size
 	width = sx; height = sy;
 	password = pw;
 	num_secs = 300;
-	status = QString::null;
+	status = "";
 
 	data = new Obj::Type[width*height];
 	for (int i = (width*height-1); i>=0; --i) data[i] = Obj::Empty;

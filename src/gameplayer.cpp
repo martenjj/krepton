@@ -91,7 +91,7 @@ const QString GamePlayer::loadEpisode(const Episode *e)
 
 	cheats_used = Cheat::NoCheats;			// reset for new episode
 	cheats_ever_used = false;
-	return (QString::null);
+	return ("");
 }
 
 const QString GamePlayer::loadSprites(const Episode *e)
@@ -117,7 +117,7 @@ const QString GamePlayer::loadMaps(const Episode *e)
 	currentlevel = -1;				// not valid any longer
 	if (currentmap!=NULL) delete currentmap;
 	currentmap = NULL;
-	return (QString::null);
+	return ("");
 }
 
 const Episode *GamePlayer::saveEpisode(const QString name, const QString path)
@@ -467,7 +467,7 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 	if (suicide && lives>0)				// option to continue
 	{
 		msg += i18n("<p>Do you want to continue the game?");
-		if (KMessageBox::questionYesNo(this, msg, QString::null,
+		if (KMessageBox::questionYesNo(this, msg, QString(),
 					       KGuiItem("&Continue"),
 					       KGuiItem("&Finish"))!=KMessageBox::Yes)
 		{

@@ -57,7 +57,7 @@ Sound *Sound::self()
 Sound::Sound()
 {
 	mEnabled = true;
-	setSchemeName(QString::null);			// find sounds for default scheme
+	setSchemeName("");				// find sounds for default scheme
 
 #ifdef SND_PHONON
 	mLastPlayed = Sound::None;
@@ -189,7 +189,7 @@ default:						return;
 
 bool Sound::setSchemeName(const QString &name)
 {
-	mSoundDir = QString::null;			// not located yet
+	mSoundDir.clear();				// not located yet
 
 	mSoundScheme = name;
 	if (mSoundScheme.isEmpty()) mSoundScheme = SOUND_DEFAULT_SCHEME;
@@ -216,7 +216,7 @@ bool Sound::setSchemeName(const QString &name)
 	if (name.isEmpty())				// setting the default...
 	{
 		mDefaultSoundDir = mSoundDir;		// record for use as fallback
-		mFallbackSoundDir = QString::null;	// but no fallback for this
+		mFallbackSoundDir = "";			// but no fallback for this
 		qDebug() << "default sounds at" << mDefaultSoundDir;
 	}
 	else						// setting another...
@@ -297,5 +297,5 @@ QMap<QString,QString> Sound::allSchemesList()
 
 QString Sound::schemeConfigName() const
 {
-	return (mSoundScheme==SOUND_DEFAULT_SCHEME ? QString::null : mSoundScheme);
+	return (mSoundScheme==SOUND_DEFAULT_SCHEME ? QString() : mSoundScheme);
 }

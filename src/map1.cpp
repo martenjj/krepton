@@ -55,7 +55,6 @@ MapPlay::MapPlay(const Map &m) : Map(m)			// create from map
 	num_diamonds = 0;
 	have_key = have_crown = false;
 	currentRepton = Obj::Repton;
-	how_died = QString::null;
 	levelfinished = false;
 	plant_inhibit = BEGIN_PLANT_GRACE;
 	cheats_used = Cheat::NoCheats;
@@ -102,7 +101,7 @@ void MapPlay::restartGame()
 	ref(xpos,ypos) = Obj::Repton;
 	currentRepton = Obj::Repton;
 
-	how_died = QString::null;
+	how_died.clear();
 	game_secs = game_points = 0;			// nothing accumulated yet
 }
 

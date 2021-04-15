@@ -356,7 +356,7 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 	// TODO: Port to Qt5
 // 	KStatusBar *status = statusBar();
 
-	QString ds = QString::null;
+	QString ds = "";
 	if (diamonds>=0)
 	{
 		if (diamonds==0) ds = i18n("Finish!");
@@ -366,7 +366,7 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 	}
 // 	status->changeItem(ds, 1);
 
-	QString ts = QString::null;
+	QString ts = "";
 	if (secs>=0)
 	{
 		const int min = secs / 60;
@@ -610,7 +610,7 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 			this,i18n("<qt>The episode <b>%1</b> has no levels available to play."
                                   "<p>You can use its sprites with another episode, or"
                                   "<br>create new levels in the editor.", e->getName()),
-			QString::null,"emptyMapsMessage");
+			QString(),"emptyMapsMessage");
 	}
 
 	modified = false;
@@ -645,7 +645,7 @@ void MainWindow::slotSetMagnification()
 	KMessageBox::information(this,
                                  i18n("This change will take effect when %1 is next started.",
                                       qApp->applicationDisplayName()),
-				 QString::null,"sizeChangeMessage");
+				 QString(),"sizeChangeMessage");
 
 	KConfigGroup grp = KSharedConfig::openConfig()->group("Options");
 	grp.writeEntry("Magnification", selection);
@@ -654,7 +654,7 @@ void MainWindow::slotSetMagnification()
 
 const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
 {
-	if (e==NULL) return (QString::null);
+	if (e==NULL) return ("");
 	qDebug() << "name=" << e->getName();
 
 	if (spritesonly)
@@ -811,7 +811,7 @@ void MainWindow::slotSaveAs()
 	{
 		if (KMessageBox::warningContinueCancel(
 			    this,i18n("<qt>Overwrite existing episode <b>%1</b>?", d.name()),
-			    QString::null,
+			    QString(),
 			    KGuiItem(i18n("Overwrite")))!=KMessageBox::Continue) return;
 	}
 
@@ -843,7 +843,7 @@ void MainWindow::slotRemove()
                               "<br>located at '%1'?",
                               Episode::savePath(name),
                               name),
-		    QString::null,KGuiItem(i18n("Remove")))!=KMessageBox::Continue) return;
+		    QString(),KGuiItem(i18n("Remove")))!=KMessageBox::Continue) return;
 
 	qDebug() << "e=" << e << "current=" << currentepisode;
 

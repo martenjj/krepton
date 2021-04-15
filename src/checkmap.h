@@ -37,7 +37,7 @@ public:
 	CheckMap(const MapList maps);
 	CheckMap::Severity status() { return (severity); }
 	const QString detail(const QString s1 = "<li>",const QString s2 = "</li>");
-	int report(QWidget *parent = NULL,const QString quest = QString::null,bool positive = false);
+	int report(QWidget *parent = NULL,const QString quest = "",bool positive = false);
 
 private:
 	CheckMap::Severity severity;

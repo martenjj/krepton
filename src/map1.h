@@ -55,7 +55,7 @@ public:
 	bool goRight() { return (moveHorizontal(1)); }
 
 	bool hasEndedLevel() const { return (levelfinished); }
-	bool hasDied() const { return (how_died!=QString::null); }
+	bool hasDied() const { return (!how_died.isEmpty()); }
 	const QString &howDied() const { return (how_died); }
 
 	int gameSeconds() { int s = game_secs; game_secs = 0; return (s); }

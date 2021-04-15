@@ -251,7 +251,7 @@ void ImportWizard::next()
                         }
                         else
                         {
-				reportError(ki18n("Can only import from local files"), QString::null, false);
+				reportError(ki18n("Can only import from local files"), "", false);
 				ok = false;
                         }
 		}
@@ -336,7 +336,7 @@ void ImportWizard::slotPage1FormatSelected()
 	QString t = page1text.toString();
 
 	QListWidgetItem *item = page1list->currentItem();
-	QString fmtName = (item==NULL ? QString::null : item->text());
+	QString fmtName = (item==NULL ? QString() : item->text());
 
 	format = manager->findNamed(fmtName);
 	if (format!=NULL)
@@ -500,5 +500,5 @@ void ImportWizard::setupPage5()
 
 QString ImportWizard::newEpisodeToLoad() const
 {
-	return ((importedOk && page5load->isChecked()) ? episodeName : QString::null);
+	return ((importedOk && page5load->isChecked()) ? episodeName : QString());
 }

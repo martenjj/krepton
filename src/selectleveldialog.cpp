@@ -102,7 +102,7 @@ default:			pix = Pixmaps::Unknown;						break;
         }
 
         QString pwd = fields[2];
-        if (state==GamePlayer::Unplayed && level>0) pwd = QString::null;
+        if (state==GamePlayer::Unplayed && level>0) pwd = "";
         QString txt = QString("  %1: %2").arg(1+level).arg(pwd);
 
         wListBox->addItem(new QListWidgetItem(Pixmaps::find(pix),txt));

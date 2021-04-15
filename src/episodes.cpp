@@ -48,7 +48,7 @@ const QString Episode::loadMaps(MapList *maps) const
 	qDeleteAll(*maps);				// clear existing maps
 	maps->clear();
 
-	QString path = getFilePath(QString::null);	// containing directory
+	QString path = getFilePath("");			// containing directory
 	QDir dir(path);					// just for safety
 	if (!dir.exists())
 	{
@@ -59,7 +59,7 @@ const QString Episode::loadMaps(MapList *maps) const
 	dir.setNameFilters(QStringList("map*"));
 	dir.setSorting(QDir::Name);
 
-	QString status = QString::null;
+	QString status = "";
 	const QFileInfoList list = dir.entryInfoList();
         for (QFileInfoList::const_iterator it = list.constBegin();
              it!=list.constEnd(); ++it)
@@ -98,7 +98,7 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 {
 	qDebug() << "name='" << name << "'";
 
-	QString path = getFilePath(QString::null);	// containing directory
+	QString path = getFilePath("");			// containing directory
 	if (!QDir(path).exists())
 	{
 		if (!QDir::root().mkpath(path))

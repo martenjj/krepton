@@ -38,7 +38,7 @@ public:
 	bool removeFiles() const;
 
 	const QString &getName() const { return (name); }
-	const QString getFilePath(const QString file = QString::null) const;
+    const QString getFilePath(const QString file = QString()) const;
 	bool isGlobal() const { return (global); }
 
 	static QString savePath(const QString &name);

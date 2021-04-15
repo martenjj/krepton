@@ -71,7 +71,7 @@ Sprites::Sprites()					// create as blank
         preparedFor = -1;				// nothing prepared yet
 	multiRemoved = false;
 	rawSet = false;
-	status = QString::null;				// sprites now OK
+	status.clear();					// sprites now OK
 }
 
 
@@ -127,7 +127,7 @@ Sprites::Sprites(const Episode *e)			// load from episode
         }
 
 	ensureRaw();
-	status = QString::null;				// sprites now OK
+	status.clear();					// sprites now OK
 }
 
 
@@ -171,7 +171,7 @@ Sprites::Sprites(const Sprites &s)			// copy constructor
         preparedFor = -1;				// nothing prepared yet
 	multiRemoved = s.multiRemoved;
 	rawSet= s.rawSet;
-	status = QString::null;				// sprites now OK
+	status.clear();					// sprites now OK
 }
 
 

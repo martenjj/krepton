@@ -133,7 +133,7 @@ void ScoreDialog::slotUser1()
 {
 	if (KMessageBox::warningContinueCancel(
 		    this,"Do you really want to clear the high scores list?",
-		    QString::null,KStandardGuiItem::clear())!=KMessageBox::Continue) return;
+		    QString(),KStandardGuiItem::clear())!=KMessageBox::Continue) return;
 
 	configGrp.config()->deleteGroup(groupname);	// deep delete group
 

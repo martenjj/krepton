@@ -219,7 +219,7 @@ default:				;		// Avoid warnings
 
 const QString CheckMap::detail(const QString s1,const QString s2)
 {
-	return (msgs.empty() ? QString::null : QString(s1+msgs.join(s2+s1)+s2));
+	return (msgs.empty() ? "" : QString(s1+msgs.join(s2+s1)+s2));
 }
 
 
@@ -234,7 +234,7 @@ int CheckMap::report(QWidget *parent,const QString quest,bool positive)
 	QString s = "<qt>The consistency check failed for these reasons:";
 	s += "<ul>"+detail()+"</ul>";
 
-	if (severity==CheckMap::Fatal && quest!=QString::null)
+	if (severity==CheckMap::Fatal && !quest.isEmpty())
 	{
 		s += QString("%1.").arg(quest);
 		return (KMessageBox::warningYesNo(parent,s));
