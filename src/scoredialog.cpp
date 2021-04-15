@@ -40,7 +40,7 @@ class ScoreListItem : public QTreeWidgetItem
 {
 public:
 	ScoreListItem(QTreeWidget *parent) : QTreeWidgetItem(parent)	{}
-	virtual bool operator<(const QTreeWidgetItem &other) const;
+	virtual bool operator<(const QTreeWidgetItem &other) const override;
 };
 
 
