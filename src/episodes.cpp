@@ -295,7 +295,7 @@ EpisodeList::EpisodeList()
                 KMessageBox::error(NULL, msg);
 	}
 
-	qSort(begin(),end(),&episodeLessThan);		// alphabetical by names
+	std::sort(begin(),end(),&episodeLessThan);		// alphabetical by names
 	qDebug() << "done";
 }
 
@@ -330,7 +330,7 @@ void EpisodeList::add(const Episode *e)
 	if (old!=NULL) removeOne(old);			// yes, remove the old one
 
         append(e);
-	qSort(begin(), end(), &episodeLessThan);	// resort after insertion
+	std::sort(begin(), end(), &episodeLessThan);	// resort after insertion
 }
 
 
