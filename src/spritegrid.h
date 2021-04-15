@@ -49,10 +49,10 @@ public:
 	void setSprite(Sprites *ss,Obj::Type tt) { sprites = ss; object = tt; }
 
 protected:
-	void paintEvent(QPaintEvent *ev);
-	void mousePressEvent(QMouseEvent *ev);
-	void mouseMoveEvent(QMouseEvent *ev);
-	void leaveEvent(QEvent *ev);
+	void paintEvent(QPaintEvent *ev) override;
+	void mousePressEvent(QMouseEvent *ev) override;
+	void mouseMoveEvent(QMouseEvent *ev) override;
+	void leaveEvent(QEvent *ev) override;
 
 private:
 	Sprites *sprites;

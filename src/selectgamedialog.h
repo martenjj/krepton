@@ -44,7 +44,7 @@ public:
     const Episode *selectedItem();
 
 public slots:
-    int exec();
+    int exec() override;
 
 protected slots:
     void slotSelectionChanged();

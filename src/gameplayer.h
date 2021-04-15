@@ -91,9 +91,9 @@ public slots:
 	void goRight();
 
 protected:
-	void timerEvent(QTimerEvent *e);
-	void paintEvent(QPaintEvent *e);
-	void keyPressEvent(QKeyEvent *e);
+	void timerEvent(QTimerEvent *e) override;
+	void paintEvent(QPaintEvent *e) override;
+	void keyPressEvent(QKeyEvent *e) override;
 
 private:
 	void recordLevel(GamePlayer::State state);

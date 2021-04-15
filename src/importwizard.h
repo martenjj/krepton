@@ -48,7 +48,7 @@ public:
 	QString newEpisodeToLoad() const;
 
 protected:
-	void next();
+	void next() override;
 
 protected slots:
 	void slotShowPage(KPageWidgetItem *page);

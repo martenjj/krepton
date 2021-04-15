@@ -33,8 +33,8 @@ public:
 	ImporterBBC();
 	virtual ~ImporterBBC();
 
-	const ImportManager::formatInfo *formatInfo();
-	bool doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *maplist,QString *results);
+	const ImportManager::formatInfo *formatInfo() override;
+	bool doImport(QFile &f,Episode *episode,Sprites *sprites,MapList *maplist,QString *results) override;
 };
 
 

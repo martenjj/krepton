@@ -54,8 +54,8 @@ public:
 protected:
 	void readOptions();
 	void saveOptions();
-	bool queryClose();
-	void closeEvent(QCloseEvent *e);
+	bool queryClose() override;
+	void closeEvent(QCloseEvent *e) override;
 
 protected slots:
 	void slotSelectGame();
