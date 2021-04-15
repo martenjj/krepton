@@ -84,10 +84,10 @@ const QString GamePlayer::loadEpisode(const Episode *e)
 	qDebug() << "name" << e->getName();
 
 	QString status = loadSprites(e);
-	if (!status.isNull()) return (status);
+	if (!status.isEmpty()) return (status);
 
 	status = loadMaps(e);
-	if (!status.isNull()) return (status);
+	if (!status.isEmpty()) return (status);
 
 	cheats_used = Cheat::NoCheats;			// reset for new episode
 	cheats_ever_used = false;
@@ -112,7 +112,7 @@ const QString GamePlayer::loadMaps(const Episode *e)
 	qDebug() << "name" << e->getName();
 
 	const QString status = e->loadMaps(&maps);
-	if (!status.isNull()) return (status);
+	if (!status.isEmpty()) return (status);
 
 	currentlevel = -1;				// not valid any longer
 	if (currentmap!=NULL) delete currentmap;

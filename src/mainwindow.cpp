@@ -544,7 +544,7 @@ void MainWindow::slotLoadSprites()
 	qDebug() << "selected = '" << e->getName() << "'";
 
 	const QString status = prepareGame(e,true);
-	if (!status.isNull())
+	if (!status.isEmpty())
 	{
 		KMessageBox::error(
 			this,i18n("<qt>Unable to load the sprites for episode <b>%1</b>."
@@ -593,7 +593,7 @@ void MainWindow::loadGame(const Episode *e)		// from GUI selection
 	qDebug() << "name='" << e->getName() << "'";
 
 	const QString status = prepareGame(e);
-	if (!status.isNull())
+	if (!status.isEmpty())
 	{
 		KMessageBox::error(
 			this,i18n("<qt>Unable to load the episode <b>%1</b>."
@@ -664,7 +664,7 @@ const QString MainWindow::prepareGame(const Episode *e,bool spritesonly)
         }
 
 	const QString status = game->loadEpisode(e);
-	currentepisode = (status.isNull() ? e : NULL);
+	currentepisode = (status.isEmpty() ? e : NULL);
 	return (status);
 }
 
@@ -868,7 +868,7 @@ void MainWindow::slotImport()
         if (wiz.exec())
 	{
 		QString newEpisodeName = wiz.newEpisodeToLoad();
-		if (newEpisodeName.isNull()) return;
+		if (newEpisodeName.isEmpty()) return;
 		if (!queryClose()) return;
 		loadGame(newEpisodeName);
 	}

@@ -342,18 +342,18 @@ void ImportWizard::slotPage1FormatSelected()
 	if (format!=NULL)
 	{
 		t += "<p><hr>";
-		if (!format->url.isNull())
+		if (!format->url.isEmpty())
 		{
 			t += "<p>"+i18n("See <a href=\"%1\">%2</a> for more information on this format.", format->url, format->url);
 		}
 
-		if (!format->notes.isNull())
+		if (!format->notes.isEmpty())
 		{
 			t += "<p>"+format->notes;
 		}
 		else
 		{
-			if (format->url.isNull())
+			if (format->url.isEmpty())
 			{
 				t += "<p>"+i18n("No further information is available on this format.");
 			}

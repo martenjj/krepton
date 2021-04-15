@@ -67,7 +67,7 @@ const QString Episode::loadMaps(MapList *maps) const
                 QFileInfo fi = (*it);
 		Map *m = new Map(path+"/"+fi.fileName());
 		status = m->loadStatus();
-		if (!status.isNull()) break;
+		if (!status.isEmpty()) break;
 		maps->append(m);
 	}
 
