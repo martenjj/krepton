@@ -30,6 +30,8 @@
 #include <qpushbutton.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
+#include <qlabel.h>
+#include <qstatusbar.h>
 
 #include <kxmlguiwindow.h>
 #include <kactioncollection.h>
@@ -45,6 +47,13 @@
 #include "newmapdialog.h"
 #include "newtransporterdialog.h"
 #include "checkmap.h"
+
+
+static QString formatCoordinates(int x,int y)
+{
+	if (x<0) return ("");
+	return (i18n(" X: %1  Y: %2 ",QString::number(x),QString::number(y)));
+}
 
 
 GameEditor::GameEditor(QWidget *parent)
@@ -85,9 +94,11 @@ GameEditor::GameEditor(QWidget *parent)
 
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonedui.rc");
 
-	// TODO: port to Qt5
-// 	KStatusBar *status = statusBar();
-// 	status->insertPermanentFixedItem(formatCoordinates(9999,9999), 1);
+	QStatusBar *status = statusBar();
+	coordsLabel = new QLabel(formatCoordinates(9999,9999));
+	coordsLabel->adjustSize();
+	coordsLabel->setMinimumWidth(coordsLabel->width());
+	status->addPermanentWidget(coordsLabel, 0);
 
 	QWidget *mw = new QWidget(this);
 	QGridLayout *l = new QGridLayout(mw);
@@ -594,14 +605,5 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 
 void GameEditor::slotShowCoordinates(int x,int y)
 {
-	// TODO: port to Qt5
-// 	KStatusBar *status = statusBar();
-// 	status->changeItem(formatCoordinates(x,y), 1);
-}
-
-
-QString GameEditor::formatCoordinates(int x,int y)
-{
-	if (x<0) return ("");
-	return (i18n(" X: %1  Y: %2 ",QString::number(x),QString::number(y)));
+	coordsLabel->setText(formatCoordinates(x,y));
 }

@@ -121,6 +121,9 @@ private:
 	QLabel *keyflag;				// toolbar icons
 	QLabel *crownflag;
 	QLabel *livesflag;
+	QLabel *diamondsCount;
+	QLabel *timeDisplay;
+	QLabel *scoreDisplay;
 
 	const QString prepareGame(const Episode *e,bool spritesonly = false);
 	bool prepareSave();

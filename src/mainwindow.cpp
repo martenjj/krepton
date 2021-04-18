@@ -174,10 +174,16 @@ MainWindow::MainWindow(QWidget *parent)
 	magnificationList->setItems(list);
 
 	QStatusBar *status = statusBar();
-	// TODO: Port to Qt5
-// 	status->insertPermanentFixedItem(i18n("Diamonds: Plenty!  "), 1);
-// 	status->insertPermanentFixedItem(i18n("Time: 999:99  "), 2);
-// 	status->insertPermanentFixedItem(i18n("Score: 999999  "), 3);
+
+	diamondsCount = new QLabel(i18n("Diamonds: Plenty!  "));
+	diamondsCount->adjustSize();
+	diamondsCount->setMinimumWidth(diamondsCount->width());
+	timeDisplay = new QLabel(i18n("Time: 999:99  "));
+	timeDisplay->adjustSize();
+	timeDisplay->setMinimumWidth(timeDisplay->width());
+	scoreDisplay = new QLabel(i18n("Score: 999999  "));
+	scoreDisplay->adjustSize();
+	scoreDisplay->setMinimumWidth(scoreDisplay->width());
 
 	const QPixmap keypix = Pixmaps::find(Pixmaps::Key);
 	keyflag = new QLabel(this);
@@ -197,12 +203,15 @@ MainWindow::MainWindow(QWidget *parent)
 	livesflag->setPixmap(livespix);
 	livesflag->setEnabled(false);
 
+	// addPermanentWidget() adds the new item at the extreme right of the
+	// status bar, so the order here is left to right as seen by the user.
+	status->addPermanentWidget(livesflag, 0);
 	status->addPermanentWidget(keyflag, 0);
 	status->addPermanentWidget(crownflag, 0);
-	status->addPermanentWidget(livesflag, 0);
+	status->addPermanentWidget(diamondsCount, 0);
+	status->addPermanentWidget(timeDisplay, 0);
+	status->addPermanentWidget(scoreDisplay, 0);
 
-	// TODO: Port to Qt5
-// 	for (int i = 1; i<=3; ++i) status->setItemAlignment(i,Qt::AlignLeft|Qt::AlignVCenter);
 	updateStats(-1);
 
 	game = new GamePlayer(this);
@@ -353,9 +362,6 @@ void MainWindow::updateSoundsMenu()
 
 void MainWindow::updateStats(int diamonds,int secs,int points)
 {
-	// TODO: Port to Qt5
-// 	KStatusBar *status = statusBar();
-
 	QString ds = "";
 	if (diamonds>=0)
 	{
@@ -364,7 +370,7 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		else ds.setNum(diamonds);
 		ds = i18n("Diamonds: %1", ds);
 	}
-// 	status->changeItem(ds, 1);
+	diamondsCount->setText(ds);
 
 	QString ts = "";
 	if (secs>=0)
@@ -373,9 +379,9 @@ void MainWindow::updateStats(int diamonds,int secs,int points)
 		const int sec = secs % 60;
                 ts = i18n("Time: %1:%2", min, QString("%1").arg(sec, 2, 10, QChar('0')));
 	}
-// 	status->changeItem(ts, 2);
+	timeDisplay->setText(ts);
 
-// 	status->changeItem((points<0 ? QString::null : i18n("Score: %1", points)), 3);
+	scoreDisplay->setText(points<0 ? "" : i18n("Score: %1", points));
 }
 
 

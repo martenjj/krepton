@@ -39,6 +39,7 @@ class MapEditor;
 class QTabWidget;
 class QAction;
 class QPushButton;
+class QLabel;
 
 
 class GameEditor : public KXmlGuiWindow
@@ -105,13 +106,14 @@ private:
 	Sprites *sprites;
 
 	bool modified;
+	QLabel *coordsLabel;
 
 	void updateCaption();
 	void selectLevel(int level);
 	void updateMapsList();
 	void updateTransportersList(int item = -1);
 
-	static QString formatCoordinates(int x,int y);
+//	static QString formatCoordinates(int x,int y);
 };
 
 #endif							// !GAMEEDITOR_H
