@@ -231,7 +231,10 @@ bool episodeLessThan(const Episode *item1,const Episode *item2)
 EpisodeList::EpisodeList()
 {
 	QStringList dirs = QStandardPaths::locateAll(QStandardPaths::AppDataLocation,
-	                                                   "episodes", QStandardPaths::LocateDirectory);
+						     "episodes", QStandardPaths::LocateDirectory);
+	const QString localDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+'/';
+	qDebug() << "local dir" << localDir;
+
 	for (const QString &d : qAsConst(dirs))
 	{
 		qDebug() << "episode dir" << d;
@@ -275,9 +278,7 @@ EpisodeList::EpisodeList()
 			name = t.readLine().trimmed();
 			f.close();
 
-			// TODO: port to Qt5
-// 			bool global = !di.startsWith(localdir);
-			bool global = true;
+			bool global = !dirname.startsWith(localDir);
 			append(new Episode(name,global,dirname));
 		}
 	}
