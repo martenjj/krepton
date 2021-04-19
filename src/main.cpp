@@ -94,10 +94,6 @@ int main(int argc, char *argv[])
 
     srand(time(NULL));
 
-//     KGlobal::dirs()->addResourceType("episodes", "appdata", "episodes");
-//     KGlobal::dirs()->addResourceType("graphics", "appdata", "pics");
-//     KGlobal::dirs()->addResourceType("appsound", "appdata", "sounds");
-
     MainWindow *w = new MainWindow(NULL);
     w->show();
     if (!name.isEmpty()) w->loadGame(name);

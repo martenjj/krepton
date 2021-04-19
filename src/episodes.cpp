@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "episodes.h"
+
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
@@ -39,8 +41,7 @@
 
 #include "krepton.h"
 #include "map.h"
-
-#include "episodes.h"
+#include "resourcelist.h"
 
 
 const QString Episode::loadMaps(MapList *maps) const
@@ -152,6 +153,8 @@ bool Episode::removeFiles() const
 	dir.setFilter(QDir::Files);
 	dir.setSorting(QDir::Name);
 
+	// TODO: only need names listed here, no sorting
+	// or even just recursive delete
 	const QFileInfoList list = dir.entryInfoList();
         for (QFileInfoList::const_iterator it = list.constBegin();
              it!=list.constEnd(); ++it)
@@ -183,14 +186,13 @@ QString Episode::sanitisedName(const QString &name)
 	for (int i = 0; i<s1.length(); ++i)
 	{
                 QChar ch = s1.at(i);
+		// TODO: substitute with regexp and character class
 		if (ch.toLatin1()==0 || !ch.isLetterOrNumber()) ch = '_';
 		t += ch.toLower();
 	}
 
         return (t);
 }
-
-
 
 
 Episode::Episode(const QString n,bool g,const QString p)
@@ -230,76 +232,23 @@ bool episodeLessThan(const Episode *item1,const Episode *item2)
 
 EpisodeList::EpisodeList()
 {
-	QStringList dirs = QStandardPaths::locateAll(QStandardPaths::AppDataLocation,
-						     "episodes", QStandardPaths::LocateDirectory);
-	const QString localDir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)+'/';
-	qDebug() << "local dir" << localDir;
-
-	for (const QString &d : qAsConst(dirs))
+	const ResourceMap episodes = ResourceList::findResources("episodes");
+	if (episodes.isEmpty())
 	{
-		qDebug() << "episode dir" << d;
-
-		QDir dir(d);
-		if (!dir.exists())
-		{
-			reportError(ki18n("Episode directory '%1' not found"), d);
-			continue;
-		}
- 
-		dir.setFilter(QDir::Dirs);
-		dir.setSorting(QDir::Name);
-		const QFileInfoList list = dir.entryInfoList();
-		for (QFileInfoList::const_iterator it = list.constBegin();
-                     it!=list.constEnd(); ++it)
-		{
-                        QFileInfo fi = (*it);
-			if (fi.fileName().startsWith(".")) continue;
-
-			if (!dir.cd(fi.fileName()))
-			{
-				reportError(ki18n("Cannot access directory '%1'"),
-				      dir.absoluteFilePath(fi.fileName()));
-				continue;
-			}
-
-			QString dirname = dir.absolutePath();
-			QString filename = dirname+"/info";
-			QFile f(filename);
-			dir.cdUp();
-
-			if (!f.open(QIODevice::ReadOnly))
-			{
-				reportError(ki18n("Cannot read information file '%1'"), filename);
-				continue;
-			}
-
-			QTextStream t(&f);
-			QString name;
-			name = t.readLine().trimmed();
-			f.close();
-
-			bool global = !dirname.startsWith(localDir);
-			append(new Episode(name,global,dirname));
-		}
+		reportError(ki18n("<qt>No episodes could be found.<br>Is the application properly installed?"),
+			    QString(), false, true);
+		return;
 	}
 
-	if (isEmpty())
+	for (ResourceMap::const_iterator it = episodes.constBegin(); it!=episodes.constEnd(); ++it)
 	{
-                if (dirs.isEmpty()) dirs = QStringList(i18n("(none)"));
-
-                // Not proper I18N here, but then the user should never see this message
-		QString msg = "<qt>";
-		msg = "No episodes could be found in any of these locations:";
-		msg += "<br><br>&nbsp;&nbsp;<filename>"+dirs.join("</filename><br>&nbsp;&nbsp;<filename>")+"</filename><br><br>";
-		msg += "Is the application properly installed?";
-
-                KMessageBox::error(NULL, msg);
+		const QString &path = it.key();
+		const QString &name = it.value();
+		append(new Episode(name, ResourceList::isGlobal(path), path));
 	}
 
 	std::sort(begin(),end(),&episodeLessThan);		// alphabetical by names
-	qDebug() << "done";
 }
-
 
 
 EpisodeList *EpisodeList::list()

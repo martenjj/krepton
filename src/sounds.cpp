@@ -22,7 +22,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "krepton.h"
 #include "sounds.h"
 
 #include <qdir.h>
@@ -42,6 +41,9 @@
 #define SOUND_FILE_EXT		".wav"
 #endif
 #define SOUND_DEFAULT_SCHEME	"default"
+
+#include "krepton.h"
+#include "resourcelist.h"
 
 
 static Sound *sInstance = NULL;
@@ -203,14 +205,6 @@ bool Sound::setSchemeName(const QString &name)
 		return (false);
 	}
 
-// 	resource += mSoundScheme+"/";
-// 	QDir d(resource);
-// 	if (!d.exists())
-// 	{
-// 		qDebug() << "Sound scheme directory" << resource << "not found - check installation!";
-// 		return (false);
-// 	}
-
 	mSoundDir = resource;				// sound directory in use
 
 	if (name.isEmpty())				// setting the default...
@@ -236,59 +230,21 @@ bool Sound::setSchemeName(const QString &name)
 }
 
 
-// TODO: lots in common with EpisodeList::EpisodeList()
 QMap<QString,QString> Sound::allSchemesList()
 {
 	QMap<QString,QString> res;
 
-	QStringList dirs = QStandardPaths::locateAll(QStandardPaths::AppDataLocation,
-	                                                   "sounds", QStandardPaths::LocateDirectory);
-	for (const QString &d : qAsConst(dirs))
+	const ResourceMap sounds = ResourceList::findResources("sounds");
+	for (ResourceMap::const_iterator it = sounds.constBegin(); it!=sounds.constEnd(); ++it)
 	{
-		qDebug() << "sound dir" << d;
+		const QString &path = it.key();
+		const QString &name = it.value();
+		res[ResourceList::internalName(path)] = name;
+	}
 
-		QDir qd(d);
-		if (!qd.exists())
-		{
-			reportError(ki18n("Sound directory '%1' not found"), d);
-			continue;
-		}
- 
-		qd.setFilter(QDir::Dirs);
-		qd.setSorting(QDir::Name);
-		const QFileInfoList list = qd.entryInfoList();
-		for (QFileInfoList::const_iterator it = list.constBegin();
-                     it!=list.constEnd(); ++it)
-		{
-                        QFileInfo fi = (*it);
-			if (fi.fileName().startsWith(".")) continue;
-
-			if (!qd.cd(fi.fileName()))
-			{
-				qWarning() << "cannot access directory:" << qd.absoluteFilePath(fi.fileName());
-				continue;
-			}
-
-			QString dirname = qd.absolutePath();
-			QString filename = dirname+"/info";
-			QString schemename = qd.dirName();
-			QFile f(filename);
-			qd.cdUp();
-
-			if (!f.open(QIODevice::ReadOnly))
-			{
-				qWarning() << "cannot read info file:" << filename;
-				continue;
-			}
-
-			QTextStream t(&f);
-			QString name;
-			name = t.readLine().trimmed();
-			f.close();
-
-			qDebug() << "sound scheme at" << dirname << "-" << schemename << "=" << name;
-			res[schemename] = name;
-		}
+	if (res.isEmpty())
+	{
+		reportError(ki18n("<qt>No sound themes could be found.<br>Is the application properly installed?"));
 	}
 
 	return (res);

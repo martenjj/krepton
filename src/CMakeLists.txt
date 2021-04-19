@@ -148,6 +148,7 @@ set(krepton_SRCS
   importerbase.cpp
   importerbbc.cpp
   cheatdialog.cpp
+  resourcelist.cpp
 )
 
 add_executable(krepton ${krepton_SRCS})
