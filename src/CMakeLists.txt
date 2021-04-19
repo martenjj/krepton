@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		15-Apr-21					#
+#  Edit:		19-Apr-21					#
 #########################################################################
 
 project(krepton)
@@ -23,10 +23,19 @@ include(CheckIncludeFiles)
 
 find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Gui Widgets)
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash CoreAddons KIO IconThemes Auth)
+
 find_package(Phonon4Qt5 NO_POLICY_SCOPE)
 set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Required for playback of audio/video notes")
 find_package(DialogUtil REQUIRED NO_POLICY_SCOPE)
 set_package_properties("DialogUtil" PROPERTIES DESCRIPTION "Dialogue utility library" TYPE REQUIRED PURPOSE "Required to build the project")
+
+find_package(KF5KDEGames ${KDEGAMES_MIN_VERSION})
+if (KF5KDEGames_FOUND)
+  set(HAVE_LIBKDEGAMES 1)
+  add_definitions(-DHAVE_LIBKDEGAMES)
+else (NOT KF5KDEGames_FOUND)
+  message(NOTICE "libkdegames not found, high scores will not be kept")
+endif (NOT KF5KDEGames_FOUND)
 
 check_library_exists(m fabs "" HAVE_LIBM)
 if (HAVE_LIBM)
@@ -121,8 +130,6 @@ set(krepton_SRCS
   map2.cpp
   selectgamedialog.cpp
   selectleveldialog.cpp
-  scoredialog.cpp
-  newscoredialog.cpp
   gameeditor.cpp
   dataeditor.cpp
   mapeditor.cpp
@@ -157,6 +164,10 @@ target_link_libraries(krepton
   KF5::IconThemes
   ${DIALOGUTIL_LIBRARIES}
 )
+
+if (HAVE_LIBKDEGAMES)
+  target_link_libraries(krepton KF5KDEGames)
+endif (HAVE_LIBKDEGAMES)
 
 if (SOUND_TYPE STREQUAL "phonon")
   add_definitions("-DHAVE_PHONON=1")

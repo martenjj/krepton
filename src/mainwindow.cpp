@@ -27,6 +27,7 @@
 
 #include <kxmlguiwindow.h>
 #include <ksharedconfig.h>
+#include <kconfiggroup.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kselectaction.h>
@@ -36,9 +37,12 @@
 #include <kaboutdata.h>
 #include <ktoolbar.h>
 
+#ifdef HAVE_LIBKDEGAMES
+#include <highscore/kscoredialog.h>
+#endif
+
 #include <qdir.h>
 #include <qcursor.h>
-// #include <qbytearray.h>
 #include <qlabel.h>
 #include <qstatusbar.h>
 #include <qapplication.h>
@@ -50,8 +54,6 @@
 #include "gameplayer.h"
 #include "checkmap.h"
 #include "selectgamedialog.h"
-#include "scoredialog.h"
-#include "newscoredialog.h"
 #include "gameeditor.h"
 #include "saveepisodedialog.h"
 #include "selectleveldialog.h"
@@ -106,10 +108,12 @@ MainWindow::MainWindow(QWidget *parent)
         connect(suicideAction, SIGNAL(triggered()), SLOT(slotSuicide()));
         actionCollection()->addAction("game_suicide", suicideAction);
 
+#ifdef HAVE_LIBKDEGAMES
 	QAction *scoresAction = new QAction(i18n("High Scores..."), this);
         scoresAction->setShortcut(Qt::CTRL+Qt::Key_H);
         connect(scoresAction, SIGNAL(triggered()), SLOT(slotHighScores()));
         actionCollection()->addAction("file_highscores", scoresAction);
+#endif
 
         soundsEnableAction = new KToggleAction(i18n("Sounds"), this);
         connect(soundsEnableAction, SIGNAL(triggered()), SLOT(slotSoundsEnable()));
@@ -325,11 +329,13 @@ void MainWindow::updateCaption()
 }
 
 
+#ifdef HAVE_LIBKDEGAMES
 void MainWindow::slotHighScores()
 {
-	ScoreDialog d(this);
+	KScoreDialog d(KScoreDialog::Name|KScoreDialog::Level|KScoreDialog::Score|KScoreDialog::Date, this);
 	d.exec();
 }
+#endif
 
 
 void MainWindow::slotSoundsEnable()
@@ -447,35 +453,27 @@ void MainWindow::gameOver()
 	updateStats(-1);
 	updateLives(0);
 
+#ifdef HAVE_LIBKDEGAMES
 	const int points = game->getPoints();
 	if (points>2000)				// no high score for trivial game
 	{
 		if (!game->everCheated())		// no high score for cheats
 		{
-			KConfigGroup grp = KSharedConfig::openConfig()->group("High Score");
+			KScoreDialog d(KScoreDialog::Name|KScoreDialog::Level|KScoreDialog::Score|KScoreDialog::Date, this);
 
-			QString name = currentepisode->getName().toUpper();
-			QString score = grp.readEntry((name+"_Score"), "");
-			if (score.isEmpty()) score = grp.readEntry((name+"Score"), "");
-			if (score.isEmpty()) score = "0";
+			KScoreDialog::FieldInfo scoreInfo;
+			scoreInfo[KScoreDialog::Score].setNum(points);
+			scoreInfo[KScoreDialog::Level].setNum(game->lastLevel());
+			d.addField(KScoreDialog::Custom1, i18n("Episode"), "episode");
+			scoreInfo[KScoreDialog::Custom1] = currentepisode->getName().toUpper();
 
-			if (points>score.toInt())
-			{
-				NewScoreDialog d(this);
-				if (d.exec())
-				{
-					score.setNum(points);
-					grp.writeEntry((name+"_Score"), score);
-					grp.writeEntry((name+"_Name"), d.name());
-
-					ScoreDialog h(this);
-					h.exec();
-				}
-			}
+			d.addScore(scoreInfo);
+			d.exec();
 		}
 		else qDebug() << "no high score, cheated";
 	}
 	else qDebug() << "no high score, only" << points << "points";
+#endif
 }
 
 

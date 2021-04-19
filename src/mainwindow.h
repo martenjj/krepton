@@ -75,7 +75,9 @@ protected slots:
 	void slotExport();
 	void slotPrint();
 	void slotRemove();
+#ifdef HAVE_LIBKDEGAMES
 	void slotHighScores();
+#endif
 	void slotSoundsEnable();
 	void slotSoundsScheme(QAction *act);
 

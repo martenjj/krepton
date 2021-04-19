@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for Plasma 5				#
-#  Edit:		15-Apr-21					#
+#  Edit:		19-Apr-21					#
 #########################################################################
 #									#
 #									#
@@ -19,6 +19,7 @@ message(STATUS "Configuring for KRepton version ${VERSION}")
 
 set(QT_MIN_VERSION "5.14.0")
 set(KF5_MIN_VERSION "5.60.0")
+set(KDEGAMES_MIN_VERSION "7.3.0")
 
 find_package(ECM ${KF5_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
