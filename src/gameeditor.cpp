@@ -72,25 +72,25 @@ GameEditor::GameEditor(QWidget *parent)
 
 	KStandardAction::close(this, SLOT(close()), actionCollection());
 
-        spriteAction = new QAction(i18n("Sprite Page"), this);
-        spriteAction->setShortcut(Qt::Key_F2);
-        connect(spriteAction, SIGNAL(triggered()), SLOT(showSpriteEditor()));
-        actionCollection()->addAction("window_spriteeditor", spriteAction);
+        spriteAction = actionCollection()->addAction("window_spriteeditor", this, SLOT(showSpriteEditor()));
+	spriteAction->setText(i18n("Sprite Page"));
+	spriteAction->setIcon(QIcon::fromTheme("krepton"));
+	actionCollection()->setDefaultShortcut(spriteAction, Qt::Key_F2);
 
-        mapAction = new QAction(i18n("Map Page"), this);
-        mapAction->setShortcut(Qt::Key_F3);
-        connect(mapAction, SIGNAL(triggered()), SLOT(showLevelEditor()));
-        actionCollection()->addAction("window_leveleditor", mapAction);
+        mapAction = actionCollection()->addAction("window_leveleditor", this, SLOT(showLevelEditor()));
+	mapAction->setText(i18n("Map Page"));
+	mapAction->setIcon(QIcon::fromTheme("document-encrypted"));
+	actionCollection()->setDefaultShortcut(mapAction, Qt::Key_F3);
 
-        dataAction = new QAction(i18n("Episode Page"), this);
-        dataAction->setShortcut(Qt::Key_F4);
-        connect(dataAction, SIGNAL(triggered()), SLOT(showDataEditor()));
-        actionCollection()->addAction("window_dataeditor", dataAction);
+        dataAction = actionCollection()->addAction("window_dataeditor", this, SLOT(showDataEditor()));
+	dataAction->setText(i18n("Episode Page"));
+	dataAction->setIcon(QIcon::fromTheme("data-information"));
+	actionCollection()->setDefaultShortcut(dataAction, Qt::Key_F4);
 
-        checkAction = new QAction(i18n("Check Consistency"), this);
-        checkAction->setShortcut(Qt::Key_F10);
-        connect(checkAction, SIGNAL(triggered()), SLOT(menuStrictCheck()));
-        actionCollection()->addAction("edit_check", checkAction);
+        checkAction = actionCollection()->addAction("edit_check", this, SLOT(menuStrictCheck()));
+	checkAction->setText(i18n("Check Consistency"));
+	checkAction->setIcon(QIcon::fromTheme("dialog-ok-apply"));
+	actionCollection()->setDefaultShortcut(checkAction, Qt::Key_F10);
 
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonedui.rc");
 
@@ -107,17 +107,17 @@ GameEditor::GameEditor(QWidget *parent)
 	l->addWidget(tabs,0,0,1,4);
 
 	view = new DataEditor(this);
-	dataIndex = tabs->addTab(view,"Episode");
+	dataIndex = tabs->addTab(view, dataAction->icon(), i18n("Episode"));
 
 	spritewin = new SpriteEditor(this,&sprites);
 	connect(spritewin,SIGNAL(changedSprite()),SLOT(changedSprite()));
         connect(spritewin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
-	spriteIndex = tabs->addTab(spritewin,"Sprites");
+	spriteIndex = tabs->addTab(spritewin, spriteAction->icon(), i18n("Sprites"));
 
 	mapwin = new MapEditor(this,&sprites);
 	connect(mapwin,SIGNAL(modified(bool)),SLOT(setModified(bool)));
         connect(mapwin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
-	mapIndex = tabs->addTab(mapwin,"Map");
+	mapIndex = tabs->addTab(mapwin, mapAction->icon(), i18n("Map"));
 
 	checkPushButton = new QPushButton("Check Consistency",mw);
 	l->addWidget(checkPushButton,2,1,Qt::AlignCenter);

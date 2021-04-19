@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="krepton" version="402">
+<kpartgui name="krepton" version="403">
 <MenuBar>
 
 	<Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -16,6 +16,7 @@
 		<Separator lineSeparator="true"/>
 
 		<Action name="file_highscores"/>
+		<Action name="game_highscores"/>
 		<Separator lineSeparator="true"/>
 
 		<Action name="file_quit"/>
@@ -23,12 +24,14 @@
 
 	<Menu name="game" noMerge="1"><text>&amp;Game</text>
 		<Action name="game_start"/>
+		<Action name="game_new"/>
 		<Action name="game_restart"/>
 		<Action name="game_continue"/>
 		<Separator lineSeparator="true"/>
 
 		<Action name="game_pause"/>
 		<Action name="game_suicide"/>
+		<Action name="game_end"/>
 	</Menu>
 
 	<Menu name="settings">

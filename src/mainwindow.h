@@ -92,7 +92,7 @@ protected slots:
 	void gameOver();
 
 private:
-	KToggleAction *pauseAction;
+	QAction *pauseAction;
 	KToggleAction *soundsEnableAction;
 	QAction *selectAction;
 	QAction *startAction;

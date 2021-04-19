@@ -38,6 +38,7 @@
 #include <ktoolbar.h>
 
 #ifdef HAVE_LIBKDEGAMES
+#include <kstandardgameaction.h>
 #include <highscore/kscoredialog.h>
 #endif
 
@@ -83,48 +84,70 @@ MainWindow::MainWindow(QWidget *parent)
         selectAction = KStandardAction::open(this, SLOT(slotSelectGame()), actionCollection());
         selectAction->setText(i18n("Select Game..."));
 
-        startAction = new QAction(i18n("Start at first level"), this);
-        startAction->setShortcut(Qt::Key_S);
-        connect(startAction, SIGNAL(triggered()), SLOT(slotStartGame()));
+	// TODO: possibly combine "Start at first level" and "Restart at level"
+#ifdef HAVE_LIBKDEGAMES
+	startAction = KStandardGameAction::gameNew(this, SLOT(slotStartGame()), actionCollection());
+#else
+	startAction = actionCollection()->addAction("game_new", this, SLOT(slotStartGame()));
+	startAction->setIcon(QIcon::fromTheme("document-new"));
         actionCollection()->addAction("game_start", startAction);
-
-        restartAction = new QAction(i18n("Restart last level"), this);
-        restartAction->setShortcut(Qt::Key_R);
-        connect(restartAction, SIGNAL(triggered()), SLOT(slotRestartGame()));
-        actionCollection()->addAction("game_restart", restartAction);
-
-        continueAction = new QAction(i18n("Restart at level..."), this);
-        continueAction->setShortcut(Qt::Key_C);
-        connect(continueAction, SIGNAL(triggered()), SLOT(slotContinueGame()));
-        actionCollection()->addAction("game_continue", continueAction);
-
-        pauseAction = new KToggleAction(i18n("Pause"), this);
-        pauseAction->setShortcut(QKeySequence(Qt::Key_P, Qt::Key_Pause));
-        connect(pauseAction, SIGNAL(triggered()), SLOT(slotPauseGame()));
-        actionCollection()->addAction("game_pause", pauseAction);
-
-        suicideAction = new QAction(i18n("Give up"), this);
-        suicideAction->setShortcut(Qt::Key_Escape);
-        connect(suicideAction, SIGNAL(triggered()), SLOT(slotSuicide()));
-        actionCollection()->addAction("game_suicide", suicideAction);
+#endif
+        actionCollection()->setDefaultShortcut(startAction, Qt::Key_S);
+        startAction->setText(i18n("Start at first level"));
 
 #ifdef HAVE_LIBKDEGAMES
-	QAction *scoresAction = new QAction(i18n("High Scores..."), this);
-        scoresAction->setShortcut(Qt::CTRL+Qt::Key_H);
-        connect(scoresAction, SIGNAL(triggered()), SLOT(slotHighScores()));
-        actionCollection()->addAction("file_highscores", scoresAction);
+	restartAction = KStandardGameAction::restart(this, SLOT(slotRestartGame()), actionCollection());
+#else
+	restartAction = actionCollection()->addAction("game_restart", this, SLOT(slotRestartGame()));
+	restartAction->setIcon(QIcon::fromTheme("view-refresh"));
+        actionCollection()->addAction("game_restart", restartAction);
+#endif
+        actionCollection()->setDefaultShortcut(restartAction, Qt::Key_R);
+        restartAction->setText(i18n("Restart last level"));
+
+        continueAction= actionCollection()->addAction("game_continue", this, SLOT(slotContinueGame()));
+	continueAction->setText(i18n("Restart at level..."));
+	continueAction->setIcon(QIcon::fromTheme("go-next"));
+        actionCollection()->setDefaultShortcut(continueAction, Qt::Key_C);
+
+#ifdef HAVE_LIBKDEGAMES
+	pauseAction = KStandardGameAction::pause(this, SLOT(slotPauseGame()), actionCollection());
+#else
+	pauseAction = actionCollection()->addAction("game_pause", this, SLOT(slotPauseGame()));
+	pauseAction->setIcon(QIcon::fromTheme("media-playback-pause"));
+        actionCollection()->setDefaultShortcuts(pauseAction, (QList<QKeySequence>() << Qt::Key_P << Qt::Key_Pause));
 #endif
 
+#ifdef HAVE_LIBKDEGAMES
+	suicideAction = KStandardGameAction::end(this, SLOT(slotSuicide()), actionCollection());
+#else
+	suicideAction = actionCollection()->addAction("game_end", this, SLOT(slotSuicide()));
+	suicideAction->setIcon(QIcon::fromTheme("window-close"));
+#endif
+        actionCollection()->setDefaultShortcut(suicideAction, Qt::Key_Escape);
+        suicideAction->setText(i18n("Give up"));
+
+#ifdef HAVE_LIBKDEGAMES
+	QAction *scoresAction = KStandardGameAction::highscores(this, SLOT(slotHighScores()), actionCollection());
+#else
+	QAction *scoresAction = actionCollection()->addAction("file_highscores", this, SLOT(slotHighScores()));
+        scoresAction->setIcon(QIcon::fromTheme("games-highscores"));
+        actionCollection()->setDefaultShortcut(scoresAction, Qt::CTRL+Qt::Key_H);
+#endif
+	scoresAction->setText(i18n("High Scores..."));
+
         soundsEnableAction = new KToggleAction(i18n("Sounds"), this);
+	//soundsEnableAction->setIcon(QIcon::fromTheme("audio-volume-medium"));
         connect(soundsEnableAction, SIGNAL(triggered()), SLOT(slotSoundsEnable()));
         actionCollection()->addAction("settings_sound_enable", soundsEnableAction);
 
 	soundsSchemeList = new KSelectAction(i18n("Sound Scheme"), this);
+	soundsSchemeList->setIcon(QIcon::fromTheme("audio-volume-medium"));
         connect(soundsSchemeList, SIGNAL(triggered(QAction *)), SLOT(slotSoundsScheme(QAction *)));
         actionCollection()->addAction("settings_sound_scheme", soundsSchemeList);
 
 	QMap<QString,QString> schemeMap = Sound::self()->allSchemesList();
-	QString curScheme = Sound::self()->schemeName();
+	const QString curScheme = Sound::self()->schemeName();
 	for (QMap<QString,QString>::const_iterator it = schemeMap.constBegin();
 	     it!=schemeMap.constEnd(); ++it)
 	{
@@ -134,39 +157,39 @@ MainWindow::MainWindow(QWidget *parent)
 		act->setData(scheme);
 	}
 
-        loadspritesAction = new QAction(i18n("Change Sprites..."), this);
-        connect(loadspritesAction, SIGNAL(triggered()), SLOT(slotLoadSprites()));
-        actionCollection()->addAction("settings_loadsprites", loadspritesAction);
+        loadspritesAction= actionCollection()->addAction("settings_loadsprites", this, SLOT(slotLoadSprites()));
+	loadspritesAction->setText(i18n("Change Sprites..."));
+	loadspritesAction->setIcon(QIcon::fromTheme("krepton"));
 
 	magnificationList = new KSelectAction(i18n("Display Size"), this);
+	magnificationList->setIcon(QIcon::fromTheme("zoom-in"));
         connect(magnificationList, SIGNAL(triggered()), SLOT(slotSetMagnification()));
         actionCollection()->addAction("settings_magnification", magnificationList);
 
-	cheatsAction = new QAction(i18n("Cheat Modes..."), this);
-	connect(cheatsAction, SIGNAL(triggered()), SLOT(slotSelectCheats()));
-	actionCollection()->addAction("settings_cheats", cheatsAction);
+        cheatsAction = actionCollection()->addAction("settings_cheats", this, SLOT(slotSelectCheats()));
+	cheatsAction->setText(i18n("Cheat Modes..."));
+	cheatsAction->setIcon(QIcon::fromTheme("dialog-warning"));
 
-        editAction = new QAction(i18n("Game Editor..."), this);
-	editAction->setShortcut(Qt::CTRL+Qt::Key_E);
-	connect(editAction, SIGNAL(triggered()), SLOT(slotEdit()));
-	actionCollection()->addAction("edit_edit", editAction);
+        editAction = actionCollection()->addAction("edit_edit", this, SLOT(slotEdit()));
+	editAction->setText(i18n("Game Editor..."));
+        editAction->setIcon(QIcon::fromTheme("document-edit"));
+	actionCollection()->setDefaultShortcut(editAction, Qt::CTRL+Qt::Key_E);
 
 	saveAction = KStandardAction::save(this, SLOT(slotSave()), actionCollection());
 	saveAsAction = KStandardAction::saveAs(this, SLOT(slotSaveAs()), actionCollection());
 
-        importAction = new QAction(i18n("Import..."), this);
-        connect(importAction, SIGNAL(triggered()), SLOT(slotImport()));
-        actionCollection()->addAction("file_import", importAction);
+        importAction = actionCollection()->addAction("file_import", this, SLOT(slotImport()));
+        importAction->setIcon(QIcon::fromTheme("document-import"));
+	importAction->setText(i18n("Import..."));
 
-        exportAction = new QAction(i18n("Export..."), this);
-        connect(exportAction, SIGNAL(triggered()), SLOT(slotExport()));
-        actionCollection()->addAction("file_export", exportAction);
+        exportAction = actionCollection()->addAction("file_export", this, SLOT(slotExport()));
+        exportAction->setIcon(QIcon::fromTheme("document-export"));
+	exportAction->setText(i18n("Export..."));
 
         printAction = KStandardAction::print(this, SLOT(slotPrint()), actionCollection());
 
-        removeAction = new QAction(i18n("Remove..."), this);
-        connect(removeAction, SIGNAL(triggered()), SLOT(slotRemove()));
-        actionCollection()->addAction("file_remove", removeAction);
+        removeAction = actionCollection()->addAction(KStandardAction::DeleteFile, "file_remove", this, SLOT(slotRemove()));
+	removeAction->setText(i18n("Remove..."));
 
         strictToggle = new KToggleAction(i18n("Check Consistency Before Saving"), this);
         actionCollection()->addAction("settings_check", strictToggle);
@@ -330,10 +353,21 @@ void MainWindow::updateCaption()
 
 
 #ifdef HAVE_LIBKDEGAMES
+static KScoreDialog *prepareScoreDialog(QWidget *parent)
+{
+	auto *d = new KScoreDialog(KScoreDialog::Name|KScoreDialog::Level|KScoreDialog::Score|KScoreDialog::Date|KScoreDialog::Custom1, parent);
+	d->setAttribute(Qt::WA_DeleteOnClose, true);
+	d->addField(KScoreDialog::Custom1, i18n("Episode"), "episode");
+	return (d);
+}
+#endif
+
+
+#ifdef HAVE_LIBKDEGAMES
 void MainWindow::slotHighScores()
 {
-	KScoreDialog d(KScoreDialog::Name|KScoreDialog::Level|KScoreDialog::Score|KScoreDialog::Date, this);
-	d.exec();
+	KScoreDialog *d = prepareScoreDialog(this);
+	d->exec();
 }
 #endif
 
@@ -459,16 +493,15 @@ void MainWindow::gameOver()
 	{
 		if (!game->everCheated())		// no high score for cheats
 		{
-			KScoreDialog d(KScoreDialog::Name|KScoreDialog::Level|KScoreDialog::Score|KScoreDialog::Date, this);
+			KScoreDialog *d = prepareScoreDialog(this);
 
 			KScoreDialog::FieldInfo scoreInfo;
 			scoreInfo[KScoreDialog::Score].setNum(points);
 			scoreInfo[KScoreDialog::Level].setNum(game->lastLevel());
-			d.addField(KScoreDialog::Custom1, i18n("Episode"), "episode");
 			scoreInfo[KScoreDialog::Custom1] = currentepisode->getName().toUpper();
 
-			d.addScore(scoreInfo);
-			d.exec();
+			d->addScore(scoreInfo);
+			d->exec();
 		}
 		else qDebug() << "no high score, cheated";
 	}
