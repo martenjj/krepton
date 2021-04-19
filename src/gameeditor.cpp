@@ -119,7 +119,7 @@ GameEditor::GameEditor(QWidget *parent)
         connect(mapwin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
 	mapIndex = tabs->addTab(mapwin, mapAction->icon(), i18n("Map"));
 
-	checkPushButton = new QPushButton("Check Consistency",mw);
+	checkPushButton = new QPushButton(checkAction->icon(), checkAction->text(), mw);
 	l->addWidget(checkPushButton,2,1,Qt::AlignCenter);
 
 	closePushButton = new QPushButton(mw);
