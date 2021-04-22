@@ -1143,8 +1143,16 @@ void MapPlay::die(const QString &how)
 }
 
 
+static QPixmap greyPixmap(const QPixmap &originalPix)
+{
+	// These conversions may be relatively slow, but if the game is
+	// paused then there will be no animation or timer events running
+	// so there should not be too much overhead.
+	QImage img = originalPix.toImage().convertToFormat(QImage::Format_Grayscale8);
+	return (QPixmap::fromImage(img));
+}
 
-void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites)
+void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, bool is_paused)
 {
 	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{
@@ -1175,10 +1183,16 @@ default:			;			// Avoid warning
 			if ((m = findMonster(mx,my))!=NULL && m->type==Obj::Monster)
 				obj = m->sprite;
 
-			p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,sprites->get(obj));
+			QPixmap pix = sprites->get(obj);
+			if (is_paused) pix = greyPixmap(pix);
+			p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
 
 			if (m!=NULL && m->type==Obj::Blip)
-				p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,sprites->get(m->sprite));
+			{
+				pix = sprites->get(m->sprite);
+				if (is_paused) pix = greyPixmap(pix);
+				p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
+			}
 		}
 	}
 }
