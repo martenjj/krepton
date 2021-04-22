@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		19-Apr-21					#
+#  Edit:		22-Apr-21					#
 #########################################################################
 
 project(krepton)
@@ -126,8 +126,8 @@ set(krepton_SRCS
   sounds.cpp
   gameplayer.cpp
   map.cpp
-  map1.cpp
-  map2.cpp
+  mapplay.cpp
+  mapedit.cpp
   selectgamedialog.cpp
   selectleveldialog.cpp
   gameeditor.cpp

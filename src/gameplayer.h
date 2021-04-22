@@ -28,10 +28,11 @@
 #include <qwidget.h>
 #include <qevent.h>
 
-#include "map1.h"
+#include "mapplay.h"
 
 class Sprites;
 class Episode;
+
 
 class GamePlayer : public QWidget
 {

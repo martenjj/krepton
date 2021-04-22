@@ -27,6 +27,7 @@
 #include <qstring.h>
 
 #include "importmanager.h"
+#include "map.h"
 
 
 class QFile;

@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "mapeditor.h"
+
 #include <qlabel.h>
 #include <qtooltip.h>
 #include <qlayout.h>
@@ -33,12 +35,10 @@
 
 #include "krepton.h"
 #include "sprites.h"
-#include "map2.h"
+#include "mapedit.h"
 #include "objectlistbox.h"
 #include "spritepreview.h"
 #include "mapgrid.h"
-
-#include "mapeditor.h"
 
 const int default_width = 595;
 const int default_height = 355;

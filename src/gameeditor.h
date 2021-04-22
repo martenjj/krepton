@@ -29,7 +29,7 @@
 
 #include "krepton.h"
 #include "sprites.h"
-#include "map2.h"
+#include "mapedit.h"
 
 
 class DataEditor;

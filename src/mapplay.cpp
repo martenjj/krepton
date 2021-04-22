@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "mapplay.h"
+
 #include <stdlib.h>
 #include <math.h>
 
@@ -31,8 +33,6 @@
 #include "krepton.h"
 #include "sprites.h"
 #include "sounds.h"
-
-#include "map1.h"
 
 
 //  These chances are a percentage per-thing, per-tick.

@@ -40,7 +40,7 @@
 #include <ktoolbar.h>
 
 #include "krepton.h"
-#include "map2.h"
+#include "mapedit.h"
 #include "dataeditor.h"
 #include "spriteeditor.h"
 #include "mapeditor.h"

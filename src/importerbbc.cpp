@@ -21,15 +21,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "importerbbc.h"
+
 #include <qcolor.h>
 #include <qfile.h>
 #include <qbytearray.h>
 
-#include "map2.h"
+#include "mapedit.h"
 #include "sprites.h"
 #include "krepton.h"
-
-#include "importerbbc.h"
 
 //////////////////////////////////////////////////////////////////////////
 //									//

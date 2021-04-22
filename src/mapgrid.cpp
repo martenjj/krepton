@@ -22,6 +22,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "mapgrid.h"
+
 #include <qpixmap.h>
 #include <qpainter.h>
 #include <qpen.h>
@@ -31,9 +33,7 @@
 
 #include "krepton.h"
 #include "sprites.h"
-#include "map2.h"
-
-#include "mapgrid.h"
+#include "mapedit.h"
 
 
 MapGrid::MapGrid(QWidget *parent)

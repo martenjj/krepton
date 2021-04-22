@@ -22,9 +22,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include "krepton.h"
+#include "mapedit.h"
 
-#include "map2.h"
+#include "krepton.h"
 
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor

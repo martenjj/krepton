@@ -37,7 +37,7 @@
 #include "episodes.h"
 #include "pixmaps.h"
 #include "sprites.h"
-#include "map1.h"
+#include "mapplay.h"
 #include "checkmap.h"
 
 

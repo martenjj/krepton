@@ -21,16 +21,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "importerbase.h"
+
 #include <qfile.h>
 #include <qfileinfo.h>
 
 #include "episodes.h"
 #include "sprites.h"
-#include "map.h"
 #include "checkmap.h"
 #include "krepton.h"
-
-#include "importerbase.h"
 
 //////////////////////////////////////////////////////////////////////////
 //									//
