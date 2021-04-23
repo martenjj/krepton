@@ -23,13 +23,10 @@
 
 #include "cheatdialog.h"
 
-#include <QVBoxLayout>
-#include <QHBoxLayout>
+#include <qboxlayout.h>
 #include <qcheckbox.h>
-#include <qlabel.h>
 
-#include <kseparator.h>
-#include <kiconloader.h>
+#include <kmessagewidget.h>
 
 #include "krepton.h"
 
@@ -45,54 +42,47 @@ CheatDialog::CheatDialog(const QString &title, QWidget *parent)
 	QWidget *w = new QWidget(this);
 	QVBoxLayout *vl = new QVBoxLayout;
 
-	QHBoxLayout *hl = new QHBoxLayout;
-
-	QLabel *l = new QLabel(w);
-	l->setPixmap(KIconLoader::global()->loadIcon("task-attention",
-						     KIconLoader::NoGroup,
-						     KIconLoader::SizeMedium));
-	hl->addWidget(l);
-
-	l = new QLabel(i18n("Using any of these cheats will mean that your score for this episode will not be recorded in the high score list."), w);
-	l->setWordWrap(true);
-	hl->addWidget(l);
-	vl->addLayout(hl);
-
-	vl->addSpacing(DialogBase::verticalSpacing());
-	vl->addWidget(new KSeparator(Qt::Horizontal));
-	vl->addSpacing(DialogBase::verticalSpacing());
-
 	noCrushCheck = new QCheckBox(i18n("Immune from &falling objects"), w);
 	noCrushCheck->setToolTip(i18n("If this option is turned on, Repton will not be crushed by falling objects (rocks or eggs)."));
 	vl->addWidget(noCrushCheck);
 
 	noTimeCheck = new QCheckBox(i18n("No &time limit"), w);
-	noTimeCheck->setToolTip(i18n("If this option is turned on, there will be no time limit to the game."));
+	noTimeCheck->setToolTip(i18n("If this option is turned on, there will be no time limit to the game"));
 	vl->addWidget(noTimeCheck);
 
-	noReplicatingPlantCheck = new QCheckBox(i18n("Plants do not replicate"), w);
-	noReplicatingPlantCheck->setToolTip(i18n("If this option is turned on, plants do not reproduce (but they are still fatal to touch)."));
+	noReplicatingPlantCheck = new QCheckBox(i18n("Plants do not reproduce"), w);
+	noReplicatingPlantCheck->setToolTip(i18n("If this option is turned on, plants (or the equivalent) do not reproduce (but they are still fatal to touch)"));
 	vl->addWidget(noReplicatingPlantCheck);
 
 	harmlessPlantCheck = new QCheckBox(i18n("Plants are harmless"), w);
-	harmlessPlantCheck->setToolTip(i18n("If this option is turned on, plants (or the equivalent) are not dangerous (but they still reproduce)."));
+	harmlessPlantCheck->setToolTip(i18n("If this option is turned on, plants (or the equivalent) are not dangerous (but they still reproduce)"));
 	vl->addWidget(harmlessPlantCheck);
 
 	harmlessSkullCheck = new QCheckBox(i18n("Skulls are harmless"), w);
-	harmlessSkullCheck->setToolTip(i18n("If this option is turned on, skulls (or the equivalent) are not dangerous."));
+	harmlessSkullCheck->setToolTip(i18n("If this option is turned on, skulls (or the equivalent) are not dangerous"));
 	vl->addWidget(harmlessSkullCheck);
 
 	harmlessMonsterCheck = new QCheckBox(i18n("Monsters are harmless"), w);
-	harmlessMonsterCheck->setToolTip(i18n("If this option is turned on, monsters are not dangerous (but they can still be killed)."));
+	harmlessMonsterCheck->setToolTip(i18n("If this option is turned on, monsters are not dangerous (but they can still be killed)"));
 	vl->addWidget(harmlessMonsterCheck);
 
 	harmlessSpiritCheck = new QCheckBox(i18n("Spirits are harmless"), w);
-	harmlessSpiritCheck->setToolTip(i18n("If this option is turned on, spirits are not dangerous (but they can still be caught)."));
+	harmlessSpiritCheck->setToolTip(i18n("If this option is turned on, spirits are not dangerous (but they can still be caught)"));
 	vl->addWidget(harmlessSpiritCheck);
 
+	vl->addSpacing(DialogBase::verticalSpacing());
 	vl->addStretch(1);
+
+	KMessageWidget *mw = new KMessageWidget(w);
+	mw->setMessageType(KMessageWidget::Information);
+	mw->setText(i18n("Using any of these cheats will mean that your score for this episode will not be recorded in the high score list."));
+	mw->setIcon(QIcon::fromTheme("task-attention"));
+	mw->setWordWrap(true);
+	mw->setCloseButtonVisible(false);
+	vl->addWidget(mw);
+
 	w->setLayout(vl);
-	w->setMinimumSize(220, 70);
+	w->setMinimumSize(420, 280);
 	setMainWidget(w);
 }
 
