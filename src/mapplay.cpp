@@ -1157,8 +1157,7 @@ void MapPlay::die(const QString &how)
 }
 
 
-
-void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites)
+void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, bool is_paused)
 {
 	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{
@@ -1189,10 +1188,14 @@ default:			;			// Avoid warning
 			if ((m = findMonster(mx,my))!=NULL && m->type==Obj::Monster)
 				obj = m->sprite;
 
-			p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,sprites->get(obj));
+			QPixmap pix = sprites->get(obj, is_paused);
+			p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
 
 			if (m!=NULL && m->type==Obj::Blip)
-				p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,sprites->get(m->sprite));
+			{
+				pix = sprites->get(m->sprite, is_paused);
+				p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
+			}
 		}
 	}
 }

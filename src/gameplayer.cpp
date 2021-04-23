@@ -218,6 +218,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 
 	in_game = true;
 	in_pause = false;
+
 	emit changedStats(diamonds,seconds,points);
 	emit changedPlayState(in_game,in_pause);
 	emit changedLives(lives);
@@ -389,13 +390,7 @@ void GamePlayer::paintEvent(QPaintEvent *)
                 return;
         }
 
-	currentmap->paintMap(&p, width(), height(), sprites);
-	if (in_pause)
-	{
-		const QPixmap pausepix = Pixmaps::find(Pixmaps::Pause);
-		p.drawPixmap((width()-pausepix.width())/2, 
-			     (height()-pausepix.height())/2,pausepix);
-	}
+	currentmap->paintMap(&p, width(), height(), sprites, in_pause);
 }
 
 void GamePlayer::goUp()

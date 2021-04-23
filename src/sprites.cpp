@@ -376,6 +376,10 @@ void Sprites::prepare(int level)
             }
 
             sprites[i] = px;
+	    // These conversions may be relatively slow, but this
+	    // initialisation is only done at most once per level.
+	    QImage img = px.toImage().convertToFormat(QImage::Format_Grayscale8);
+	    greysprites[i] = QPixmap::fromImage(img);
 	}
     }
 

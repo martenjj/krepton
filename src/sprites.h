@@ -46,11 +46,11 @@ public:
 	Sprites();					// create as blank
 	Sprites(const Episode *e);			// load from episode
         Sprites(const Sprites &s);			// copy constructor
-	const QString loadStatus() const { return (status); }
+	const QString loadStatus() const			{ return (status); }
 
 	void prepare(int level);
-	QPixmap get(Obj::Type obj) const { return (sprites[obj]); }
-	QPixmap getRaw(Obj::Type obj) const { return (rawsprites[obj]); }
+	QPixmap get(Obj::Type obj, bool paused = false) const	{ return (!paused ? sprites[obj] : greysprites[obj]); }
+	QPixmap getRaw(Obj::Type obj) const			{ return (rawsprites[obj]); }
 
 	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
 	bool save(const Episode *e);
@@ -60,7 +60,7 @@ public:
 
 	static QPixmap preview(const Episode *e);
 	static void setMagnification(Sprites::Magnification mag);
-	static Sprites::Magnification getMagnification() { return (magnification); }
+	static Sprites::Magnification getMagnification()	{ return (magnification); }
 
 private:
 	static Sprites::Magnification magnification;
@@ -70,6 +70,7 @@ private:
 
         QMap<int,QPixmap> files;			// source files per-level
 	QPixmap sprites[Obj::num_sprites];		// scaled & masked, for game
+	QPixmap greysprites[Obj::num_sprites];		// grey scaled, for paused game
 	QPixmap rawsprites[Obj::num_sprites];		// unprocessed, for editor
 
 	int preparedFor;				// level sprites are ready for
