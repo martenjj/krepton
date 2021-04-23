@@ -25,7 +25,6 @@
 #include "mapplay.h"
 
 #include <stdlib.h>
-#include <math.h>
 
 #include <qpainter.h>
 #include <qpixmap.h>
@@ -507,78 +506,89 @@ case Orientation::None:
 }
 
 
-#define MONSTER_BLOCKED		666			// a very large distance
+#define MONSTER_BLOCKED		INT_MAX			// a very large distance
 
 
 // Check if the monster can go into a direction, and calculate the
-// distance between it and Repton.
-double MapPlay::monsterTryDirection(Monster *m, int xd, int yd)
+// distance between it and Repton.  Return the square of the distance,
+// this is only used in updateMonster() below for calculating the
+// shortest distance.
+int MapPlay::monsterTryDirection(const Monster *m, int xd, int yd)
 {
 	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);	// contents of destination
 
 	if (isempty(obj))				// can move to there
 	{						// calculate distance
-		return (sqrt(pow(m->xpos+xd-xpos,2) + pow(m->ypos+yd-ypos,2)));
+		const int xdist = m->xpos+xd-xpos;
+		const int ydist = m->ypos+yd-ypos;
+		return (xdist*xdist + ydist*ydist);
         }
         else if (obj==Obj::Repton && !(cheats_used & Cheat::HarmlessMonster))
         {						// will move onto Repton
 		die("The monster got you!");
         }
-        return (MONSTER_BLOCKED);
+        return (MONSTER_BLOCKED);			// monster cannot move
 }
 
 
 // Check the Repton position and move the monster according with it.
 bool MapPlay::updateMonster(Monster *m)
 {
-	int xd = 0;
-	int yd = 0;
-	double i,len;
-
         if (m->hold>0) --m->hold;			// just count down, don't move
         else						// monster ready to move
         {
+		int xd = 0;				// move that monster will make
+		int yd = 0;
 
-	len = sqrt(pow(m->xpos-xpos,2) + pow(m->ypos-ypos,2));
+		const int xdist = m->xpos+xpos;
+		const int ydist = m->ypos+ypos;
+		int len = xdist*xdist + ydist*ydist;	// current distance to Repton
 
-	if ((i = monsterTryDirection(m, 0, -1))<len)
-	{
-		xd = 0; yd = -1; len = i;
-	}
-	if ((i = monsterTryDirection(m, 0, 1))<len)
-	{
-		xd = 0; yd = 1; len = i;
-	}
-	if ((i = monsterTryDirection(m, 1, 0))<len)
-	{
-		xd = 1; yd = 0; len = i;
-	}
-	if (monsterTryDirection(m, -1, 0)<len)
-	{
-		xd = -1; yd = 0;
-	}
-
-        if (xd==0 && yd==0)				// monster can't move
-        {
-		// Blocked monster in a direct line can move down (if horizontal from
-		// Repton) or right (if vertical from Repton).
-		// See http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108
-		// The % chance is my invention.
-		if (m->ypos==ypos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,0,1)<MONSTER_BLOCKED)
+		// Try the four possible monster move directions
+		// to see which one will bring it closer to Repton.
+		int i = monsterTryDirection(m, 0, -1);
+		if (i<len)
 		{
-			xd = 0; yd = 1;
+			xd = 0; yd = -1; len = i;
 		}
-		else
-		if (m->xpos==xpos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,1,0)<MONSTER_BLOCKED)
+
+		i = monsterTryDirection(m, 0, 1);
+		if (i<len)
 		{
-			xd = 1; yd = 0;
+			xd = 0; yd = 1; len = i;
 		}
-        }
 
-	m->xpos += xd;
-	m->ypos += yd;
-        }
+		i = monsterTryDirection(m, 1, 0);
+		if (i<len)
+		{
+			xd = 1; yd = 0; len = i;
+		}
 
+		i = monsterTryDirection(m, -1, 0);
+		if (i<len)
+		{
+			xd = -1; yd = 0;
+		}
+
+		if (xd==0 && yd==0)			// monster can't move
+		{
+			// Blocked monster in a direct line can move down (if horizontal from
+			// Repton) or right (if vertical from Repton).
+			// See http://www.stairwaytohell.com/sthforums/viewtopic.php?f=1&t=2108
+			// The % chance is my invention.
+			if (m->ypos==ypos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,0,1)!=MONSTER_BLOCKED)
+			{
+				xd = 0; yd = 1;
+			}
+			else if (m->xpos==xpos && chance(CHANCE_MONSTER_PURSUE) && monsterTryDirection(m,1,0)!=MONSTER_BLOCKED)
+			{
+				xd = 1; yd = 0;
+			}
+		}
+
+		m->xpos += xd;
+		m->ypos += yd;
+        }
 
 	m->sprite = (m->sprite==Obj::Monster) ? Obj::Monster2 : Obj::Monster;
 	return (true);					// because of animation

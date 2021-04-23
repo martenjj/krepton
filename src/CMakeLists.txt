@@ -37,11 +37,6 @@ else (NOT KF5KDEGames_FOUND)
   message(NOTICE "libkdegames not found, high scores will not be kept")
 endif (NOT KF5KDEGames_FOUND)
 
-check_library_exists(m fabs "" HAVE_LIBM)
-if (HAVE_LIBM)
-  set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} "-lm")
-endif (HAVE_LIBM)
-
 check_function_exists(strerror HAVE_STRERROR)
 if (HAVE_STRERROR)
   add_definitions(-DHAVE_STRERROR)
@@ -50,16 +45,6 @@ if (HAVE_STRERROR)
     add_definitions(-DHAVE_ERRNO_H)
   endif (HAVE_ERRNO_H)
 endif (HAVE_STRERROR)
-
-check_function_exists(pow HAVE_FUNCTION_POW)
-if (NOT HAVE_FUNCTION_POW)
-  message(SEND_ERROR "Function 'pow' is not available")
-endif (NOT HAVE_FUNCTION_POW)
-
-check_function_exists(sqrt HAVE_FUNCTION_SQRT)
-if (NOT HAVE_FUNCTION_SQRT)
-  message(SEND_ERROR "Function 'sqrt' is not available")
-endif (NOT HAVE_FUNCTION_SQRT)
 
 if (SOUND_TYPE STREQUAL "phonon")
   if (NOT PHONON_FOUND)

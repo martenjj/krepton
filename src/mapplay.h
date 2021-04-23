@@ -95,7 +95,7 @@ private:
 	bool tryFall(int x,int y);
 	bool blipTryDirection(const Monster *m, Orientation::Type dir = Orientation::None) const;
 	bool blipGoDirection(Monster *m, Orientation::Type dir = Orientation::None);
-	double monsterTryDirection(Monster *m, int xd, int yd);
+	int monsterTryDirection(const Monster *m, int xd, int yd);
 	bool updateBlip(Monster *m);
 	bool updateMonster(Monster *m);
 	bool tryPlant(int x, int y, int dx, int dy);
