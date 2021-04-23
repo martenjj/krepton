@@ -160,6 +160,10 @@ default:			;			// Avoid warning
 		const int x = m->xpos;
 		const int y = m->ypos;
 
+		// TODO: mentioned somewhere, possibly at the Repton Resource Page
+		// https://www.reptonresourcepage.co.uk/Walkthrough.php?game=2&plat=0&scene=Now&level=7
+		// that the initial sprite orientation is different in the BBC and later
+		// versions.  Check that the logic here is correct.
 		if (!isempty(x-1,y) && isempty(x,y-1)) m->orientation = Orientation::North;
 		else if (!isempty(x,y+1) && isempty(x-1,y)) m->orientation = Orientation::West;
 		else if (!isempty(x,y-1) && isempty(x+1,y)) m->orientation = Orientation::East;	
