@@ -50,6 +50,11 @@ http://www.stairwaytohell.com/gamehelp/solution-repton3-ms.txt:
   For killing a monster: 20 points
   All monsters must be killed to finish a level
 
+Limit Repton's movement speed to one square per game tick
+(timerMonsters in GamePlayer).  Otherwise, Repton can run and get
+ahead of a pursuing monster or spirit, but in the original game he
+couldn't.  Maybe retain the original behaviour as a cheat option.
+
 
 
 From the original HTML documentation

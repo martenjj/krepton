@@ -58,11 +58,11 @@ GamePlayer::GamePlayer(QWidget *parent)
 	setFocusPolicy(Qt::StrongFocus);
 	setFocus();
 
-	timerObjects = startTimer(200);
-	timerMonsters = startTimer(300);
-	timerEggs = startTimer(500);
-	timerSecs = startTimer(1000);
-	timerPlants = startTimer(3000);
+	timerObjects = startTimer(200);			// Update falling rocks or eggs
+	timerMonsters = startTimer(300);		// Update monsters and spirits
+	timerEggs = startTimer(500);			// Update a breaking egg
+	timerSecs = startTimer(1000);			// Update elapsed time and idle Repton
+	timerPlants = startTimer(3000);			// Update replicating plants
 }
 
 GamePlayer::~GamePlayer()
