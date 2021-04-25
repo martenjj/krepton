@@ -544,8 +544,8 @@ bool MapPlay::updateMonster(Monster *m)
 		int xd = 0;				// move that monster will make
 		int yd = 0;
 
-		const int xdist = m->xpos+xpos;
-		const int ydist = m->ypos+ypos;
+		const int xdist = m->xpos-xpos;
+		const int ydist = m->ypos-ypos;
 		int len = xdist*xdist + ydist*ydist;	// current distance to Repton
 
 		// Try the four possible monster move directions
