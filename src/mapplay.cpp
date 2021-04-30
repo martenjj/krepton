@@ -155,19 +155,7 @@ default:			;			// Avoid warning
 	{
 		Monster *m = (*it);
                 if (m==NULL) continue;
-		if (m->type!=Obj::Blip) continue;
-
-		const int x = m->xpos;
-		const int y = m->ypos;
-
-		// TODO: mentioned somewhere, possibly at the Repton Resource Page
-		// https://www.reptonresourcepage.co.uk/Walkthrough.php?game=2&plat=0&scene=Now&level=7
-		// that the initial sprite orientation is different in the BBC and later
-		// versions.  Check that the logic here is correct.
-		if (!isempty(x-1,y) && isempty(x,y-1)) m->orientation = Orientation::North;
-		else if (!isempty(x,y+1) && isempty(x-1,y)) m->orientation = Orientation::West;
-		else if (!isempty(x,y-1) && isempty(x+1,y)) m->orientation = Orientation::East;	
-		else if (!isempty(x+1,y) && isempty(x,y+1)) m->orientation = Orientation::South;
+		if (m->type==Obj::Blip) blipInitialDirection(m);
 	}
 
 	qDebug() << "done monsters=" << monsters.count() << " diamonds=" << num_diamonds;
@@ -326,187 +314,28 @@ bool MapPlay::tryFall(int x,int y)
 }
 
 
-void deltaForDirection(Orientation::Type dir, int *xp, int *yp)
+// Kill a blip, make it a diamond, and produce a sound.
+void MapPlay::cageBlip(Monster *m)
 {
-	int xd = 0;
-	int yd = 0;
-	switch (dir)					// calculate displacement
-	{
-case Orientation::None:		         break;		// should never happen
-case Orientation::North:	yd = -1; break;
-case Orientation::East:		xd = +1; break;
-case Orientation::South:	yd = +1; break;
-case Orientation::West:		xd = -1; break;
-	}
-
-	*xp = xd;
-	*yp = yd;
+	Sound::self()->playSound(Sound::Cage);
+	ref(m->xpos, m->ypos) = Obj::Diamond;
+	killMonster(m);
 }
 
 
-
-char showDirection(Orientation::Type dir)
+/* override */ bool MapPlay::blipHit(Monster *m, Obj::Type obj)
 {
-	switch (dir)					// calculate displacement
+	if (obj==Obj::Cage)
 	{
-case Orientation::North:	return ('N');
-case Orientation::East:		return ('E');
-case Orientation::South:	return ('S');
-case Orientation::West:		return ('W');
-default:			return ('?');
+		cageBlip(m);
 	}
-}
-
-
-
-// Check if the blip can go that way.
-bool MapPlay::blipTryDirection(const Monster *m, Orientation::Type dir) const
-{
-	int xd, yd;
-	if (dir==Orientation::None) dir = m->orientation;
-	deltaForDirection(dir, &xd, &yd);
-
-	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);
-	return (isempty(obj) || obj==Obj::Cage || obj==Obj::Repton);
-}
-
-
-// Send the blip that way, and take appropriate action.
-bool MapPlay::blipGoDirection(Monster *m, Orientation::Type dir)
-{
-	int xd, yd;
-	if (dir==Orientation::None) dir = m->orientation;
-	deltaForDirection(dir, &xd, &yd);
-
-	Obj::Type obj = xy(m->xpos+xd, m->ypos+yd);
-	if (isempty(obj))
+	else if (obj==Obj::Repton)
 	{
-		m->xpos += xd;
-		m->ypos += yd;
-		m->orientation = dir;
-		return (true);
-	}
-	else if (obj==Obj::Cage)
-	{
-		cageBlip(m, m->xpos+xd, m->ypos+yd);
-		return (true);
-	}
-	else if (obj==Obj::Repton && !(cheats_used & Cheat::HarmlessSpirit))
-	{
+		if (cheats_used & Cheat::HarmlessSpirit) return (false);
 		die("It got you!");
 	}
 
-	return (false);
-}
-
-
-// Check and move the blip.
-bool MapPlay::updateBlip(Monster *m)
-{
-	const int mx = m->xpos;
-	const int my = m->ypos;
-
-	// is the spirit surrounded?
-	if (!isempty(mx, my+1) && !isempty(mx+1, my) &&
-	    !isempty(mx, my-1) && !isempty(mx-1, my))
-	{
-		qDebug() << "spirit surrounded at" << mx << my;
-		return (false);				// nothing we can do
-	}
-
-	// is the spirit in empty space?
-	if (isempty(mx, my+1) && isempty(mx+1, my) &&
-	    isempty(mx, my-1) && isempty(mx-1, my) &&
-	    isempty(mx-1, my-1) && isempty(mx-1, my+1) &&
-	    isempty(mx+1, my-1) && isempty(mx+1, my+1))
-	{
-		qDebug() << "spirit confused at" << mx << my << showDirection(m->orientation);
-		blipGoDirection(m);			// just go straight on
-	}
-	else
-	{
-		switch (m->orientation)
-		{
-case Orientation::North:
-			if (!blipTryDirection(m) &&
-			    blipTryDirection(m, Orientation::West) &&
-			    blipTryDirection(m, Orientation::East) &&
-			    isempty(mx-1, my+1))
-			{
-				qDebug() << "reorient at" << mx << my << "N, try E";
-				if (blipGoDirection(m, Orientation::East)) break;
-			}
-
-			if (!blipGoDirection(m, Orientation::West) &&
-			    !blipGoDirection(m))
-			{
-				m->orientation = Orientation::East;
-				return (updateBlip(m));
-			}
-			break;
-
-case Orientation::East:
-			if (!blipTryDirection(m) &&
-			    blipTryDirection(m, Orientation::North) &&
-			    blipTryDirection(m, Orientation::South) &&
-			    isempty(mx-1, my-1))
-			{
-				qDebug() << "reorient at" << mx << my << "E, try S";
-				if (blipGoDirection(m, Orientation::South)) break;
-			}
-
-			if (!blipGoDirection(m, Orientation::North) &&
-			    !blipGoDirection(m))
-			{
-				m->orientation = Orientation::South;
-				return (updateBlip(m));
-			}
-			break;
-
-case Orientation::South:
-			if (!blipTryDirection(m) &&
-			    blipTryDirection(m, Orientation::East) &&
-			    blipTryDirection(m, Orientation::West) &&
-			    isempty(mx+1, my-1))
-			{
-				qDebug() << "reorient at" << mx << my << "S, try W";
-				if (blipGoDirection(m, Orientation::West)) break;
-			}
-
-			if (!blipGoDirection(m, Orientation::East) &&
-			    !blipGoDirection(m))
-			{
-				m->orientation = Orientation::West;
-				return (updateBlip(m));
-			}
-			break;
-
-case Orientation::West:
-			if (!blipTryDirection(m) &&
-			    blipTryDirection(m, Orientation::South) &&
-			    blipTryDirection(m, Orientation::North) &&
-			    isempty(mx+1, my+1))
-			{
-				qDebug() << "reorient at" << mx << my << "W, try N";
-				if (blipGoDirection(m, Orientation::North)) break;
-			}
-
-			if (!blipGoDirection(m, Orientation::South) &&
-			    !blipGoDirection(m))
-			{
-				m->orientation = Orientation::North;
-				return (updateBlip(m));
-			}
-			break;
-
-case Orientation::None:
-			break;				// should never happen
-		}
-	}
-
-	if (m->xpos!=mx || m->ypos!=my)
-		m->sprite = (m->sprite==Obj::Blip) ? Obj::Blip2 : Obj::Blip;
-	return (true);					// because of animation
+	return (true);
 }
 
 
@@ -544,8 +373,8 @@ bool MapPlay::updateMonster(Monster *m)
 		int xd = 0;				// move that monster will make
 		int yd = 0;
 
-		const int xdist = m->xpos+xpos;
-		const int ydist = m->ypos+ypos;
+		const int xdist = m->xpos-xpos;
+		const int ydist = m->ypos-ypos;
 		int len = xdist*xdist + ydist*ydist;	// current distance to Repton
 
 		// Try the four possible monster move directions
@@ -1138,14 +967,6 @@ void MapPlay::killMonster(Monster *mp)
 	// Just deactivate it.
 	monsters[monsters.indexOf(mp)] = NULL;
 	delete mp;
-}
-
-// Kill a blip, make it a diamond, and produce a sound.
-void MapPlay::cageBlip(Monster *m, int x, int y)
-{
-	Sound::self()->playSound(Sound::Cage);
-	ref(x,y) = Obj::Diamond;
-	killMonster(m);
 }
 
 void MapPlay::die(const QString &how)

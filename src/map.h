@@ -70,7 +70,7 @@ public:
 	Map(const QString &path);			// create from file
 	Map(const Map &m);				// copy constructor
 	Map(int sx,int sy,const QByteArray &pw);	// create with size
-	~Map();
+	virtual ~Map();
 	const QString loadStatus() const { return (status); }
 
 	bool save(const QString &path) const;
@@ -97,6 +97,21 @@ protected:
 		if (x<0 || y<0 || x>=width || y>=height) return (Obj::Wall);
 		return (ref(x,y));
 	}
+
+	bool blipTryDirection(const Monster *m, Orientation::Type dir = Orientation::None) const;
+	bool blipGoDirection(Monster *m, Orientation::Type dir = Orientation::None);
+	bool updateBlip(Monster *m);
+
+	virtual bool blipHit(Monster *m, Obj::Type type)	{ return (false); }
+
+public:
+	static void deltaForDirection(Orientation::Type dir, int *xp, int *yp);
+	static char showDirection(Orientation::Type dir);
+
+	virtual bool isempty(int x,int y) const;
+	virtual bool isempty(Obj::Type obj) const;
+
+	void blipInitialDirection(Monster *m) const;
 
 private:
 	Obj::Type *data;

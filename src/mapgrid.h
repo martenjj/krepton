@@ -56,6 +56,9 @@ protected:
 	void leaveEvent(QEvent *ev) override;
 
 private:
+	QVector<QPoint> previewBlipRoute(int x, int y);
+
+private:
 	MapEdit *map;
 	Sprites *sprites;
 	bool showtrans;

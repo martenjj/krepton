@@ -41,6 +41,9 @@ MapGrid::MapGrid(QWidget *parent)
 {
 	qDebug();
 
+	// TODO: instead of a separate widget, make this a QAbstractScrollArea
+	// and handle paint events on the viewport instead.
+
         mWidget = new MapGridWidget(this);
 	mWidget->setMouseTracking(true);
 	setMouseTracking(true);
@@ -96,6 +99,84 @@ void MapGridWidget::setMap(MapEdit *mm)
 }
 
 
+QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
+{
+	qDebug() << "blip at" << x << y;
+
+	const int startx = x;
+	const int starty = y;
+	QVector<QPoint> route;
+
+	Monster m(x, y, Obj::Blip);
+	map->blipInitialDirection(&m);
+
+	// It is not possible to find the end of the spirit route simply by
+	// its returning to its starting point, as it may simply be passing it
+	// in another direction.  It is also not possible to detect returning
+	// to the starting point moving in the same direction, as the initial
+	// direction from blipInitialDirection() may have been wrong.
+	// Therefore the position and direction of the spirit is noted when it
+	// has moved one square, when the direction of travel should be
+	// correct.  When the spirit returns to the same position travelling
+	// in the same direction, that is definitely the end of its route.
+	int returnx = -1;
+	int returny = -1;
+	Orientation::Type returnorient;
+
+	while (true)					// until end of route
+	{
+		if (map->updateBlip(&m))
+		{
+			int mx = m.xpos;
+			int my = m.ypos;
+			qDebug() << "  moved to" << mx << my;
+			route.append(QPoint(mx*Sprites::base_width+(Sprites::base_width/2), my*Sprites::base_height+(Sprites::base_height/2)));
+
+			if (mx==returnx && my==returny && m.orientation==returnorient)
+			{
+				qDebug() << "  returned";
+				break;
+			}
+
+			if (returnx==-1)
+			{
+				returnx = mx;
+				returny = my;
+				returnorient = m.orientation;
+				qDebug() << "  return to" << returnx << returny
+					 << "orient" << map->showDirection(returnorient);
+			}
+
+			Obj::Type obj = map->getCell(mx, my);
+			if (obj==Obj::Cage)
+			{
+				qDebug() << "  caught";
+				break;
+			}
+		}
+		else
+		{
+			qDebug() << "  cannot move";
+			break;
+		}
+
+		// The last screen of episode "Now" has a spirit run
+		// 362 squares long.
+		if (route.count()>400)
+		{
+			qDebug() << "  too long";
+			break;
+		}
+	}
+
+	qDebug() << "route found with" << route.count() << "points";
+	return (route);
+}
+
+
+
+
+
 void MapGridWidget::paintEvent(QPaintEvent *ev)
 {
 	QPainter p(this);
@@ -105,8 +186,6 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 		p.eraseRect(p.window());		// because of WRepaintNoErase
 		return;
 	}
-
-//	qDebug() << "showtrans=" << showtrans;
 
 	const int mapwidth = map->getWidth();
 	const int mapheight = map->getHeight();
@@ -147,6 +226,28 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 			p.setPen(pen);
 			p.setBrush(Qt::white);
 			p.drawEllipse(dx-4,dy-4,9,9);
+		}
+	}
+
+	// TODO: GUI option to show these
+	if (true)
+	{
+		for (int y = 0; y<mapheight; ++y)
+		{
+			for (int x = 0; x<mapwidth; ++x)
+			{
+				Obj::Type obj = map->getCell(x, y);
+				if (obj!=Obj::Blip) continue;
+
+				QVector<QPoint> route = previewBlipRoute(x, y);
+				if (!route.isEmpty())
+				{
+					route.prepend(QPoint(x*Sprites::base_width+(Sprites::base_width/2), y*Sprites::base_height+(Sprites::base_height/2)));
+					QPen pen(Qt::white, 2);
+					p.setPen(pen);
+					p.drawPolyline(route.data(), route.count());
+				}
+			}
 		}
 	}
 
@@ -192,6 +293,11 @@ void MapGridWidget::leaveEvent(QEvent *ev)
 
 void MapGrid::updatedCell(int x,int y)
 {
+	// TODO: if spirit routes are being shown, and the changed cell could
+	// potentially affect a spirit route (replacing a traverseable object
+	// with a non traverseable one) then the entire map needs to be
+	// repainted.
+
 	mWidget->repaint(x*Sprites::base_width,y*Sprites::base_height,
 	                 Sprites::base_width,Sprites::base_height);
 }

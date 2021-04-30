@@ -605,5 +605,8 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 
 void GameEditor::slotShowCoordinates(int x,int y)
 {
+	// TODO: the position display is 0-origin, but the transporter
+	// coordinates are in 1-origin.  Leads to confusing offset calculation
+	// in MapGridWidget::paintEvent().
 	coordsLabel->setText(formatCoordinates(x,y));
 }

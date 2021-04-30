@@ -93,10 +93,7 @@ private:
 	bool tryFallHorizontal(int x,int y,int xd);
 	bool tryFallLeftOrRight(int x,int y);
 	bool tryFall(int x,int y);
-	bool blipTryDirection(const Monster *m, Orientation::Type dir = Orientation::None) const;
-	bool blipGoDirection(Monster *m, Orientation::Type dir = Orientation::None);
 	int monsterTryDirection(const Monster *m, int xd, int yd);
-	bool updateBlip(Monster *m);
 	bool updateMonster(Monster *m);
 	bool tryPlant(int x, int y, int dx, int dy);
 	bool updatePlant(Monster *m);
@@ -110,25 +107,9 @@ private:
 	bool moveHorizontal(int xd);
 	bool movePlayer(int xd, int yd);
 	void killMonster(Monster *mp);
-	void cageBlip(Monster *m, int x, int y);
+	void cageBlip(Monster *m);
 	void die(const QString &how);
-
-	bool isempty(Obj::Type obj) const
-	{
-		switch (obj)
-		{
-case Obj::Empty:
-case Obj::Ground1:
-case Obj::Ground2:	return (true);
-
-default:		return (false);
-		}
-	}
-
-	bool isempty(int x,int y) const
-	{
-		return (isempty(xy(x,y)));
-	}
+	bool blipHit(Monster *m, Obj::Type obj) override;
 };
 
 
