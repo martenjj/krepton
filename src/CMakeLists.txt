@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		22-Apr-21					#
+#  Edit:		21-May-21					#
 #########################################################################
 
 project(krepton)
@@ -46,11 +46,23 @@ if (HAVE_STRERROR)
   endif (HAVE_ERRNO_H)
 endif (HAVE_STRERROR)
 
+if (SOUND_TYPE STREQUAL "libkdegames")
+  if (NOT KF5KDEGames_FOUND)
+    message(SEND_ERROR "libkdegames sound output requested, but package not found")
+  endif (NOT KF5KDEGames_FOUND)
+endif (SOUND_TYPE STREQUAL "libkdegames")
+
 if (SOUND_TYPE STREQUAL "phonon")
   if (NOT PHONON_FOUND)
-    message(SEND_ERROR "Phonon sound output requested, but not found")
+    message(SEND_ERROR "Phonon sound output requested, but package not found")
   endif (NOT PHONON_FOUND)
 endif (SOUND_TYPE STREQUAL "phonon")
+
+if (SOUND_TYPE STREQUAL "OFF")
+  if (KF5KDEGames_FOUND)
+    set(SOUND_TYPE "libkdegames")
+  endif (SOUND_TYPE STREQUAL "OFF")
+endif (KF5KDEGames_FOUND)
 
 if (SOUND_TYPE STREQUAL "OFF")
   if (Phonon4Qt5_FOUND)
@@ -58,7 +70,10 @@ if (SOUND_TYPE STREQUAL "OFF")
   endif (Phonon4Qt5_FOUND)
 endif (SOUND_TYPE STREQUAL "OFF")
 
-if (SOUND_TYPE STREQUAL "phonon")
+if (SOUND_TYPE STREQUAL "libkdegames")
+  add_definitions(-DSND_KGSOUND)
+  message(STATUS "Selected sound output: using KgSound")
+elseif (SOUND_TYPE STREQUAL "phonon")
   add_definitions(-DSND_PHONON)
   message(STATUS "Selected sound output: using Phonon")
 elseif (SOUND_TYPE STREQUAL "artsplay")
