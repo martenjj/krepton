@@ -66,10 +66,27 @@ Sound::Sound()
 #ifdef SND_PHONON
 	mLastPlayed = Sound::None;
 
-        mMediaObject = new Phonon::MediaObject(NULL);
-        Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
+	mMediaObject = new Phonon::MediaObject(NULL);
+	Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
 	Phonon::createPath(mMediaObject, audioOutput);
 #endif
+
+#ifdef SND_KGSOUND
+	qDebug() << "Configured for KgSound";
+#endif
+#ifdef SND_PHONON
+	qDebug() << "Configured for Phonon";
+#endif
+#ifdef SND_ARTSPLAY
+	qDebug() << "Configured for external ARTS player";
+#endif
+#ifdef SND_SOXPLAY
+	qDebug() << "Configured for external SOX";
+#endif
+#ifdef SND_ALSAPLAY
+	qDebug() << "Configured for external ALSA";
+#endif
+
 }
 
 
