@@ -463,8 +463,8 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 	{
 		msg += i18n("<p>Do you want to continue the game?");
 		if (KMessageBox::questionYesNo(this, msg, QString(),
-					       KGuiItem("&Continue"),
-					       KGuiItem("&Finish"))!=KMessageBox::Yes)
+					       KStandardGuiItem::cont(),
+					       KGuiItem(i18n("Finish"), KStandardGuiItem::stop().icon()))!=KMessageBox::Yes)
 		{
 			lives = 0;
 		}

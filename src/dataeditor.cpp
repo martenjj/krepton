@@ -31,6 +31,8 @@
 #include <qlineedit.h>
 #include <qspinbox.h>
 
+#include <kstandardguiitem.h>
+
 #include <dialogbase.h>
 
 #include "krepton.h"
@@ -51,16 +53,19 @@ DataEditor::DataEditor(QWidget* parent)
     levelsLabel->setBuddy(mapsListBox);
     l->addWidget(mapsListBox,2,1,6,2);
 
-    newlevelPushButton = new QPushButton("&New...",this);
+    newlevelPushButton = new QPushButton(this);
+    KStandardGuiItem::assign(newlevelPushButton, KStandardGuiItem::Add);
+    newlevelPushButton->setText(newlevelPushButton->text()+i18n("..."));
     l->addWidget(newlevelPushButton,2,4);
 
-    removelevelPushButton = new QPushButton("&Remove",this);
+    removelevelPushButton = new QPushButton(this);
+    KStandardGuiItem::assign(removelevelPushButton, KStandardGuiItem::Remove);
     l->addWidget(removelevelPushButton,2,6);
 
-    levelupPushButton = new QPushButton("Move &Up",this);
+    levelupPushButton = new QPushButton(QIcon::fromTheme("arrow-up"), i18n("Move Up"), this);
     l->addWidget(levelupPushButton,3,4);
 
-    leveldownPushButton = new QPushButton("Move Do&wn",this);
+    leveldownPushButton = new QPushButton(QIcon::fromTheme("arrow-down"), i18n("Move Down"), this);
     l->addWidget(leveldownPushButton,3,6);
 
     l->setRowMinimumHeight(4, 2*DialogBase::verticalSpacing());
@@ -95,13 +100,16 @@ DataEditor::DataEditor(QWidget* parent)
     transportLabel->setBuddy(transportListBox);
     l->addWidget(transportListBox,11,1,3,2);
 
-    newtransportPushButton = new QPushButton("N&ew...",this);
+    newtransportPushButton = new QPushButton(this);
+    KStandardGuiItem::assign(newtransportPushButton, KStandardGuiItem::Add);
+    newtransportPushButton->setText(newtransportPushButton->text()+i18n("..."));
     l->addWidget(newtransportPushButton,11,4);
 
-    removetransportPushButton = new QPushButton("Rem&ove",this);
+    removetransportPushButton = new QPushButton(this);
+    KStandardGuiItem::assign(removetransportPushButton, KStandardGuiItem::Remove);
     l->addWidget(removetransportPushButton,11,6);
 
-    changetransportPushButton = new QPushButton("C&hange...",this);
+    changetransportPushButton = new QPushButton(QIcon::fromTheme("document-edit"), i18n("Change..."), this);
     l->addWidget(changetransportPushButton,12,4);
 
     l->setRowStretch(13,1);
