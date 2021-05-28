@@ -70,6 +70,7 @@ MapGridWidget::MapGridWidget(QWidget *parent)
 	map = NULL;
 	showtrans = false;
 	showsel = false;
+	showspiritroutes = false;
 	xtrans = ytrans = 0;
 }
 
@@ -121,7 +122,7 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 	// in the same direction, that is definitely the end of its route.
 	int returnx = -1;
 	int returny = -1;
-	Orientation::Type returnorient;
+	Orientation::Type returnorient = Orientation::None;
 
 	while (true)					// until end of route
 	{
@@ -395,8 +396,7 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 		}
 	}
 
-	// TODO: GUI option to show these
-	if (true)
+	if (showspiritroutes)
 	{
 		for (int y = 0; y<mapheight; ++y)
 		{
@@ -479,6 +479,18 @@ void MapGrid::showTransporters(bool state)
 void MapGridWidget::showTransporters(bool state)
 {
 	showtrans = state;
+}
+
+
+void MapGrid::showSpiritRoutes(bool state)
+{
+	mWidget->showSpiritRoutes(state);
+}
+
+
+void MapGridWidget::showSpiritRoutes(bool state)
+{
+	showspiritroutes = state;
 }
 
 

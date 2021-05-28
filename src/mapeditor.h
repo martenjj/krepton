@@ -56,6 +56,7 @@ protected slots:
 	void pressedButton(int button,int x,int y);
 	void optionShowTransporterRoutes(bool checked);
 	void optionShowTransporterSelected(bool checked);
+	void optionShowSpiritRoutes(bool checked);
 
 private:
 	ObjectListBox *sprite_list;

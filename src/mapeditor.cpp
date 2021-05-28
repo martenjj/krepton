@@ -87,11 +87,15 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 
 	QCheckBox *cb = new QCheckBox("Transporter routes",optiongroup);
 	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterRoutes(bool)));
-        vl->addWidget(cb);
+	vl->addWidget(cb);
 
 	cb = new QCheckBox("Selected transporter",optiongroup);
 	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterSelected(bool)));
-        vl->addWidget(cb);
+	vl->addWidget(cb);
+
+	cb = new QCheckBox("Spirit routes",optiongroup);
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowSpiritRoutes(bool)));
+	vl->addWidget(cb);
 
         optiongroup->setLayout(vl);
 	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
@@ -157,6 +161,13 @@ void MapEditor::updateChilds()
 void MapEditor::optionShowTransporterRoutes(bool checked)
 {
 	map_area->showTransporters(checked);
+	updateChilds();
+}
+
+
+void MapEditor::optionShowSpiritRoutes(bool checked)
+{
+	map_area->showSpiritRoutes(checked);
 	updateChilds();
 }
 

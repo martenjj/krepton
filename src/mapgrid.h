@@ -43,6 +43,7 @@ public:
 	void setMap(MapEdit *mm);
 	void showTransporters(bool state);
 	void showSelectedTransporter(bool state);
+	void showSpiritRoutes(bool state);
 	void selectedTransporter(int i = -1);
 
 signals:
@@ -63,6 +64,7 @@ private:
 	Sprites *sprites;
 	bool showtrans;
 	bool showsel;
+	bool showspiritroutes;
 	int xtrans,ytrans;
 };
 
@@ -78,6 +80,7 @@ public:
 	void updatedCell(int x,int y);
 	void showTransporters(bool state);
 	void showSelectedTransporter(bool state);
+	void showSpiritRoutes(bool state);
 	void selectedTransporter(int i = -1);
 	void update();
 
