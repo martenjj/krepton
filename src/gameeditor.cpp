@@ -605,5 +605,5 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 
 void GameEditor::slotShowCoordinates(int x,int y)
 {
-	coordsLabel->setText(formatCoordinates(x,y));
+	coordsLabel->setText(formatCoordinates(x+1,y+1));
 }
