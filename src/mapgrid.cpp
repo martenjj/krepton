@@ -101,7 +101,7 @@ void MapGridWidget::setMap(MapEdit *mm)
 
 QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 {
-	qDebug() << "blip at" << x << y;
+	qDebug() << "blip at" << x+1 << y+1;
 
 	const int startx = x;
 	const int starty = y;
@@ -129,8 +129,8 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 		{
 			int mx = m.xpos;
 			int my = m.ypos;
-			qDebug() << "  moved to" << mx << my;
-			route.append(QPoint(mx*Sprites::base_width+(Sprites::base_width/2), my*Sprites::base_height+(Sprites::base_height/2)));
+			qDebug() << "  moved to" << mx+1 << my+1;
+			route.append(QPoint(mx, my));
 
 			if (mx==returnx && my==returny && m.orientation==returnorient)
 			{
@@ -143,7 +143,7 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 				returnx = mx;
 				returny = my;
 				returnorient = m.orientation;
-				qDebug() << "  return to" << returnx << returny
+				qDebug() << "  return to" << returnx+1 << returny+1
 					 << "orient" << map->showDirection(returnorient);
 			}
 
@@ -173,8 +173,174 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 	return (route);
 }
 
+// Positions within a square, for the blip route plotting offset.
+#define CENTRE		0
+#define TOPLEFT		1
+#define TOPRIGHT	2
+#define BOTTOMLEFT	3
+#define BOTTOMRIGHT	4
 
 
+static QPoint cellPosition(int x, int y, int within)
+{
+	QPoint p(x*Sprites::base_width+(Sprites::base_width/2),
+		 y*Sprites::base_height+(Sprites::base_height/2));
+
+	const int offsetx = Sprites::base_width/4;
+	const int offsety = Sprites::base_height/4;
+	if (within==TOPLEFT)
+	{
+		p.rx() -= offsetx;
+		p.ry() -= offsety;
+	}
+	else if (within==TOPRIGHT)
+	{
+		p.rx() += offsetx;
+		p.ry() -= offsety;
+	}
+	else if (within==BOTTOMRIGHT)
+	{
+		p.rx() += offsetx;
+		p.ry() += offsety;
+	}
+	else if (within==BOTTOMLEFT)
+	{
+		p.rx() -= offsetx;
+		p.ry() += offsety;
+	}
+
+	return (p);
+}
+
+
+static Orientation::Type movementDirection(const QPoint &prevpnt, const QPoint &thispnt)
+{
+	Orientation::Type dir = Orientation::None;
+	if (prevpnt.x()==thispnt.x())			// vertical movement
+	{
+		if (thispnt.y()>prevpnt.y()) dir = Orientation::South;
+		else dir = Orientation::North;
+	}
+	else if (prevpnt.y()==thispnt.y())		// horizontal movement
+	{
+		if (thispnt.x()>prevpnt.x()) dir = Orientation::East;
+		else dir = Orientation::West;
+	}
+
+	if (dir==Orientation::None) qWarning() << "cannot find direction from" << prevpnt << "to" << thispnt;
+	return (dir);
+}
+
+
+static QVector<QPoint> plotBlipRoute(const QVector<QPoint> &route)
+{
+	QVector<QPoint> plot;
+	plot.reserve(route.size()*2);
+
+#ifdef SPIRIT_ROUTE_CENTRE
+	for (const QPoint &pp : route)
+	{
+		plot.append(cellPosition(pp.x(), pp.y(), CENTRE));
+	}
+#else // SPIRIT_ROUTE_CENTRE
+	for (int i = 1; i<route.count()-1; ++i)
+	{
+		const QPoint &pnt = route[i];
+
+		// Find the orientation that the spirit is currently travelling in.
+		// This means the direction from the previous point to this one;
+		// because of starting at 1 above there will always be a previous point.
+		const QPoint &prevpnt = route[i-1];
+		Orientation::Type thisdir = movementDirection(prevpnt, pnt);
+		if (thisdir==Orientation::None) continue;
+
+		// Then find the orientation that the spirit will leave this
+		// point travelling in.  This means the direction from this
+		// point to the next one; because of the "-1" above there will
+		// always be a next point.
+		const QPoint &nextpnt = route[i+1];
+		Orientation::Type nextdir = movementDirection(pnt, nextpnt);
+		if (nextdir==Orientation::None) continue;
+
+		// For the first point (i.e. one step on from the spirit's starting
+		// position), calculate the starting position corresponding to this
+		// step orientation.
+		if (i==1)
+		{
+			int startpoint = CENTRE;
+			if (thisdir==Orientation::North) startpoint = BOTTOMLEFT;
+			else if (thisdir==Orientation::East) startpoint = TOPLEFT;
+			else if (thisdir==Orientation::South) startpoint = TOPRIGHT;
+			else if (thisdir==Orientation::West) startpoint = BOTTOMRIGHT;
+
+			// If the spirit will not be returning to this point at the end
+			// if its route, then it needs the step from its start point
+			// to here to be drawn first.
+			if (pnt!=route.last()) plot.append(cellPosition(prevpnt.x(), prevpnt.y(), startpoint));
+
+			// Then the same position within this point.
+			plot.append(cellPosition(pnt.x(), pnt.y(), startpoint));
+		}
+
+		// Find the arrival point in the next square corresponding to that
+		// movement direction.
+		int endpoint = CENTRE;
+		if (nextdir==Orientation::North) endpoint = BOTTOMLEFT;
+		else if (nextdir==Orientation::East) endpoint = TOPLEFT;
+		else if (nextdir==Orientation::South) endpoint = TOPRIGHT;
+		else if (nextdir==Orientation::West) endpoint = BOTTOMRIGHT;
+
+		// For a right turn, the spirit needs first to move to the far
+		// side of the current square in the current direction before
+		// turning to go on to the next square.
+		if (thisdir==Orientation::North && nextdir==Orientation::East)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPLEFT));
+		}
+		else if (thisdir==Orientation::East && nextdir==Orientation::South)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPRIGHT));
+		}
+		else if (thisdir==Orientation::South && nextdir==Orientation::West)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMRIGHT));
+		}
+		else if (thisdir==Orientation::West && nextdir==Orientation::North)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMLEFT));
+		}
+
+		// But if the spirit is turning completely around, then it needs to
+		// go around the current square first.
+		if (thisdir==Orientation::North && nextdir==Orientation::South)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPLEFT));
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPRIGHT));
+		}
+		else if (thisdir==Orientation::East && nextdir==Orientation::West)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPRIGHT));
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMRIGHT));
+		}
+		else if (thisdir==Orientation::South && nextdir==Orientation::North)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMRIGHT));
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMLEFT));
+		}
+		else if (thisdir==Orientation::West && nextdir==Orientation::East)
+		{
+			plot.append(cellPosition(pnt.x(), pnt.y(), BOTTOMLEFT));
+			plot.append(cellPosition(pnt.x(), pnt.y(), TOPLEFT));
+		}
+
+		// Finally the spirit moves on to the destination point in
+		// the next square.
+		plot.append(cellPosition(nextpnt.x(), nextpnt.y(), endpoint));
+	}
+#endif // SPIRIT_ROUTE_CENTRE
+
+	return (plot);
+}
 
 
 void MapGridWidget::paintEvent(QPaintEvent *ev)
@@ -240,13 +406,14 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 				if (obj!=Obj::Blip) continue;
 
 				QVector<QPoint> route = previewBlipRoute(x, y);
-				if (!route.isEmpty())
-				{
-					route.prepend(QPoint(x*Sprites::base_width+(Sprites::base_width/2), y*Sprites::base_height+(Sprites::base_height/2)));
-					QPen pen(Qt::white, 2);
-					p.setPen(pen);
-					p.drawPolyline(route.data(), route.count());
-				}
+				if (route.isEmpty()) continue;
+
+				route.prepend(QPoint(x, y));
+				const QVector<QPoint> &plot = plotBlipRoute(route);
+
+				QPen pen(Qt::white, 2);
+				p.setPen(pen);
+				p.drawPolyline(plot.data(), plot.count());
 			}
 		}
 	}
