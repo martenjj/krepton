@@ -28,11 +28,13 @@
 #include <qfile.h>
 #include <qstandardpaths.h>
 
+#ifdef SND_KGSOUND
+#include <kgsound.h>
+#endif
 #ifdef SND_PHONON
 #include <Phonon/MediaSource>
 #include <Phonon/AudioOutput>
 #endif
-
 #ifdef SND_EXTERNAL
 #include <kprocess.h>
 #endif
@@ -64,15 +66,38 @@ Sound::Sound()
 #ifdef SND_PHONON
 	mLastPlayed = Sound::None;
 
-        mMediaObject = new Phonon::MediaObject(NULL);
-        Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
+	mMediaObject = new Phonon::MediaObject(NULL);
+	Phonon::AudioOutput *audioOutput = new Phonon::AudioOutput(Phonon::GameCategory, NULL);
 	Phonon::createPath(mMediaObject, audioOutput);
 #endif
+
+#ifdef SND_KGSOUND
+	qDebug() << "Configured for KgSound";
+#endif
+#ifdef SND_PHONON
+	qDebug() << "Configured for Phonon";
+#endif
+#ifdef SND_ARTSPLAY
+	qDebug() << "Configured for external ARTS player";
+#endif
+#ifdef SND_SOXPLAY
+	qDebug() << "Configured for external SOX";
+#endif
+#ifdef SND_ALSAPLAY
+	qDebug() << "Configured for external ALSA";
+#endif
+
 }
 
 
 Sound::~Sound()
 {
+#ifdef SND_KGSOUND
+	for (KgSound *snd : mSourceMap.values())
+	{
+		if (snd!=nullptr) snd->stop();
+	}
+#endif
 #ifdef SND_PHONON
 	mMediaObject->stop();
 #endif
@@ -86,6 +111,7 @@ void Sound::playSound(Sound::Type s)
 
 	qDebug() << "type" << s;
 
+#ifndef SND_EXTERNAL
 #ifdef SND_PHONON
 	if (s==mLastPlayed)				// same as last sound
 	{
@@ -93,10 +119,10 @@ void Sound::playSound(Sound::Type s)
 		return;
 	}
 
-	Phonon::MediaSource *src = mSourceMap.value(s);
-	if (src==NULL)
-	{
 #endif
+	auto *src = mSourceMap.value(s);		// KGSound or Phonon::MediaSource
+	if (src==nullptr)				// need to create sound object
+	{
 		QString name;
 		switch (s)
 		{
@@ -159,20 +185,27 @@ default:						return;
 
 #ifdef SND_PHONON
 		src = new Phonon::MediaSource(fname);
-		qDebug() << "created media object for" << fname;
+#endif
+#ifdef SND_KGSOUND
+		src = new KgSound(fname);
+#endif
+		qDebug() << "created sound object from" << fname;
 		mSourceMap[s] = src;
 	}
 
-	if (src!=NULL)
+	if (src!=nullptr)
 	{
+#ifdef SND_KGSOUND
+		src->start();
+#endif
+#ifdef SND_PHONON
 		mMediaObject->setCurrentSource(*src);
 		mMediaObject->play();
 		mLastPlayed = s;
+#endif
 		return;
 	}
-#endif
-
-#ifdef SND_EXTERNAL
+#else
 	KProcess *proc = new KProcess(NULL);
 #ifdef EXT_ARTSPLAY
 	*proc << "artsplay" << fname;
@@ -185,7 +218,6 @@ default:						return;
 #endif
 	proc->start(KProcess::DontCare);
 #endif
-
 }
 
 

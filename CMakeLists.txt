@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for Plasma 5				#
-#  Edit:		19-Apr-21					#
+#  Edit:		21-May-21					#
 #########################################################################
 #									#
 #									#
@@ -39,7 +39,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${KDE_INSTALL_FULL_DATAROOTDIR}/marbl
 #									#
 #########################################################################
 
-option(SOUND_TYPE "Specify how sound is to be played (phonon,artsplay,soxplay,alsaplay,none)" OFF)
+option(SOUND_TYPE "Specify how sound is to be played (libkdegames,phonon,artsplay,soxplay,alsaplay,none)" OFF)
 option(INSTALL_BINARIES "Install the binaries and libraries, turn off for development in place" ON)
 
 #########################################################################

@@ -351,7 +351,7 @@ void GameEditor::mapRemove()
 	QString msg = QString("Are you sure to remove the selected map #%1, '%2'?")
 		.arg(item+1).arg(view->mapsListBox->currentItem()->text());
 	if (KMessageBox::warningContinueCancel(this,msg,QString(),
-					       KGuiItem("&Remove"))==KMessageBox::Continue)
+					       KStandardGuiItem::remove())==KMessageBox::Continue)
 	{
 		maps.mapRemove(item);
 		setModified();
@@ -466,7 +466,7 @@ void GameEditor::transporterRemove()
 	QString msg = QString("Are you sure to remove the selected transporter #%1?").arg(item+1);
 
 	if (KMessageBox::warningContinueCancel(this,msg,QString(),
-					       KGuiItem("&Remove"))==KMessageBox::Continue)
+					       KStandardGuiItem::remove())==KMessageBox::Continue)
 	{
 		map->transporterRemove(item);
 		setModified();
@@ -605,8 +605,5 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 
 void GameEditor::slotShowCoordinates(int x,int y)
 {
-	// TODO: the position display is 0-origin, but the transporter
-	// coordinates are in 1-origin.  Leads to confusing offset calculation
-	// in MapGridWidget::paintEvent().
-	coordsLabel->setText(formatCoordinates(x,y));
+	coordsLabel->setText(formatCoordinates(x+1,y+1));
 }

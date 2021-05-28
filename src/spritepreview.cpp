@@ -39,8 +39,8 @@ SpritePreview::SpritePreview(QWidget *parent) : QLabel(parent)
 
 	setFrameStyle(QFrame::Box|QFrame::Sunken);
 	setLineWidth(1);
-	setMidLineWidth(2);
-	setFixedSize(Sprites::base_width,Sprites::base_height);
+	setMidLineWidth(1);
+	setMargin(1);
 }
 
 

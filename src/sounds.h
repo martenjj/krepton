@@ -28,6 +28,9 @@
 #ifdef SND_PHONON
 #include <Phonon/MediaObject>
 #endif
+#ifdef SND_KGSOUND
+class KgSound;
+#endif
 
 #include "krepton.h"
 
@@ -77,7 +80,9 @@ private:
 	Phonon::MediaObject *mMediaObject;
 	QMap<Sound::Type, Phonon::MediaSource *> mSourceMap;
 #endif
-
+#ifdef SND_KGSOUND
+	QMap<Sound::Type, KgSound *> mSourceMap;
+#endif
 };
 
 

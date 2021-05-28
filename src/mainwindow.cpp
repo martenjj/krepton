@@ -89,11 +89,11 @@ MainWindow::MainWindow(QWidget *parent)
 	startAction = KStandardGameAction::gameNew(this, SLOT(slotStartGame()), actionCollection());
 #else
 	startAction = actionCollection()->addAction("game_new", this, SLOT(slotStartGame()));
-	startAction->setIcon(QIcon::fromTheme("document-new"));
         actionCollection()->addAction("game_start", startAction);
 #endif
         actionCollection()->setDefaultShortcut(startAction, Qt::Key_S);
         startAction->setText(i18n("Start at first level"));
+	startAction->setIcon(QIcon::fromTheme("go-next"));
 
 #ifdef HAVE_LIBKDEGAMES
 	restartAction = KStandardGameAction::restart(this, SLOT(slotRestartGame()), actionCollection());
@@ -107,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         continueAction= actionCollection()->addAction("game_continue", this, SLOT(slotContinueGame()));
 	continueAction->setText(i18n("Restart at level..."));
-	continueAction->setIcon(QIcon::fromTheme("go-next"));
+	continueAction->setIcon(QIcon::fromTheme("go-last"));
         actionCollection()->setDefaultShortcut(continueAction, Qt::Key_C);
 
 #ifdef HAVE_LIBKDEGAMES
@@ -729,8 +729,8 @@ game until it is saved.\
 To retain the level-specific sprite files, select <b>Keep</b>.  Changes made \
 using the sprite editor may not have any effect on played levels."),\
                                                      i18n("Multiple Sprites"),
-                                                     KGuiItem("Remove"),
-                                                     KGuiItem("Keep")))
+                                                     KStandardGuiItem::remove(),
+                                                     KGuiItem(i18n("Keep"), KStandardGuiItem::yes().icon())))
             {
 case KMessageBox::Yes:
 		game->getSprites()->removeMultiLevels();
@@ -849,7 +849,7 @@ void MainWindow::slotSaveAs()
 		if (KMessageBox::warningContinueCancel(
 			    this,i18n("<qt>Overwrite existing episode <b>%1</b>?", d.name()),
 			    QString(),
-			    KGuiItem(i18n("Overwrite")))!=KMessageBox::Continue) return;
+			    KStandardGuiItem::overwrite())!=KMessageBox::Continue) return;
 	}
 
 	const Episode *e = game->saveEpisode(d.name(),d.path());
@@ -876,11 +876,11 @@ void MainWindow::slotRemove()
 	qDebug() << "selected = '" << e->getName() << "'";
 
 	if (KMessageBox::warningContinueCancel(
-		    this,i18n("<qt>Are you sure you want to remove the episode <b>%2</b>,"
+		    this,i18n("<qt>Are you sure you want to permanently delete the episode <b>%2</b>,"
                               "<br>located at '%1'?",
                               Episode::savePath(name),
                               name),
-		    QString(),KGuiItem(i18n("Remove")))!=KMessageBox::Continue) return;
+		    QString(),KStandardGuiItem::del())!=KMessageBox::Continue) return;
 
 	qDebug() << "e=" << e << "current=" << currentepisode;
 

@@ -46,11 +46,11 @@ public:
 	Sprites();					// create as blank
 	Sprites(const Episode *e);			// load from episode
         Sprites(const Sprites &s);			// copy constructor
-	const QString loadStatus() const			{ return (status); }
+	const QString &loadStatus() const			{ return (status); }
 
 	void prepare(int level);
-	QPixmap get(Obj::Type obj, bool paused = false) const	{ return (!paused ? sprites[obj] : greysprites[obj]); }
-	QPixmap getRaw(Obj::Type obj) const			{ return (rawsprites[obj]); }
+	const QPixmap &get(Obj::Type obj, bool paused = false) const	{ return (!paused ? sprites[obj] : greysprites[obj]); }
+	const QPixmap &getRaw(Obj::Type obj) const			{ return (rawsprites[obj]); }
 
 	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
 	bool save(const Episode *e);
