@@ -112,8 +112,6 @@ private:
 	void selectLevel(int level);
 	void updateMapsList();
 	void updateTransportersList(int item = -1);
-
-//	static QString formatCoordinates(int x,int y);
 };
 
 #endif							// !GAMEEDITOR_H

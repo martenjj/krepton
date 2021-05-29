@@ -27,7 +27,6 @@
 #include <qpixmap.h>
 #include <qpainter.h>
 #include <qpen.h>
-#include <qcolor.h>
 #include <qevent.h>
 #include <qscrollbar.h>
 
@@ -41,30 +40,17 @@ MapGrid::MapGrid(QWidget *parent)
 {
 	qDebug();
 
-	// TODO: instead of a separate widget, make this a QAbstractScrollArea
-	// and handle paint events on the viewport instead.
-
-        mWidget = new MapGridWidget(this);
-	mWidget->setMouseTracking(true);
-	setMouseTracking(true);
-        setWidget(mWidget);
-
-	connect(mWidget,SIGNAL(pressedButton(int,int,int)),SIGNAL(pressedButton(int,int,int)));
-	connect(mWidget,SIGNAL(changedCoordinates(int,int)),SIGNAL(changedCoordinates(int,int)));
+	QWidget *w = new QWidget(this);
+	w->setMouseTracking(true);
+	w->setAttribute(Qt::WA_OpaquePaintEvent);
+	w->setAttribute(Qt::WA_NoSystemBackground);
+	w->installEventFilter(this);
+	setWidget(w);
 
 	setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	horizontalScrollBar()->setSingleStep(Sprites::base_width);
 	verticalScrollBar()->setSingleStep(Sprites::base_width);
-
-	qDebug() << "done";
-}
-
-
-MapGridWidget::MapGridWidget(QWidget *parent)
-	: QWidget(parent)
-{
-	qDebug();
 
 	sprites = NULL;
 	map = NULL;
@@ -77,30 +63,29 @@ MapGridWidget::MapGridWidget(QWidget *parent)
 
 void MapGrid::setMap(MapEdit *mm)
 {
-	mWidget->setMap(mm);
-}
-
-
-void MapGridWidget::setMap(MapEdit *mm)
-{
 	map = mm;
         update();
 
-	if (map==NULL)
+	if (map==NULL)					// removing the map
 	{
-		setEnabled(false);
+		widget()->setEnabled(false);
 		return;
 	}
 
 	const int cwidth = map->getWidth()*Sprites::base_width;
 	const int cheight = map->getHeight()*Sprites::base_height;
-	resize(cwidth,cheight);
-	setMaximumSize(cwidth,cheight);
-	setEnabled(true);
+	widget()->setFixedSize(cwidth, cheight);
+	widget()->setEnabled(true);
 }
 
 
-QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
+// Work out a spirit route, given its starting position and the current
+// state of the map, as a list of squares traversed.  It starts at the
+// spirit position and ends either when it encounters a cage, or returns
+// to the starting point travelling in the same direction.  The route is
+// drawn on the map by plotBlipRoute() below.
+
+static QVector<QPoint> previewBlipRoute(int x, int y, MapEdit *map)
 {
 	qDebug() << "blip at" << x+1 << y+1;
 
@@ -161,8 +146,9 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 			break;
 		}
 
-		// The last screen of episode "Now" has a spirit run
-		// 362 squares long.
+		// The last screen of episode "Now" has a spirit run 362 squares
+		// long.  It is possible to construct pathological maps with longer
+		// spirit runs, but they won't be very interesting to play...
 		if (route.count()>400)
 		{
 			qDebug() << "  too long";
@@ -174,7 +160,9 @@ QVector<QPoint> MapGridWidget::previewBlipRoute(int x, int y)
 	return (route);
 }
 
+
 // Positions within a square, for the blip route plotting offset.
+
 #define CENTRE		0
 #define TOPLEFT		1
 #define TOPRIGHT	2
@@ -232,6 +220,13 @@ static Orientation::Type movementDirection(const QPoint &prevpnt, const QPoint &
 	return (dir);
 }
 
+
+// Given a spirit route as calcuated by previewBlipRoute() above, generate
+// a polyline to draw on the map.  Simply drawing along the centre line of
+// the route is simple but does not really show what is happening if the
+// spirit turns round or returns along the same route.  The drawn route is
+// therefore offset to correspond with the spirit logic of always following
+// the wall to its left.
 
 static QVector<QPoint> plotBlipRoute(const QVector<QPoint> &route)
 {
@@ -312,7 +307,7 @@ static QVector<QPoint> plotBlipRoute(const QVector<QPoint> &route)
 		}
 
 		// But if the spirit is turning completely around, then it needs to
-		// go around the current square first.
+		// go around the far side of the current square first.
 		if (thisdir==Orientation::North && nextdir==Orientation::South)
 		{
 			plot.append(cellPosition(pnt.x(), pnt.y(), TOPLEFT));
@@ -344,14 +339,14 @@ static QVector<QPoint> plotBlipRoute(const QVector<QPoint> &route)
 }
 
 
-void MapGridWidget::paintEvent(QPaintEvent *ev)
+bool MapGrid::widgetPaintEvent(QPaintEvent *ev)
 {
-	QPainter p(this);
+	QPainter p(widget());
 
-	if (map==NULL || sprites==NULL)			// no contents to draw
-	{						// but we must do this
-		p.eraseRect(p.window());		// because of WRepaintNoErase
-		return;
+	if (map==NULL || sprites==NULL)			 // no contents to draw
+	{						 // but we must do this
+		p.eraseRect(p.window());		 // because of WA_OpaquePaintEvent
+		return (false);
 	}
 
 	const int mapwidth = map->getWidth();
@@ -359,16 +354,10 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 
 	for (int y = 0; y<mapheight; ++y)
 	{
-		int aty = y*Sprites::base_height;
-		//if (aty>(clipy+cliph)) break;
-		//if ((aty+Sprites::base_height)<clipy) continue;
-
+		const int aty = y*Sprites::base_height;
 		for (int x = 0; x<mapwidth; ++x)
 		{
-			int atx = x*Sprites::base_width;
-			//if (atx>(clipx+clipw)) break;
-			//if ((atx+Sprites::base_width)<clipx) continue;
-
+			const int atx = x*Sprites::base_width;
 			p.drawPixmap(atx,aty,sprites->getRaw(map->getCell(x,y)));
 		}
 	}
@@ -405,7 +394,7 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 				Obj::Type obj = map->getCell(x, y);
 				if (obj!=Obj::Blip) continue;
 
-				QVector<QPoint> route = previewBlipRoute(x, y);
+				QVector<QPoint> route = previewBlipRoute(x, y, map);
 				if (route.isEmpty()) continue;
 
 				route.prepend(QPoint(x, y));
@@ -428,91 +417,109 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 		p.drawLine(tx-9,ty-9,tx+9,ty+9);
 		p.drawLine(tx-9,ty+9,tx+9,ty-9);
 	}
+
+	return (false);			// propagate event
+
 }
 
 
-void MapGridWidget::mousePressEvent(QMouseEvent *ev)
+bool MapGrid::widgetMouseButtonPressEvent(QMouseEvent *ev)
 {
-	if (!(ev->button()==Qt::LeftButton || ev->button()==Qt::RightButton)) return;
+	QMouseEvent *mev = static_cast<QMouseEvent *>(ev);
+	if (mev->button()==Qt::LeftButton || mev->button()==Qt::RightButton)
+	{
+		int x = mev->x()/Sprites::base_width;
+		int y = mev->y()/Sprites::base_height;
+		emit pressedButton(mev->button(),x,y);
+	}
 
-	int x = ev->x()/Sprites::base_width;
-	int y = ev->y()/Sprites::base_height;
-	emit pressedButton(ev->button(),x,y);
+	return (true);			// handled event
 }
 
 
-void MapGridWidget::mouseMoveEvent(QMouseEvent *ev)
+bool MapGrid::widgetMouseMoveEvent(QMouseEvent *ev)
 {
-	int x = ev->x()/Sprites::base_width;
-	int y = ev->y()/Sprites::base_height;
+	QMouseEvent *mev = static_cast<QMouseEvent *>(ev);
 
-	int b = ev->buttons() & (Qt::LeftButton|Qt::RightButton);
+	int x = mev->x()/Sprites::base_width;
+	int y = mev->y()/Sprites::base_height;
+
+	int b = mev->buttons() & (Qt::LeftButton|Qt::RightButton);
 	if (b!=0) emit pressedButton(b,x,y);
 	emit changedCoordinates(x,y);
+
+	return (true);					// handled event
 }
 
 
-void MapGridWidget::leaveEvent(QEvent *ev)
+bool MapGrid::widgetLeaveEvent(QEvent *ev)
 {
-	emit changedCoordinates(-1,-1);
+	emit changedCoordinates(-1, -1);
+	return (true);					// handled event
+}
+
+
+bool MapGrid::eventFilter(QObject *obj, QEvent *ev)
+{
+	if (obj==widget())
+	{
+		switch (ev->type())
+		{
+case QEvent::Paint:
+			return (widgetPaintEvent(static_cast<QPaintEvent *>(ev)));
+
+case QEvent::MouseButtonPress:
+			return (widgetMouseButtonPressEvent(static_cast<QMouseEvent *>(ev)));
+
+case QEvent::MouseMove:
+			return (widgetMouseMoveEvent(static_cast<QMouseEvent *>(ev)));
+
+case QEvent::Leave:
+			return (widgetLeaveEvent(ev));
+
+default:		break;
+		}
+	}
+
+	return (QScrollArea::eventFilter(obj, ev));
 }
 
 
 void MapGrid::updatedCell(int x,int y)
 {
-	// TODO: if spirit routes are being shown, and the changed cell could
-	// potentially affect a spirit route (replacing a traverseable object
-	// with a non traverseable one) then the entire map needs to be
-	// repainted.
-
-	mWidget->repaint(x*Sprites::base_width,y*Sprites::base_height,
-	                 Sprites::base_width,Sprites::base_height);
+	// If spirit routes are being shown, any changed cell could
+	// potentially affect a spirit route by replacing a traverseable
+	// object with a non-traverseable one.  Therefore the entire map
+	// needs to be repainted.  Otherwise, only the changed cell needs
+	// to be repainted.
+	if (showspiritroutes) widget()->update();
+	else widget()->update(x*Sprites::base_width, y*Sprites::base_height,
+			      Sprites::base_width, Sprites::base_height);
 }
 
 
 void MapGrid::showTransporters(bool state)
 {
-	mWidget->showTransporters(state);
-}
-
-
-void MapGridWidget::showTransporters(bool state)
-{
 	showtrans = state;
+        update();
 }
 
 
 void MapGrid::showSpiritRoutes(bool state)
 {
-	mWidget->showSpiritRoutes(state);
-}
-
-
-void MapGridWidget::showSpiritRoutes(bool state)
-{
 	showspiritroutes = state;
+        update();
 }
 
 
 void MapGrid::showSelectedTransporter(bool state)
 {
-	mWidget->showSelectedTransporter(state);
-}
-
-
-void MapGridWidget::showSelectedTransporter(bool state)
-{
 	showsel = state;
+        update();
 }
 
 
 void MapGrid::selectedTransporter(int item)
-{
-	mWidget->selectedTransporter(item);
-}
-
-
-void MapGridWidget::selectedTransporter(int item)
 {
 	qDebug() << "item=" << item;
 
@@ -522,16 +529,12 @@ void MapGridWidget::selectedTransporter(int item)
 	if (item>=0) map->transporterGet(item,&ox,&oy);
 	xtrans = ox;
 	ytrans = oy;
+
+        update();
 }
 
 
 void MapGrid::setSprites(Sprites *ss)
-{
-	mWidget->setSprites(ss);
-}
-
-
-void MapGridWidget::setSprites(Sprites *ss)
 {
 	sprites = ss;
 }
@@ -539,5 +542,5 @@ void MapGridWidget::setSprites(Sprites *ss)
 
 void MapGrid::update()
 {
-	mWidget->update();
+	widget()->update();
 }

@@ -44,7 +44,6 @@ public:
 	void setMap(MapEdit *mm);
 
 public slots:
-	void updateChilds();
 	void selectedTransporter(int i);
 
 signals:

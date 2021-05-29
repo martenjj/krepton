@@ -33,31 +33,33 @@ class MapEdit;
 class Sprites;
 
 
-class MapGridWidget : public QWidget
+class MapGrid : public QScrollArea
 {
 	Q_OBJECT
 
 public:
-	MapGridWidget(QWidget *parent = NULL);
+	MapGrid(QWidget *parent = NULL);
+
 	void setSprites(Sprites *ss);
 	void setMap(MapEdit *mm);
+	void updatedCell(int x,int y);
 	void showTransporters(bool state);
 	void showSelectedTransporter(bool state);
 	void showSpiritRoutes(bool state);
 	void selectedTransporter(int i = -1);
 
+protected:
+	bool eventFilter(QObject *obj, QEvent *ev) override;
+	void update();
+
+	bool widgetPaintEvent(QPaintEvent *ev);
+	bool widgetMouseButtonPressEvent(QMouseEvent *ev);
+	bool widgetMouseMoveEvent(QMouseEvent *ev);
+	bool widgetLeaveEvent(QEvent *ev);
+
 signals:
 	void pressedButton(int,int,int);
 	void changedCoordinates(int,int);
-
-protected:
-	void mousePressEvent(QMouseEvent *ev) override;
-	void mouseMoveEvent(QMouseEvent *ev) override;
-	void paintEvent(QPaintEvent *ev) override;
-	void leaveEvent(QEvent *ev) override;
-
-private:
-	QVector<QPoint> previewBlipRoute(int x, int y);
 
 private:
 	MapEdit *map;
@@ -66,30 +68,6 @@ private:
 	bool showsel;
 	bool showspiritroutes;
 	int xtrans,ytrans;
-};
-
-
-class MapGrid : public QScrollArea
-{
-	Q_OBJECT
-
-public:
-	MapGrid(QWidget *parent = NULL);
-	void setSprites(Sprites *ss);
-	void setMap(MapEdit *mm);
-	void updatedCell(int x,int y);
-	void showTransporters(bool state);
-	void showSelectedTransporter(bool state);
-	void showSpiritRoutes(bool state);
-	void selectedTransporter(int i = -1);
-	void update();
-
-signals:
-	void pressedButton(int,int,int);
-	void changedCoordinates(int,int);
-
-private:
-	MapGridWidget *mWidget;
 };
 
 #endif							// !MAPGRID_H

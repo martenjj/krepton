@@ -152,35 +152,25 @@ void MapEditor::pressedButton(int button,int x,int y)
 }
 
 
-void MapEditor::updateChilds()
-{
-	map_area->update();
-}
-
-
 void MapEditor::optionShowTransporterRoutes(bool checked)
 {
 	map_area->showTransporters(checked);
-	updateChilds();
 }
 
 
 void MapEditor::optionShowSpiritRoutes(bool checked)
 {
 	map_area->showSpiritRoutes(checked);
-	updateChilds();
 }
 
 
 void MapEditor::optionShowTransporterSelected(bool checked)
 {
 	map_area->showSelectedTransporter(checked);
-	updateChilds();
 }
 
 
 void MapEditor::selectedTransporter(int item)
 {
 	map_area->selectedTransporter(item);
-	updateChilds();
 }
