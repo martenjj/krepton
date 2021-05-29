@@ -109,6 +109,23 @@ static QVector<QPoint> previewBlipRoute(int x, int y, MapEdit *map)
 	int returny = -1;
 	Orientation::Type returnorient = Orientation::None;
 
+	// This limit is to make sure that the route calculation does not go
+	// on for ever in the event that the spirit does not return to its
+	// starting point.  It is probably not possible, for a static map,
+	// to construct a situation where a spirit does not either get caught
+	// in a cage or return to its starting point, but this is an emergency
+	// stop just in case.
+	//
+	// Experimenting with small maps would suggest that the maximum length
+	// of a spirit route which can be achieved is about 70% of the total
+	// map area.  This limit is not likely to be reached by real maps which
+	// are actually interesting to play:  the longest route observed in the
+	// Repton 3 canon is 362 squares long in "Now" screen 8 (53%).
+	//
+	// So the limit is set at 60% of the total map area.  If there is a map
+	// that ever hits this limit, I'd be interested to see it...
+	const int limit = (map->getWidth()*map->getHeight()*100)/60;
+
 	while (true)					// until end of route
 	{
 		if (map->updateBlip(&m))
@@ -146,12 +163,11 @@ static QVector<QPoint> previewBlipRoute(int x, int y, MapEdit *map)
 			break;
 		}
 
-		// The last screen of episode "Now" has a spirit run 362 squares
-		// long.  It is possible to construct pathological maps with longer
-		// spirit runs, but they won't be very interesting to play...
-		if (route.count()>400)
+		// Check that the route length has not reached the limit
+		// as calculated above.
+		if (route.count()>limit)
 		{
-			qDebug() << "  too long";
+			qDebug() << "  reached limit" << limit;
 			break;
 		}
 	}
