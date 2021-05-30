@@ -124,6 +124,11 @@ static QVector<QPoint> previewBlipRoute(int x, int y, MapEdit *map)
 	//
 	// So the limit is set at 60% of the total map area.  If there is a map
 	// that ever hits this limit, I'd be interested to see it...
+	//
+	// The limit can be hit if the spirit is in free space or is confused
+	// at its starting position, though, because it may never return to
+	// the next square after its start (the one where returnx/returny are
+	// noted).  So the limit does need to be implemented.
 	const int limit = (map->getWidth()*map->getHeight()*100)/60;
 
 	while (true)					// until end of route

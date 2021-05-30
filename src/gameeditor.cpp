@@ -110,7 +110,7 @@ GameEditor::GameEditor(QWidget *parent)
 	dataIndex = tabs->addTab(view, dataAction->icon(), i18n("Episode"));
 
 	spritewin = new SpriteEditor(this,&sprites);
-	connect(spritewin,SIGNAL(changedSprite()),SLOT(changedSprite()));
+	connect(spritewin,SIGNAL(changedSprite()),this,SLOT(changedSprite()));
         connect(spritewin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
 	spriteIndex = tabs->addTab(spritewin, spriteAction->icon(), i18n("Sprites"));
 
@@ -227,8 +227,8 @@ void GameEditor::updateTransportersList(int item)
 	}
 
 	selectedTransporter();
-	if (mapwin!=NULL) mapwin->update();		// if showing transporters
-}
+	if (mapwin!=NULL && mapwin->isVisible()) mapwin->update();
+}							// if showing transporters
 
 
 void GameEditor::selectedTransporter()
@@ -510,8 +510,7 @@ void GameEditor::changedTime(int i)
 void GameEditor::changedSprite()
 {
 	qDebug();
-	if (spritewin!=NULL) spritewin->updateChilds();
-	if (mapwin!=NULL) mapwin->update();
+	if (mapwin!=NULL && mapwin->isVisible()) mapwin->update();
 	setModified();
 }
 
@@ -574,7 +573,7 @@ void GameEditor::closeEvent(QCloseEvent *e)
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
 {
-	qDebug() << "name='" << name << "'";
+	qDebug() << "episode "<< name;
 
 	epname = name;
 
@@ -595,12 +594,6 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	selectLevel(-1);
 	updateMapsList();
 	updateCaption();
-
-	// TODO: updateChilds() needed? Can it just be update()?
-	if (spritewin!=NULL) spritewin->updateChilds();
-	if (mapwin!=NULL) mapwin->update();
-
-	qDebug() << "done";
 }
 
 
