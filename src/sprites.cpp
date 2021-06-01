@@ -22,6 +22,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
+#include "krepton.h"
+#include "sprites.h"
+
 #include <string.h>
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
@@ -31,15 +34,10 @@
 #include <qbitmap.h>
 #include <qpainter.h>
 #include <qfile.h>
-#include <qcolor.h>
 #include <qregexp.h>
 #include <qdir.h>
-#include <qlist.h>
 
-#include "krepton.h"
 #include "episodes.h"
-
-#include "sprites.h"
 
 
 static const int whitethresh = 220;			// for recolouring previews
@@ -48,67 +46,53 @@ static const int xnum = 8;
 static const int ynum = 6;
 
 
-Sprites::Magnification Sprites::magnification = Sprites::Normal;
+Sprites::Magnification Sprites::magnification = Sprites::Unset;
 int Sprites::sprite_width = Sprites::base_width;
 int Sprites::sprite_height = Sprites::base_height;
-bool Sprites::magnificationset = false;
 
 
 Sprites::Sprites()					// create as blank
 {
 	qDebug();
+	Q_ASSERT((xnum*ynum)==Obj::num_sprites);	// check size consistent here
 
-	for (int y = 0; y<ynum; ++y)
-	{
-		for (int x = 0; x<xnum; ++x)
-		{
-			int i = y*xnum + x; 
-			QPixmap px(base_width,base_height);
-			rawsprites[i] = px;
-		}
-	}
-
-        preparedFor = -1;				// nothing prepared yet
+	preparedFor = -1;				// nothing prepared yet
 	multiRemoved = false;
-	rawSet = false;
 	status.clear();					// sprites now OK
 }
 
 
 Sprites::Sprites(const Episode *e)			// load from episode
 {
-	qDebug() << "for" << e->getName();
+	qDebug() << "from" << e->getName();
 
-	status = QString("Not initialised");
+	status = i18n("Not initialised");
 	multiRemoved = false;
-        preparedFor = -1;				// nothing prepared yet
+	preparedFor = -1;				// nothing prepared yet
 
         QDir d(e->getFilePath());
         d.setFilter(QDir::Files);
         d.setNameFilters(QString("sprites[1-9]*.png;sprites.png;sprites.bmp").split(';'));
 
-        QRegExp rx("(\\d+)\\.");
-        QStringList sfl = d.entryList();
-        if (sfl.count()==0)
+	QRegExp rx("(\\d+)\\.");
+        const QStringList sfl = d.entryList();
+        if (sfl.isEmpty())
         {
-            status = i18n("No sprite files found in %1", d.absolutePath());
+            status = i18n("No sprite files found in '%1'", d.absolutePath());
             return;
         }
 
-        for (QStringList::const_iterator it = sfl.constBegin(); it!=sfl.constEnd(); ++it)
+        for (const QString &sf : sfl)
         {
-            QString sf = (*it);
-
             int level = 0;				// assume all-levels sprites
             if (sf.contains(rx))			// level-numbered file?
             {
                 level = rx.cap(1).toInt();
             }
+            qDebug() << "  sprite file" << sf << "for level" << level;
 
-            qDebug() << "  sprite file " << sf << " for level " << level;
-
-            QString path = d.filePath(sf);
-            QPixmap allsprites(path);
+            const QString path = d.filePath(sf);
+            const QPixmap allsprites(path);
             if (allsprites.isNull())
             {
 		status = i18n("%1, %2", strerror(errno), path);
@@ -116,8 +100,6 @@ Sprites::Sprites(const Episode *e)			// load from episode
             }
 
             files[level] = allsprites;
-
-            qDebug() << "  -> serial " << allsprites.cacheKey();
         }
 
         if (files.isEmpty())				// should never happen
@@ -131,16 +113,31 @@ Sprites::Sprites(const Episode *e)			// load from episode
 }
 
 
+Sprites::Sprites(const Sprites *s)
+{
+	qDebug();
+
+	files = s->files;				// implicit sharing
+	rawsprites = s->rawsprites;			// implicit sharing
+
+	preparedFor = -1;				// nothing prepared yet
+	multiRemoved = s->multiRemoved;
+	status.clear();                                 // sprites now OK
+}
+
+
 void Sprites::ensureRaw()
 {
     qDebug();
+
+    rawsprites.resize(Obj::num_sprites);
 
     QPixmap std = files.constBegin().value();		// standard pixmaps for editor
     for (int y = 0; y<ynum; ++y)			// "0" will be first if present
     {
 	for (int x = 0; x<xnum; ++x)
 	{
-	    int i = y*xnum + x; 
+	    int i = y*xnum + x;
 
 	    QPixmap px(base_width,base_height);
 	    QPainter pp;
@@ -153,25 +150,6 @@ void Sprites::ensureRaw()
 	    rawsprites[i] = px;
 	}
     }
-
-    rawSet = true;
-}
-
-
-Sprites::Sprites(const Sprites &s)			// copy constructor
-{
-	qDebug();
-
-        files = s.files;				// implicit sharing
-	for (int i = 0; i<Obj::num_sprites; ++i)	// copy explicitly
-	{
-		rawsprites[i] = s.rawsprites[i];
-	}
-
-        preparedFor = -1;				// nothing prepared yet
-	multiRemoved = s.multiRemoved;
-	rawSet= s.rawSet;
-	status.clear();					// sprites now OK
 }
 
 
@@ -179,7 +157,7 @@ bool Sprites::save(const Episode *e)
 {
 	qDebug() << "name" << e->getName();
 
-	if (!rawSet) ensureRaw();
+	if (rawsprites.isEmpty()) ensureRaw();
 
 	QPixmap allsprites(xnum*base_width,ynum*base_height);
 
@@ -196,7 +174,7 @@ bool Sprites::save(const Episode *e)
 	p.end();
 
 	QString path = e->getFilePath("sprites.png");
-	qDebug() << "  save rawsprites to '" << path << "'";
+	qDebug() << "  save rawsprites to" << path;
 
 	if (!allsprites.save(path,"PNG"))
 	{
@@ -217,7 +195,7 @@ bool Sprites::save(const Episode *e)
 	    for (QStringList::const_iterator it = sfl.constBegin(); it!=sfl.constEnd(); ++it)
 	    {
 		QString sf = (*it);
-		qDebug() << "  removing level-specific '" << sf << "'";
+		qDebug() << "  removing level-specific" << sf;
 		QFile::remove(d.filePath(sf));
 	    }
 	}
@@ -231,7 +209,7 @@ bool Sprites::save(const Episode *e)
 		if (level==0) continue;			// already saved above
 
 		path = e->getFilePath(QString("sprites%1.png").arg(level));
-		qDebug() << "  save level " << level << " to '" << path << "'";
+		qDebug() << "  save level" << level << "to" << path;
 
 		if (!files[level].save(path,"PNG"))
 		{
@@ -259,12 +237,12 @@ QPixmap Sprites::preview(const Episode *e)
             d.setNameFilters(QString("sprites*.png;sprites*.bmp").split(';'));
             d.setSorting(QDir::Name);
 
-            QStringList sfl = d.entryList();
-            if (sfl.count()==0) return (QPixmap());	// no sprite files at all!
+            const QStringList sfl = d.entryList();
+            if (sfl.isEmpty()) return (QPixmap());	// no sprite files at all!
             path = d.filePath(sfl.first());		// use first level file found
         }
 
-	QPixmap allsprites(path);
+	const QPixmap allsprites(path);
 	if (allsprites.isNull()) return (QPixmap());
 
 	int y = Obj::Repton / xnum;
@@ -278,12 +256,15 @@ QPixmap Sprites::preview(const Episode *e)
 
 void Sprites::setMagnification(Sprites::Magnification mag)
 {
-	qDebug() << "mag" << mag << "set" << magnificationset;
+	qDebug() << "cur" << magnification << "->" << mag;
 
-	if (magnificationset) return;
+	if (magnification!=Sprites::Unset)
+	{
+		qWarning() << "Magnification already set to" << magnification;
+		return;
+	}
+
 	magnification = mag;
-	magnificationset = true;
-
 	sprite_width = base_width*(1<<((static_cast<int>(magnification))))/2;
 	sprite_height = base_height*(1<<((static_cast<int>(magnification))))/2;
 }
@@ -295,11 +276,11 @@ void Sprites::setPixel(Obj::Type obj,int x,int y,QColor colour,int level)
 
     if (level==0)					// normal operation
     {
+	if (rawsprites.isEmpty()) rawsprites.resize(Obj::num_sprites);
+
 	p.begin(&rawsprites[obj]);
 	p.setPen(colour);
 	p.drawPoint(x,y);
-
-	rawSet = true;					// modified, so don't update
     }
     else						// set for level-specific
     {
@@ -331,12 +312,16 @@ void Sprites::prepare(int level)
 
     if (preparedFor==level) return;			// already ready for level?
 
-    QPixmap src;					// source pixmap, if any
+    sprites.clear();
+    sprites.resize(Obj::num_sprites);
+    greysprites.clear();
+    greysprites.resize(Obj::num_sprites);
 
+    QPixmap src;					// source pixmap, if any
     if (files.contains(level))				// specific one present
     {
-        src = files[level];				// pixmap for this level
-        qDebug() << "  prepare from pixmap " << src.cacheKey() << " for level " << level;
+	src = files[level];				// pixmap for this level
+	qDebug() << "  prepare for level" << level;
     }
     else
     {
@@ -347,7 +332,7 @@ void Sprites::prepare(int level)
     {
 	for (int x = 0; x<xnum; ++x)
 	{
-	    int i = y*xnum + x; 
+	    int i = y*xnum + x;
 
 	    QPixmap px(base_width,base_height);
 	    if (!src.isNull())
@@ -384,13 +369,13 @@ void Sprites::prepare(int level)
     }
 
     preparedFor = level;
-    qDebug() << "  prepared for level " << preparedFor;
+    qDebug() << "  prepared for level" << preparedFor;
 }
 
 
 bool Sprites::hasMultiLevels() const
 {
-    qDebug() << "c0=" << files.contains(0) << " count=" << files.count();
+    qDebug() << "c0" << files.contains(0) << "count" << files.count();
     return (files.count()>=2 || (!files.contains(0) && files.count()>=1));
 }
 

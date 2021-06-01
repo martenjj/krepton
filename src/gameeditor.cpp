@@ -579,7 +579,7 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	epname = name;
 
 	if (sprites!=NULL) delete sprites;
-	sprites = new Sprites(*ss);
+	sprites = new Sprites(ss);
 
         qDeleteAll(maps);
 	maps.clear();

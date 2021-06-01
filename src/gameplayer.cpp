@@ -150,7 +150,7 @@ void GamePlayer::setSprites(const Sprites *ss)
 	qDebug() << "sprites=" << sprites << " ss=" << ss;
 
 	if (sprites!=NULL) delete sprites;
-	sprites = new Sprites(*ss);
+	sprites = new Sprites(ss);
 }
 
 void GamePlayer::setMaps(const MapList ml)

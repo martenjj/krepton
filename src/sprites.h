@@ -41,16 +41,24 @@ public:
 	static int sprite_width;
 	static int sprite_height;
 
-	enum Magnification { Half=0, Normal=1, Double=2 };
+	enum Magnification
+	{
+		Unset = -1,
+		Half = 0,
+		Normal = 1,
+		Double = 2
+	};
 
 	Sprites();					// create as blank
-	Sprites(const Episode *e);			// load from episode
-        Sprites(const Sprites &s);			// copy constructor
+	explicit Sprites(const Episode *e);		// load from episode
+	explicit Sprites(const Sprites *s);		// create a copy
+	explicit Sprites(const Sprites &s) = delete;	// copy constructor
+
 	const QString &loadStatus() const			{ return (status); }
 
 	void prepare(int level);
-	const QPixmap &get(Obj::Type obj, bool paused = false) const	{ return (!paused ? sprites[obj] : greysprites[obj]); }
-	const QPixmap &getRaw(Obj::Type obj) const			{ return (rawsprites[obj]); }
+	const QPixmap &get(Obj::Type obj, bool paused = false) const	{ Q_ASSERT(!sprites.isEmpty()); return (!paused ? sprites.at(obj) : greysprites.at(obj)); }
+	const QPixmap &getRaw(Obj::Type obj) const			{ Q_ASSERT(!rawsprites.isEmpty()); return (rawsprites.at(obj)); }
 
 	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
 	bool save(const Episode *e);
@@ -64,18 +72,16 @@ public:
 
 private:
 	static Sprites::Magnification magnification;
-	static bool magnificationset;
 
 	void ensureRaw();
 
-        QMap<int,QPixmap> files;			// source files per-level
-	QPixmap sprites[Obj::num_sprites];		// scaled & masked, for game
-	QPixmap greysprites[Obj::num_sprites];		// grey scaled, for paused game
-	QPixmap rawsprites[Obj::num_sprites];		// unprocessed, for editor
+	QMap<int,QPixmap> files;			// source files per-level
+	QVector<QPixmap> sprites;			// scaled & masked, for game
+	QVector<QPixmap> greysprites;			// grey scaled, for paused game
+	QVector<QPixmap> rawsprites;			// unprocessed, for editor
 
 	int preparedFor;				// level sprites are ready for
 	bool multiRemoved;				// remove levels on saving
-	bool rawSet;					// rawsprites have been created
 
 	QString status;					// file loading status
 };
