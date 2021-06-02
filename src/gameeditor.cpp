@@ -109,12 +109,12 @@ GameEditor::GameEditor(QWidget *parent)
 	view = new DataEditor(this);
 	dataIndex = tabs->addTab(view, dataAction->icon(), i18n("Episode"));
 
-	spritewin = new SpriteEditor(this,&sprites);
+	spritewin = new SpriteEditor(this);
 	connect(spritewin,SIGNAL(changedSprite()),SLOT(changedSprite()));
         connect(spritewin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
 	spriteIndex = tabs->addTab(spritewin, spriteAction->icon(), i18n("Sprites"));
 
-	mapwin = new MapEditor(this,&sprites);
+	mapwin = new MapEditor(this);
 	connect(mapwin,SIGNAL(modified(bool)),SLOT(setModified(bool)));
         connect(mapwin,SIGNAL(coordinatePosition(int,int)),SLOT(slotShowCoordinates(int,int)));
 	mapIndex = tabs->addTab(mapwin, mapAction->icon(), i18n("Map"));
@@ -204,7 +204,7 @@ void GameEditor::updateMapsList()
 void GameEditor::updateTransportersList(int item)
 {
 	int level = view->mapsListBox->currentRow();
-	qDebug() << "level=" << level << " item=" << item;
+	qDebug() << "level" << level << "item" << item;
 	if (level<0) return;
 	MapEdit *map = maps.at(level);
 
@@ -234,7 +234,7 @@ void GameEditor::updateTransportersList(int item)
 void GameEditor::selectedTransporter()
 {
 	int item = view->transportListBox->currentRow();
-	qDebug() << "item=" << item;
+	qDebug() << item;
 
 	view->removetransportPushButton->setEnabled(item>=0);
 	view->changetransportPushButton->setEnabled(item>=0);
@@ -245,7 +245,7 @@ void GameEditor::selectedTransporter()
 
 void GameEditor::selectLevel(int level)
 {
-	qDebug() << "level=" << level;
+	qDebug() << "level" << level;
 
 	if (level<0)					// no selection
 	{
@@ -532,7 +532,7 @@ void GameEditor::showSpriteEditor()
 void GameEditor::showLevelEditor()
 {
 	int item = view->mapsListBox->currentRow();
-	qDebug() << "sel=" << item;
+	qDebug() << "sel" << item;
 	mapwin->setMap(item<0 ? NULL : maps.at(item));
 
 	tabs->setCurrentIndex(mapIndex);
@@ -547,7 +547,7 @@ void GameEditor::showDataEditor()
 
 void GameEditor::setModified(bool mod)
 {
-	qDebug() << "mod=" << mod;
+	qDebug() << "mod?" << mod;
 
 	if (modified==mod) return;			// no change
 
@@ -574,7 +574,7 @@ void GameEditor::closeEvent(QCloseEvent *e)
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
 {
-	qDebug() << "name='" << name << "'";
+	qDebug() << "name" << name;
 
 	epname = name;
 
@@ -596,8 +596,8 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 	updateMapsList();
 	updateCaption();
 
-	if (spritewin!=NULL) spritewin->updateChilds();
-	if (mapwin!=NULL) mapwin->updateChilds();
+	if (spritewin!=NULL) spritewin->setSprites(sprites);
+	if (mapwin!=NULL) mapwin->setSprites(sprites);
 
 	qDebug() << "done";
 }

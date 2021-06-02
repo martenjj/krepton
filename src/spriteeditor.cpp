@@ -22,27 +22,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <qwidget.h>
+#include "krepton.h"
+#include "spriteeditor.h"
+
 #include <qlabel.h>
-#include <qtooltip.h>
-#include <qstringlist.h>
-#include <qcolor.h>
 #include <qlayout.h>
 
 #include <dialogbase.h>
 
 #include <kcolorbutton.h>
 
-#include "krepton.h"
 #include "spritepreview.h"
 #include "spritegrid.h"
 #include "sprites.h"
 #include "objectlistbox.h"
 
-#include "spriteeditor.h"
 
-
-SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
+SpriteEditor::SpriteEditor(QWidget *parent)
 	: QWidget(parent)
 {
 	qDebug();
@@ -50,8 +46,8 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
         setObjectName("SpriteEditor");
 	setWindowTitle(i18n("Sprite Editor"));
 
-	sprites = ss;
-	current_sprite = Obj::Empty;
+	sprites = NULL;
+	current_sprite = Obj::None;
 
 	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(5,5);
@@ -116,6 +112,13 @@ SpriteEditor::SpriteEditor(QWidget *parent,Sprites **ss)
 }
 
 
+void SpriteEditor::setSprites(Sprites *ss)
+{
+	sprites = ss;
+	updateChilds();
+}
+
+
 void SpriteEditor::selectedSprite(int i)
 {
 	current_sprite = static_cast<Obj::Type>(i);
@@ -130,14 +133,15 @@ void SpriteEditor::pressedButton(int button,int x,int y)
 	else if (button & Qt::RightButton) col = right_color->color();
 	else return;
 
-	(*sprites)->setPixel(current_sprite,x,y,col);
+	Q_ASSERT(sprites!=NULL);
+	sprites->setPixel(current_sprite,x,y,col);
 	emit changedSprite();
 }
 
 
 void SpriteEditor::updateChilds()
 {
-	preview_sprite->setSprite(*sprites,current_sprite);
-	grid_sprite->setSprite(*sprites,current_sprite);
-	grid_sprite->repaint();	
+	Q_ASSERT(sprites!=NULL);
+	preview_sprite->setSprite(sprites, current_sprite);
+	grid_sprite->setSprite(sprites, current_sprite);
 }

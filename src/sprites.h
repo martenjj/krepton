@@ -53,6 +53,7 @@ public:
 	explicit Sprites(const Episode *e);		// load from episode
 	explicit Sprites(const Sprites *s);		// create a copy
 	explicit Sprites(const Sprites &s) = delete;	// copy constructor
+	~Sprites() = default;
 
 	const QString &loadStatus() const			{ return (status); }
 

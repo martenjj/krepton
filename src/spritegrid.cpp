@@ -53,7 +53,7 @@ SpriteGrid::SpriteGrid(QWidget *parent) : QFrame(parent)
 void SpriteGrid::paintEvent(QPaintEvent *ev)
 {
 	if (sprites==NULL || object>=Obj::num_sprites) return;
-	QImage img = sprites->getRaw(object).toImage();
+	const QImage img = sprites->getRaw(object).toImage();
 
 	QPainter p(this);
 	for (int y = 0; y<Sprites::base_height; ++y)

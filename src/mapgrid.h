@@ -39,7 +39,7 @@ class MapGridWidget : public QWidget
 
 public:
 	MapGridWidget(QWidget *parent = NULL);
-	void setSprites(Sprites *ss);
+	void setSprites(const Sprites *ss);
 	void setMap(MapEdit *mm);
 	void showTransporters(bool state);
 	void showSelectedTransporter(bool state);
@@ -57,7 +57,7 @@ protected:
 
 private:
 	MapEdit *map;
-	Sprites *sprites;
+	const Sprites *sprites;
 	bool showtrans;
 	bool showsel;
 	int xtrans,ytrans;
@@ -70,7 +70,7 @@ class MapGrid : public QScrollArea
 
 public:
 	MapGrid(QWidget *parent = NULL);
-	void setSprites(Sprites *ss);
+	void setSprites(const Sprites *ss);
 	void setMap(MapEdit *mm);
 	void updatedCell(int x,int y);
 	void showTransporters(bool state);

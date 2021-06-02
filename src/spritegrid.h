@@ -46,7 +46,7 @@ signals:
 
 public:
 	SpriteGrid(QWidget *parent = NULL);
-	void setSprite(Sprites *ss,Obj::Type tt) { sprites = ss; object = tt; }
+	void setSprite(const Sprites *ss, Obj::Type tt) { sprites = ss; object = tt; update(); }
 
 protected:
 	void paintEvent(QPaintEvent *ev) override;
@@ -55,7 +55,7 @@ protected:
 	void leaveEvent(QEvent *ev) override;
 
 private:
-	Sprites *sprites;
+	const Sprites *sprites;
 	Obj::Type object;
 	int border;
 };

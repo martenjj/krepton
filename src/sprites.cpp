@@ -53,7 +53,7 @@ int Sprites::sprite_height = Sprites::base_height;
 
 Sprites::Sprites()					// create as blank
 {
-	qDebug();
+	qDebug() << "empty";
 	Q_ASSERT((xnum*ynum)==Obj::num_sprites);	// check size consistent here
 
 	preparedFor = -1;				// nothing prepared yet
@@ -115,7 +115,7 @@ Sprites::Sprites(const Episode *e)			// load from episode
 
 Sprites::Sprites(const Sprites *s)
 {
-	qDebug();
+	qDebug() << "copy";
 
 	files = s->files;				// implicit sharing
 	rawsprites = s->rawsprites;			// implicit sharing

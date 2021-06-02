@@ -35,13 +35,17 @@ class ObjectListBox;
 class MapEdit;
 class Sprites;
 
+
 class MapEditor : public QWidget
 {
 	Q_OBJECT
 
 public:
-	MapEditor(QWidget *parent,Sprites **ss);
+	explicit MapEditor(QWidget *parent);
+	virtual ~MapEditor() = default;
+
 	void setMap(MapEdit *mm);
+	void setSprites(const Sprites *ss);
 
 public slots:
 	void updateChilds();
@@ -61,7 +65,7 @@ private:
 	ObjectListBox *sprite_list;
 	SpritePreview *preview_sprite;
 	MapGrid *map_area;
-	Sprites **sprites;
+	const Sprites *sprites;
 	Obj::Type current_sprite;
 	MapEdit *map;
 

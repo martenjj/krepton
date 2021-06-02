@@ -40,7 +40,10 @@ class SpriteEditor : public QWidget
 	Q_OBJECT
 
 public:
-	SpriteEditor(QWidget *parent,Sprites **ss);
+	SpriteEditor(QWidget *parent);
+	virtual ~SpriteEditor() = default;
+
+	void setSprites(Sprites *ss);
 
 public slots:
 	void updateChilds();
@@ -59,7 +62,8 @@ private:
 	KColorButton *right_color;
         SpritePreview *preview_sprite;
 	SpriteGrid *grid_sprite;
-	Sprites **sprites;
+
+	Sprites *sprites;
 	Obj::Type current_sprite;
 };
 

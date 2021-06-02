@@ -44,10 +44,10 @@ const int default_width = 595;
 const int default_height = 355;
 
 
-MapEditor::MapEditor(QWidget *parent,Sprites **ss)
+MapEditor::MapEditor(QWidget *parent)
 	: QWidget(parent)
 {
-	qDebug() << "sprites=" << *ss;
+	qDebug();
 
 	setWindowTitle("Level Editor");
 	setMinimumSize(default_width, default_height);
@@ -55,7 +55,7 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 	setSizeIncrement(Sprites::base_width,Sprites::base_height);
 
 	map = NULL;
-	sprites = ss;
+	sprites = NULL;
 
 	QGridLayout *gl = new QGridLayout(this);
 	gl->setRowStretch(1,9);
@@ -116,27 +116,34 @@ MapEditor::MapEditor(QWidget *parent,Sprites **ss)
 
 void MapEditor::setMap(MapEdit *mm)
 {
-	qDebug() << "pw='" << (mm?mm->getPassword():QString("NULL")) << "'";
+	qDebug() << "pw" << (mm!=NULL ? mm->getPassword() : "(null)");
 
 	map = mm;
 	map_area->setMap(map);
 	sprite_list->setEnabled(map!=NULL);
 }
 
+
+void MapEditor::setSprites(const Sprites *ss)
+{
+	sprites = ss;
+	map_area->setSprites(sprites);
+	preview_sprite->setSprite(sprites,current_sprite);
+}
+
+
 void MapEditor::selectedSprite(int i)
 {
-	qDebug() << "i=" << i;
-
+	qDebug() << i;
 	current_sprite = static_cast<Obj::Type>(i);
-	preview_sprite->setSprite(*sprites,current_sprite);
-	map_area->setSprites(*sprites);
+	preview_sprite->setSprite(sprites,current_sprite);
 }
 
 
 void MapEditor::pressedButton(int button,int x,int y)
 {
 	if (map==NULL) return;
-	if (current_sprite==static_cast<Obj::Type>(-1)) return;
+	if (current_sprite==Obj::None) return;
 
 	bool changed = false;
 	if (button & Qt::LeftButton) changed = map->setCell(x,y,current_sprite);

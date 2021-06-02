@@ -25,11 +25,12 @@
 #ifndef SPRITEPREVIEW_H
 #define SPRITEPREVIEW_H
 
-#include <qlabel.h>
-
 #include "krepton.h"
 
+#include <qlabel.h>
+
 class Sprites;
+
 
 class SpritePreview : public QLabel
 {
@@ -37,11 +38,9 @@ class SpritePreview : public QLabel
 
 public:
 	SpritePreview(QWidget *parent = NULL);
-	void setSprite(Sprites *ss,Obj::Type tt);// { sprites = ss; object = tt; }
+	virtual ~SpritePreview() = default;
 
-private:
-	Sprites *sprites;
-	Obj::Type object;
+	void setSprite(const Sprites *sprites, Obj::Type object);
 };
 
 #endif							// !SPRITEPREVIEW_H

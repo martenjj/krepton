@@ -33,7 +33,9 @@ class Obj
 {
 public:	enum Type					// available Repton objects
 	{						// DO NOT CHANGE THE ORDER!
-		Rock,					// allowed in map files...
+		None = -1,				// no object
+
+		Rock = 0,				// allowed in map files...
 		Diamond,
 		Ground1,
 		Ground2,

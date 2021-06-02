@@ -106,8 +106,6 @@ void MapGridWidget::paintEvent(QPaintEvent *ev)
 		return;
 	}
 
-//	qDebug() << "showtrans=" << showtrans;
-
 	const int mapwidth = map->getWidth();
 	const int mapheight = map->getHeight();
 
@@ -229,7 +227,7 @@ void MapGrid::selectedTransporter(int item)
 
 void MapGridWidget::selectedTransporter(int item)
 {
-	qDebug() << "item=" << item;
+	qDebug() << item;
 
 	int ox = 0;
 	int oy = 0;
@@ -240,13 +238,14 @@ void MapGridWidget::selectedTransporter(int item)
 }
 
 
-void MapGrid::setSprites(Sprites *ss)
+void MapGrid::setSprites(const Sprites *ss)
 {
 	mWidget->setSprites(ss);
+	update();
 }
 
 
-void MapGridWidget::setSprites(Sprites *ss)
+void MapGridWidget::setSprites(const Sprites *ss)
 {
 	sprites = ss;
 }

@@ -22,21 +22,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////
 
-#include <qlabel.h>
-#include <qpixmap.h>
-#include <qframe.h>
-
-#include "krepton.h"
-#include "sprites.h"
-
 #include "spritepreview.h"
+
+#include <qpixmap.h>
+
+#include "sprites.h"
 
 
 SpritePreview::SpritePreview(QWidget *parent) : QLabel(parent)
 {
-	sprites = NULL;
-	object = Obj::Empty;
-
 	setFrameStyle(QFrame::Box|QFrame::Sunken);
 	setLineWidth(1);
 	setMidLineWidth(1);
@@ -44,15 +38,16 @@ SpritePreview::SpritePreview(QWidget *parent) : QLabel(parent)
 }
 
 
-void SpritePreview::setSprite(Sprites *ss,Obj::Type tt)
+void SpritePreview::setSprite(const Sprites *sprites, Obj::Type object)
 {
-	sprites = ss;
-	object = tt;
-
-	if (object==static_cast<Obj::Type>(-1)) setEnabled(false);
+	if (sprites==NULL || object==Obj::None)
+	{
+		setPixmap(QPixmap());
+		setEnabled(false);
+	}
 	else
 	{
-		setEnabled(true);
 		setPixmap(sprites->getRaw(object));
+		setEnabled(true);
 	}
 }
