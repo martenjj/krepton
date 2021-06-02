@@ -27,6 +27,8 @@
 
 #include <qlistwidget.h>
 
+class Sprites;
+
 
 class ObjectListBox : public QListWidget
 {
@@ -34,6 +36,9 @@ class ObjectListBox : public QListWidget
 
 public:
 	ObjectListBox(bool all, QWidget *parent = NULL);
+	virtual ~ObjectListBox() = default;
+
+	void setSprites(const Sprites *sprites);
 };
 
 

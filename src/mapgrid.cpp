@@ -89,8 +89,6 @@ static QVector<QPoint> previewBlipRoute(int x, int y, MapEdit *map)
 {
 	qDebug() << "blip at" << x+1 << y+1;
 
-	const int startx = x;
-	const int starty = y;
 	QVector<QPoint> route;
 
 	Monster m(x, y, Obj::Blip);

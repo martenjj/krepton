@@ -69,7 +69,7 @@ MapEditor::MapEditor(QWidget *parent)
 	gl->setRowMinimumHeight(2,DialogBase::verticalSpacing());
 	gl->setRowMinimumHeight(4,2*DialogBase::verticalSpacing());
 
-	sprite_list = new ObjectListBox(false,this);
+	sprite_list = new ObjectListBox(false, this);
 	sprite_list->setToolTip(i18n("The list of available objects to insert"));
 	connect(sprite_list, SIGNAL(currentRowChanged(int)), SLOT(selectedSprite(int)));
 	gl->addWidget(sprite_list,1,0);
@@ -142,6 +142,7 @@ void MapEditor::setSprites(const Sprites *ss)
 {
 	sprites = ss;
 	map_area->setSprites(sprites);
+	sprite_list->setSprites(sprites);
 	preview_sprite->setSprite(sprites,current_sprite);
 }
 

@@ -25,6 +25,8 @@
 #include "krepton.h"
 #include "objectlist.h"
 
+#include "sprites.h"
+
 #include "objectlistbox.h"
 
 
@@ -35,7 +37,27 @@ ObjectListBox::ObjectListBox(bool all, QWidget *parent)
 
 	qDebug() << "all" << all;
 
-	setFixedWidth(150);
-	if (all) addItems(ObjectList::allSpriteNames());
-	else addItems(ObjectList::allMapNames());
+	setFixedWidth(180);
+
+        const QStringList names = all ? ObjectList::allSpriteNames() : ObjectList::allMapNames();
+        for (int i = 0; i<names.count(); ++i)
+        {
+		const Obj::Type obj = static_cast<Obj::Type>(i);
+
+		QListWidgetItem *item = new QListWidgetItem(names[i]);
+		addItem(item);
+        }
+}
+
+
+void ObjectListBox::setSprites(const Sprites *sprites)
+{
+	const int num = count();
+	for (int i = 0; i<num; ++i)
+	{
+		const Obj::Type obj = static_cast<Obj::Type>(i);
+
+		QListWidgetItem *it = item(i);
+		it->setIcon(QIcon(sprites->getRaw(obj)));
+	}
 }
