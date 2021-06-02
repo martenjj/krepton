@@ -60,7 +60,7 @@ SpriteEditor::SpriteEditor(QWidget *parent)
 	gl->setRowMinimumHeight(5,DialogBase::verticalSpacing());
 	gl->setRowMinimumHeight(6,2*DialogBase::verticalSpacing());
 
-	sprite_list = new ObjectListBox(true,this);
+	sprite_list = new ObjectListBox(true, this);
 	sprite_list->setToolTip(i18n("The list of available sprites to edit"));
 	connect(sprite_list, SIGNAL(currentRowChanged(int)), SLOT(selectedSprite(int)));
 	gl->addWidget(sprite_list,1,0,5,1);
@@ -117,6 +117,7 @@ SpriteEditor::SpriteEditor(QWidget *parent)
 void SpriteEditor::setSprites(Sprites *ss)
 {
 	sprites = ss;
+	sprite_list->setSprites(sprites);
 	updateSpriteDisplay();
 }
 
