@@ -163,7 +163,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	magnificationList = new KSelectAction(i18n("Display Size"), this);
 	magnificationList->setIcon(QIcon::fromTheme("zoom-in"));
-        connect(magnificationList, SIGNAL(triggered()), SLOT(slotSetMagnification()));
+        connect(magnificationList, SIGNAL(triggered(int)), SLOT(slotSetMagnification(int)));
         actionCollection()->addAction("settings_magnification", magnificationList);
 
         cheatsAction = actionCollection()->addAction("settings_cheats", this, SLOT(slotSelectCheats()));
@@ -673,11 +673,11 @@ void MainWindow::loadGame(const QString name)		// from command line
 }
 
 
-void MainWindow::slotSetMagnification()
+void MainWindow::slotSetMagnification(int idx)
 {
-        const int selection = magnificationList->currentItem();
-	qDebug() << " selected=" << selection;
-	if (selection==static_cast<int>(Sprites::getMagnification())) return;
+	const Sprites::Magnification selection = static_cast<Sprites::Magnification>(idx);
+	qDebug() << selection;
+	if (selection==Sprites::getMagnification()) return;
 
 	KMessageBox::information(this,
                                  i18n("This change will take effect when %1 is next started.",
@@ -685,7 +685,7 @@ void MainWindow::slotSetMagnification()
 				 QString(),"sizeChangeMessage");
 
 	KConfigGroup grp = KSharedConfig::openConfig()->group("Options");
-	grp.writeEntry("Magnification", selection);
+	grp.writeEntry("Magnification", idx);
 }
 
 

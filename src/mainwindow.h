@@ -65,8 +65,7 @@ protected slots:
 	void slotLoadSprites();
 	void slotPauseGame();
 	void slotSuicide();
-//	void slotFinish();
-	void slotSetMagnification();
+	void slotSetMagnification(int idx);
 	void slotSelectCheats();
 	void slotEdit();
 	void slotSave();
