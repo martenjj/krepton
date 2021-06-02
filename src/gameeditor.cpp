@@ -51,7 +51,7 @@
 
 static QString formatCoordinates(int x,int y)
 {
-	if (x<0) return ("");
+	if (x<=0 && y<=0) return ("");
 	return (i18n(" X: %1  Y: %2 ",QString::number(x),QString::number(y)));
 }
 
@@ -227,8 +227,8 @@ void GameEditor::updateTransportersList(int item)
 	}
 
 	selectedTransporter();
-	if (mapwin!=NULL) mapwin->updateChilds();	// if showing transporters
-}
+	if (mapwin!=NULL && mapwin->isVisible()) mapwin->update();
+}							// if showing transporters
 
 
 void GameEditor::selectedTransporter()
@@ -356,7 +356,7 @@ void GameEditor::mapRemove()
 		maps.mapRemove(item);
 		setModified();
 
-//TODO: should this be '0'?
+		// TODO: should this be '0'?
 		selectLevel(-1);
 		updateMapsList();
 		emit editMapsChange();
@@ -510,8 +510,7 @@ void GameEditor::changedTime(int i)
 void GameEditor::changedSprite()
 {
 	qDebug();
-	if (spritewin!=NULL) spritewin->updateChilds();
-	if (mapwin!=NULL) mapwin->updateChilds();
+	if (mapwin!=NULL && mapwin->isVisible()) mapwin->update();
 	setModified();
 }
 
@@ -574,7 +573,7 @@ void GameEditor::closeEvent(QCloseEvent *e)
 
 void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss)
 {
-	qDebug() << "name" << name;
+	qDebug() << "episode "<< name;
 
 	epname = name;
 
@@ -591,7 +590,7 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 		maps.append(new MapEdit(*mm));
 	}
 
-//TODO: should this be '0'?
+	// TODO: should this be '0'?
 	selectLevel(-1);
 	updateMapsList();
 	updateCaption();
@@ -603,7 +602,7 @@ void GameEditor::startEdit(const QString name,const MapList ml,const Sprites *ss
 }
 
 
-void GameEditor::slotShowCoordinates(int x,int y)
+void GameEditor::slotShowCoordinates(int x, int y)
 {
-	coordsLabel->setText(formatCoordinates(x+1,y+1));
+	coordsLabel->setText(formatCoordinates(x+1, y+1));
 }

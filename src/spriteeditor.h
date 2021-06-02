@@ -45,9 +45,6 @@ public:
 
 	void setSprites(Sprites *ss);
 
-public slots:
-	void updateChilds();
-
 signals:
 	void changedSprite();
 	void coordinatePosition(int x,int y);
@@ -55,6 +52,9 @@ signals:
 protected slots:
 	void selectedSprite(int i);
 	void pressedButton(int button,int x,int y);
+
+private:
+	void updateSpriteDisplay();
 
 private:
 	ObjectListBox *sprite_list;

@@ -62,6 +62,10 @@ public:
 	void transporterRemove(int item);
 	void changePassword(const QByteArray &pw);
 	void changeTime(int t);
+
+	bool updateBlip(Monster *m);
+	bool isempty(Obj::Type obj) const override;
+	bool isempty(int x, int y) const override;
 };
 
 

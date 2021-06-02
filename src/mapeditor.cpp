@@ -31,6 +31,9 @@
 #include <qgroupbox.h>
 #include <qgridlayout.h>
 
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
+
 #include <dialogbase.h>
 
 #include "krepton.h"
@@ -49,6 +52,7 @@ MapEditor::MapEditor(QWidget *parent)
 {
 	qDebug();
 
+	setObjectName("MapEditor");
 	setWindowTitle("Level Editor");
 	setMinimumSize(default_width, default_height);
 	resize(default_width, default_height);
@@ -81,21 +85,6 @@ MapEditor::MapEditor(QWidget *parent)
 	label = new QLabel("Object:", this);
 	gl->addWidget(label,0,2,Qt::AlignLeft);
 
-        // TODO: persistent settings of these options
-	QGroupBox *optiongroup = new QGroupBox("Display",this);
-        QVBoxLayout *vl = new QVBoxLayout;
-
-	QCheckBox *cb = new QCheckBox("Transporter routes",optiongroup);
-	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterRoutes(bool)));
-        vl->addWidget(cb);
-
-	cb = new QCheckBox("Selected transporter",optiongroup);
-	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterSelected(bool)));
-        vl->addWidget(cb);
-
-        optiongroup->setLayout(vl);
-	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
-
 	map_area = new MapGrid(this);
 	connect(map_area,SIGNAL(pressedButton(int,int,int)),
 		this,SLOT(pressedButton(int,int,int)));
@@ -106,6 +95,31 @@ MapEditor::MapEditor(QWidget *parent)
 	label = new QLabel("Map:", this);
 	label->setBuddy(map_area);
 	gl->addWidget(label,0,4,Qt::AlignLeft);
+
+	const KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
+	QGroupBox *optiongroup = new QGroupBox("Display",this);
+        QVBoxLayout *vl = new QVBoxLayout;
+
+	QCheckBox *cb = new QCheckBox("Transporter routes",optiongroup);
+	cb->setChecked(grp.readEntry("ShowTransporterRoutes", false));
+	map_area->showTransporters(cb->isChecked());
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterRoutes(bool)));
+	vl->addWidget(cb);
+
+	cb = new QCheckBox("Selected transporter",optiongroup);
+	cb->setChecked(grp.readEntry("ShowTransporterSelected", false));
+	map_area->showSelectedTransporter(cb->isChecked());
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterSelected(bool)));
+	vl->addWidget(cb);
+
+	cb = new QCheckBox("Spirit routes",optiongroup);
+	cb->setChecked(grp.readEntry("ShowSpiritRoutes", false));
+	map_area->showSpiritRoutes(cb->isChecked());
+	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowSpiritRoutes(bool)));
+	vl->addWidget(cb);
+
+        optiongroup->setLayout(vl);
+	gl->addWidget(optiongroup,3,0,1,3,Qt::AlignLeft);
 
         sprite_list->setFocus();
 	selectedSprite(-1);
@@ -155,28 +169,37 @@ void MapEditor::pressedButton(int button,int x,int y)
 }
 
 
-void MapEditor::updateChilds()
-{
-	map_area->update();
-}
-
-
 void MapEditor::optionShowTransporterRoutes(bool checked)
 {
 	map_area->showTransporters(checked);
-	updateChilds();
+
+	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
+	grp.writeEntry("ShowTransporterRoutes", checked);
+	grp.sync();
+}
+
+
+void MapEditor::optionShowSpiritRoutes(bool checked)
+{
+	map_area->showSpiritRoutes(checked);
+
+	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
+	grp.writeEntry("ShowSpiritRoutes", checked);
+	grp.sync();
 }
 
 
 void MapEditor::optionShowTransporterSelected(bool checked)
 {
 	map_area->showSelectedTransporter(checked);
-	updateChilds();
+
+	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
+	grp.writeEntry("ShowTransporterSelected", checked);
+	grp.sync();
 }
 
 
 void MapEditor::selectedTransporter(int item)
 {
 	map_area->selectedTransporter(item);
-	updateChilds();
 }

@@ -29,18 +29,18 @@
 
 MapEdit::MapEdit(const Map &m) : Map(m)			// copy constructor
 {
-	qDebug() << "pw='" << getPassword() << "'";
+	qDebug() << "pw" << getPassword();
 }
 
 MapEdit::MapEdit(int sx,int sy,const QByteArray &pw) : Map(sx,sy,pw)
 {
-	qDebug() << "sx=" << sx << " sy=" << sy;
+	qDebug() << "sx" << sx << "sy" << sy;
 }
 
 
 MapEdit::~MapEdit()
 {
-	qDebug() << "pw='" << getPassword() << "'";
+	qDebug() << "pw" << getPassword();
 }
 
 TransporterList MapEdit::getTransportersList()
@@ -109,6 +109,23 @@ void MapEdit::changeTime(int t)
 	num_secs = t;
 }
 
+
+/* override */ bool MapEdit::isempty(Obj::Type obj) const
+{
+	return (obj==Obj::Cage || obj==Obj::Repton || obj==Obj::Blip || Map::isempty(obj));
+}
+
+
+/* override */ bool MapEdit::isempty(int x, int y) const
+{
+	return (Map::isempty(x, y));
+}
+
+
+/* reimplemented */ bool MapEdit::updateBlip(Monster *m)
+{
+	return (Map::updateBlip(m));
+}
 
 
 void MapEditList::mapInsert(int sx,int sy,const QByteArray &password)

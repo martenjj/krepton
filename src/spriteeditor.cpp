@@ -27,6 +27,7 @@
 
 #include <qlabel.h>
 #include <qlayout.h>
+#include <qtimer.h>
 
 #include <dialogbase.h>
 
@@ -109,6 +110,7 @@ SpriteEditor::SpriteEditor(QWidget *parent)
 	adjustSize();
 
         sprite_list->setFocus();
+	QTimer::singleShot(0, this, [this]() { sprite_list->setCurrentRow(static_cast<int>(current_sprite)); });
 }
 
 
@@ -122,7 +124,7 @@ void SpriteEditor::setSprites(Sprites *ss)
 void SpriteEditor::selectedSprite(int i)
 {
 	current_sprite = static_cast<Obj::Type>(i);
-	updateChilds();
+	updateSpriteDisplay();
 }
 
 
@@ -139,7 +141,7 @@ void SpriteEditor::pressedButton(int button,int x,int y)
 }
 
 
-void SpriteEditor::updateChilds()
+void SpriteEditor::updateSpriteDisplay()
 {
 	Q_ASSERT(sprites!=NULL);
 	preview_sprite->setSprite(sprites, current_sprite);
