@@ -498,6 +498,7 @@ void MainWindow::gameOver()
 			KScoreDialog::FieldInfo scoreInfo;
 			scoreInfo[KScoreDialog::Score].setNum(points);
 			scoreInfo[KScoreDialog::Level].setNum(game->lastLevel()+1);
+			scoreInfo[KScoreDialog::Date] = QLocale::system().toString(QDate::currentDate(), QLocale::ShortFormat);
 			scoreInfo[KScoreDialog::Custom1] = currentepisode->getName().toUpper();
 
 			d->addScore(scoreInfo);
