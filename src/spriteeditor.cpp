@@ -117,7 +117,7 @@ SpriteEditor::SpriteEditor(QWidget *parent)
 void SpriteEditor::setSprites(Sprites *ss)
 {
 	sprites = ss;
-	updateChilds();
+	updateSpriteDisplay();
 }
 
 

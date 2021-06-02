@@ -555,9 +555,10 @@ void MapGrid::selectedTransporter(int item)
 }
 
 
-void MapGrid::setSprites(Sprites *ss)
+void MapGrid::setSprites(const Sprites *ss)
 {
 	sprites = ss;
+	update();
 }
 
 
