@@ -25,7 +25,7 @@
 #ifndef SAVEEPISODEDIALOG_H
 #define SAVEEPISODEDIALOG_H
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 class QLineEdit;
 class KSqueezedTextLabel;

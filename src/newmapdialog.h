@@ -25,7 +25,7 @@
 #ifndef NEWMAPDIALOG_H
 #define NEWMAPDIALOG_H
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 class QLineEdit;
 class QSpinBox;

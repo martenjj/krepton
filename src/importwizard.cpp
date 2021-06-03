@@ -41,7 +41,7 @@
 #include <kconfiggroup.h>
 #include <kurlrequester.h>
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 #include "episodes.h"
 #include "importmanager.h"

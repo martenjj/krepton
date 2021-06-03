@@ -29,7 +29,7 @@
 #include <qlayout.h>
 #include <qtimer.h>
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 #include <kcolorbutton.h>
 

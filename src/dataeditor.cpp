@@ -33,7 +33,7 @@
 
 #include <kstandardguiitem.h>
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 #include "krepton.h"
 

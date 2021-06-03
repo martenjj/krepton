@@ -25,7 +25,7 @@
 #ifndef NEWTRANSPORTERDIALOG_H
 #define NEWTRANSPORTERDIALOG_H
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 class QSpinBox;
 

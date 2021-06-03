@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		21-May-21					#
+#  Edit:		03-Jun-21					#
 #########################################################################
 
 project(krepton)
@@ -26,8 +26,8 @@ find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash
 
 find_package(Phonon4Qt5 NO_POLICY_SCOPE)
 set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Required for playback of audio/video notes")
-find_package(DialogUtil REQUIRED NO_POLICY_SCOPE)
-set_package_properties("DialogUtil" PROPERTIES DESCRIPTION "Dialogue utility library" TYPE REQUIRED PURPOSE "Required to build the project")
+find_package(LibKFDialog REQUIRED NO_POLICY_SCOPE)
+set_package_properties("LibKFDialog" PROPERTIES DESCRIPTION "KDE Frameworks dialogue utility library" URL "https://github.com/martenjj/libkfdialog" TYPE REQUIRED PURPOSE "Required to build the project")
 
 find_package(KF5KDEGames ${KDEGAMES_MIN_VERSION})
 if (KF5KDEGames_FOUND)
@@ -163,7 +163,7 @@ target_link_libraries(krepton
   KF5::XmlGui
   KF5::KIOCore KF5::KIOWidgets
   KF5::IconThemes
-  ${DIALOGUTIL_LIBRARIES}
+  kfdialog
 )
 
 if (HAVE_LIBKDEGAMES)

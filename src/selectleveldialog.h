@@ -25,7 +25,7 @@
 #ifndef SELECTLEVELDIALOG_H
 #define SELECTLEVELDIALOG_H
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 #include "gameplayer.h"
 

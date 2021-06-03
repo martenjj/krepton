@@ -24,7 +24,7 @@
 #ifndef CHEATDIALOG_H
 #define CHEATDIALOG_H
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 #include "krepton.h"
 
 class QCheckBox;

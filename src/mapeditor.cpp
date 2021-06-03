@@ -34,7 +34,7 @@
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
-#include <dialogbase.h>
+#include <kfdialog/dialogbase.h>
 
 #include "krepton.h"
 #include "sprites.h"
