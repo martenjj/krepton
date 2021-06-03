@@ -163,7 +163,7 @@ target_link_libraries(krepton
   KF5::XmlGui
   KF5::KIOCore KF5::KIOWidgets
   KF5::IconThemes
-  kfdialog
+  ${LIBKFDIALOG_LIBRARIES}
 )
 
 if (HAVE_LIBKDEGAMES)
