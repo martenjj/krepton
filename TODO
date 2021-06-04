@@ -1,6 +1,9 @@
 Things to do for KRepton
 ========================
 
+Port to KDE Frameworks 5
+** Done in version 5.0
+
 Port to KDE 4
 ** Done in version 4.4
 
@@ -26,6 +29,7 @@ Print the maps, in colour and with annotation of course!
 Map editor option to display the route that the blips will take.  This
 would be very useful for working out where they will go, but may take
 a lot of coding.
+** Done in version 5.0
 
 More useful editing operations: cut/copy/paste, insert/delete
 rows/columns, area fill, resize existing level.
@@ -50,6 +54,9 @@ http://www.stairwaytohell.com/gamehelp/solution-repton3-ms.txt:
   For killing a monster: 20 points
   All monsters must be killed to finish a level
 
+Fix curved objects also according to that file, the crown and time
+capsules are curved on both sides.
+
 Limit Repton's movement speed to one square per game tick
 (timerMonsters in GamePlayer).  Otherwise, Repton can run and get
 ahead of a pursuing monster or spirit, but in the original game he
@@ -65,6 +72,7 @@ The Work and Baby II episodes are to be fixed because corrupted.
 
 The KDE audio interface is inadequate for complex sound applications
 like games. Need to find a best method for playing sounds.
+** Done in Frameworks 5 port
 
 Find more appropriate sounds (at least for broken egg and falling
 objects).

@@ -25,14 +25,13 @@ More information and documentation is available from the home page:
 
    http://www.keelhaul.me.uk/krepton/
 
-To build and install the application, you will need Qt 4 and CMake
-installed on your system.  See the INSTALL file included here for
-building and installation instructions.
+To build and install the application, you will need Qt 5, KDE
+Frameworks 5 and CMake installed on your system.  See the INSTALL file
+included here for building and installation instructions.
 
 If you have fond memories of the original Repton games then you won't
 need to be told any more; download and play the game now! If you don't
 know anything about them but would like to find out more then see the
 KRepton home page and try the links there.
-
 
 Have fun...

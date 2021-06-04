@@ -2,10 +2,33 @@ ChangeLog for KRepton                             -*- mode:text -*-
 =====================
 
 
+Changes from version 4.4 to version 5.0:
+---------------------------------------
+Ported to Qt 5 and KDE Frameworks 5.
+
+The KDE Games library (libkdegames) is used if available.  This means
+that a system wide high score list is maintained (if libkdegames is
+configured to use one) and game sounds can be played in quick
+succession.  The former sound options (Phonon or external player)
+are still available.  High scores are not available if not using
+libkdegames.
+
+The map turns grey when paused.
+
+The route that spirits will take can be shown on the map editor.  This
+reflects the situation as it stands at the time:  that is, it does not
+take account of objects falling or an earlier spirit following the
+same route and getting caught in a cage.
+
+The display settings in the map editor are persistent.
+
+The map or sprite editor object list shows sprite images.
+
+
+
 Changes from version 4.4 to version 4.5:
 ---------------------------------------
-
-Spirits are hopefully less likely to get trapped or confused.
+Spirits will try to recover if they get trapped or confused.
 
 Cheat modes are available to turn off various dangerous things.
 
@@ -16,7 +39,6 @@ from Repton 1, Repton 2 and Repton 3 are available.
 
 Changes from version 4.3 to version 4.4:
 ---------------------------------------
-
 KDE4 port.
 
 No high score recorded for a trivial game (less than 2000 points).
@@ -38,7 +60,6 @@ somehow lost in the GIT conversion.
 
 Changes from version 4.2 to version 4.3:
 ---------------------------------------
-
 Sources converted to GIT.
 No user-visible changes.
 
@@ -46,7 +67,6 @@ No user-visible changes.
 
 Changes from version 4.1 to version 4.2:
 ---------------------------------------
-
 Allow per-level sprite files, so that imported episodes where the
 palette varies between levels (notably the 3 original episodes
 Prelude, Toccata and Finale) can be accurately reproduced.  Backwards
@@ -61,7 +81,6 @@ Added a tooltop to explain the level selection dialogue.
 
 Changes from version 4.0 to version 4.1:
 ---------------------------------------
-
 Added an import wizard to allow game files in other formats to be imported.
 Currently the only format supported is BBC Repton 3 (and sequels).
 

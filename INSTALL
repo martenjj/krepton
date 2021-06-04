@@ -1,16 +1,27 @@
 KRepton Installation Instructions
 =================================
 
-KRepton is now ported to KDE4 and so uses CMake.
+KRepton is now ported to KDE Frameworks 5 and so uses CMake.  The
+external dependencies and their minimum versions required are:
+
+  Qt				5.14.0		qt.io
+  KDE Frameworks		5.60.0		kde.org
+  libkdegames (optional)	7.3.0		kde.org
+  CMake				3.0		cmake.org
+
+  libkfdialog			github.com/martenjj/libkfdialog
+
+All of these apart from the last should be available as standard
+packages for your distro.
 
 To compile and install, clone the Git repository or download and
-extract the source archive, and then create a separate build
+extract a source archive, and then create a separate build
 directory.  Change into the newly created build directory and then do:
 
   cmake /path/to/source/directory
 
-This will eventually do the installation into the same place as
-KDE4 is currently installed.  To install to somewhere else, use
+This will eventually do the installation into the same place as KDE
+Frameworks are currently installed.  To install to somewhere else, use
 instead:
 
   cmake -DCMAKE_INSTALL_PREFIX=/install/path /path/to/source/directory
