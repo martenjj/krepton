@@ -85,16 +85,16 @@ signals:
 	void changedLives(int);
 	void gameOver();
 
-public slots:
-	void goUp();
-        void goDown();
-	void goLeft();
-	void goRight();
-
 protected:
 	void timerEvent(QTimerEvent *e) override;
 	void paintEvent(QPaintEvent *e) override;
 	void keyPressEvent(QKeyEvent *e) override;
+
+private:
+	bool goUp();
+	bool goDown();
+	bool goLeft();
+	bool goRight();
 
 private:
 	void recordLevel(GamePlayer::State state);
@@ -114,6 +114,8 @@ private:
 	int idle;
 	int diamonds;
 	bool havekey,havecrown;
+
+	int pendingShuffle;
 
 	Cheat::Options cheats_used;
 	bool cheats_ever_used;
