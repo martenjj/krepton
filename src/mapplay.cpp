@@ -898,6 +898,7 @@ case Obj::Ground2:
 case Obj::Rock:
 case Obj::Egg:
 case Obj::Broken_Egg:
+case Obj::Falling_Egg:
 case Obj::Broken_Egg1:
 case Obj::Broken_Egg2:
 case Obj::Broken_Egg3:
