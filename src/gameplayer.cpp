@@ -209,6 +209,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 	diamonds = 0;
 	havekey = false;
 	havecrown = false;
+	pendingShuffle = 0;
 
 	QString msg = i18n("<qt>Starting level %1 of episode <b>%2</b>", level+1, episodeName);
 	if (level>0) msg += i18n("<br>The password is \"<b>%1</b>\"", currentmap->getPassword());
@@ -317,18 +318,31 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 	seconds += currentmap->gameSeconds();		// anything gained this tick
 	points += currentmap->gamePoints();
 
-	int id = e->timerId();
+	bool needsRepaint = false;
+	const int id = e->timerId();
 	if (id==timerObjects)
 	{
-		if (currentmap->updateObjects()) repaint();
+		needsRepaint = currentmap->updateObjects();
+
+		// The previous updateObjects() will have allowed moveable
+		// objects (rocks and eggs) to fall by one square.  Now,
+		// if doing an automatic Repton shuffle, move Repton back
+		// and take any appropriate action before they continue
+		// to fall on the next timer tick.
+		if (pendingShuffle!=0)
+		{
+			if (pendingShuffle==Qt::Key_Right) needsRepaint |= goRight();
+			else if (pendingShuffle==Qt::Key_Left) needsRepaint |= goLeft();
+			pendingShuffle = 0;
+		}
 	}
 	else if (id==timerMonsters)
 	{
-		if (currentmap->updateMonsters()) repaint();
+		needsRepaint = currentmap->updateMonsters();
 	}
 	else if (id==timerEggs)
 	{
-		if (currentmap->updateEggs() && currentmap->updateObjects()) repaint();
+		needsRepaint = (currentmap->updateEggs() && currentmap->updateObjects());
 	}
 	else if (id==timerSecs)
 	{
@@ -344,12 +358,14 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 		}
 
 		++idle;
-		if (idle>10 && currentmap->updateIdle()) repaint();
+		if (idle>10) needsRepaint = currentmap->updateIdle();
 	}
 	else if (id==timerPlants)
 	{
-		if (currentmap->updatePlants()) repaint();
+		needsRepaint = currentmap->updatePlants();
 	}
+
+	if (needsRepaint) repaint();
 
 	const int gotdiamonds = currentmap->getDiamonds();
 	if (gotdiamonds!=diamonds || seconds!=oldsecs || points!=oldpoints)
@@ -393,53 +409,64 @@ void GamePlayer::paintEvent(QPaintEvent *)
 	currentmap->paintMap(&p, width(), height(), sprites, in_pause);
 }
 
-void GamePlayer::goUp()
+
+bool GamePlayer::goUp()
 {
-	if (!in_game || in_pause) return;
-	if (currentmap->goUp()) repaint();
+	if (!in_game || in_pause) return (false);
 	idle = 0;
+	return (currentmap->goUp());
 }
 
-void GamePlayer::goDown()
+bool GamePlayer::goDown()
 {
-	if (!in_game || in_pause) return;
-	if (currentmap->goDown()) repaint();
+	if (!in_game || in_pause) return (false);
 	idle = 0;
+	return (currentmap->goDown());
 }
 
-void GamePlayer::goLeft()
+bool GamePlayer::goLeft()
 {
-	if (!in_game || in_pause) return;
-	if (currentmap->goLeft()) repaint();
+	if (!in_game || in_pause) return (false);
 	idle = 0;
+	return (currentmap->goLeft());
 }
 
-void GamePlayer::goRight()
+bool GamePlayer::goRight()
 {
-	if (!in_game || in_pause) return;
-	if (currentmap->goRight()) repaint();
+	if (!in_game || in_pause) return (false);
 	idle = 0;
+	return (currentmap->goRight());
 }
+
 
 void GamePlayer::keyPressEvent(QKeyEvent *e)
 {
+	bool needsRepaint = false;
 	switch (e->key())
 	{
-case Qt::Key_Up:	goUp();
+case Qt::Key_Up:
+		needsRepaint = goUp();
 		break;
 
-case Qt::Key_Down:	goDown();
+case Qt::Key_Down:
+		needsRepaint = goDown();
 		break;
 
-case Qt::Key_Left:	goLeft();
+case Qt::Key_Left:
+		if (e->modifiers() & Qt::ShiftModifier) pendingShuffle = Qt::Key_Right;
+		needsRepaint = goLeft();
 		break;
 
-case Qt::Key_Right:	goRight();
+case Qt::Key_Right:
+		if (e->modifiers() & Qt::ShiftModifier) pendingShuffle = Qt::Key_Left;
+		needsRepaint = goRight();
 		break;
 
 default:	e->ignore();
-		break;
+		return;
 	}
+
+	if (needsRepaint) repaint();
 }
 
 
