@@ -49,6 +49,7 @@ GamePlayer::GamePlayer(QWidget *parent)
 	in_game = false;
 	in_pause = false;
 	in_timelimit = false;
+	flashForTimeLimit = true;
 	currentmap = NULL;
 	currentlevel = -1;
 	sprites = NULL;
@@ -368,7 +369,9 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 			in_timelimit = false;
 		}
 		else in_timelimit = (seconds<=20);	// warn when 20 seconds left,
-		if (in_timelimit) needsRepaint = true;	// which will give 10 flashes
+							// which will give 10 flashes
+		if (!flashForTimeLimit) in_timelimit = false;
+		if (in_timelimit) needsRepaint = true;
 
 		++idle;					// count up standing still time
 		if (idle>10) needsRepaint |= currentmap->updateIdle();

@@ -194,6 +194,9 @@ MainWindow::MainWindow(QWidget *parent)
         strictToggle = new KToggleAction(i18n("Check Consistency Before Saving"), this);
         actionCollection()->addAction("settings_check", strictToggle);
 
+        flashToggle = new KToggleAction(i18n("Flash When Time Running Out"), this);
+        actionCollection()->addAction("settings_flash", flashToggle);
+
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonui.rc");
 
 	QStringList list;
@@ -296,6 +299,8 @@ void MainWindow::readOptions()
 	int mag = grp1.readEntry("Magnification", static_cast<int>(Sprites::Normal));
 	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 
+	flashToggle->setChecked(grp1.readEntry("FlashForTimeLimit", true));
+
 	const KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
 	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
 }
@@ -308,6 +313,7 @@ void MainWindow::saveOptions()
 	KConfigGroup grp1 = KSharedConfig::openConfig()->group("Options");
 	grp1.writeEntry("SoundsEnable", soundsEnableAction->isChecked());
 	grp1.writeEntry("SoundScheme", Sound::self()->schemeConfigName());
+	grp1.writeEntry("FlashForTimeLimit", flashToggle->isChecked());
 
 	KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
 	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
@@ -536,6 +542,7 @@ void MainWindow::slotRestartGame()
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 
 	fetchFromEditor();
+	game->setFlashForTimeLimit(flashToggle->isChecked());
 	game->startGame(currentepisode,game->lastLevel());
 }
 

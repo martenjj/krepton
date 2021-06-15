@@ -1,5 +1,5 @@
 <!DOCTYPE kpartgui>
-<kpartgui name="krepton" version="403">
+<kpartgui name="krepton" version="404">
 <MenuBar>
 
 	<Menu name="file" noMerge="1"><text>&amp;File</text>
@@ -40,6 +40,7 @@
 		<Action name="settings_magnification"/>
 		<Separator lineSeparator="true"/>
 		<!-- gameplay -->
+		<Action name="settings_flash"/>
 		<Action name="settings_cheats"/>
 		<Separator lineSeparator="true"/>
 		<!-- sound -->
