@@ -129,7 +129,7 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 		it!=maps->constEnd(); ++it, ++i)
 	{						// save all maps
 		const Map *mm = (*it);
-                const QString p1 = getFilePath(QString("map%1").arg(i));
+                const QString p1 = getFilePath(QString("map%1").arg(i, 3, 10, QLatin1Char('0')));
 		if (!mm->save(p1)) return (false);
         }
 
