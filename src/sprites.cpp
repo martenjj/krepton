@@ -131,24 +131,16 @@ void Sprites::ensureRaw()
 {
     qDebug();
 
+    rawsprites.clear();
     rawsprites.resize(Obj::num_sprites);
 
-    QPixmap std = files.constBegin().value();		// standard pixmaps for editor
+    const QPixmap &std = files.constBegin().value();	// standard pixmaps for editor
     for (int y = 0; y<ynum; ++y)			// "0" will be first if present
     {
 	for (int x = 0; x<xnum; ++x)
 	{
-	    int i = y*xnum + x;
-
-	    QPixmap px(base_width,base_height);
-	    QPainter pp;
-
-	    pp.begin(&px);
-	    pp.drawPixmap(0,0,std,
-			  x*base_width,y*base_height,
-			  base_width,base_height);
-	    pp.end();
-	    rawsprites[i] = px;
+	    int i = y*xnum+x;
+	    rawsprites[i] = std.copy(x*base_width, y*base_height, base_width, base_height);
 	}
     }
 }
@@ -340,27 +332,15 @@ void Sprites::prepare(int level)
 	{
 	    int i = y*xnum + x;
 
-	    QPixmap px(base_width,base_height);
-	    if (!src.isNull())
-	    {
-		    // TODO: can use QPixmap::copy() instead of needing a QPainter
-                QPainter pp;
-
-                pp.begin(&px);
-                pp.drawPixmap(0,0,src,
-                              x*base_width,y*base_height,
-                              base_width,base_height);
-                pp.end();
-	    }
+	    QPixmap px;
+	    if (!src.isNull()) px = src.copy(x*base_width, y*base_height, base_width, base_height);
 	    else px = rawsprites[i];
 
             if (magnification!=Sprites::Normal)
             {
-		    // TODO: can use QPixmap::scaled()
-                QPixmap px2(sprite_width,sprite_height);
-                QPainter pp2(&px2);
-                pp2.drawPixmap(px2.rect(),px);
-                px = px2;
+		    px = px.scaled(sprite_width, sprite_height,
+				   Qt::IgnoreAspectRatio,
+				   Qt::SmoothTransformation);
             }
 
             if (i==Obj::Blip || i==Obj::Blip2)
