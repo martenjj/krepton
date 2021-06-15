@@ -48,6 +48,7 @@ GamePlayer::GamePlayer(QWidget *parent)
 
 	in_game = false;
 	in_pause = false;
+	in_timelimit = false;
 	currentmap = NULL;
 	currentlevel = -1;
 	sprites = NULL;
@@ -219,6 +220,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 
 	in_game = true;
 	in_pause = false;
+	in_timelimit = false;
 
 	emit changedStats(diamonds,seconds,points);
 	emit changedPlayState(in_game,in_pause);
@@ -346,19 +348,30 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 	}
 	else if (id==timerSecs)
 	{
-		--seconds;
+		// I'm not sure how much time limit warning was given by the
+		// original BBC version, but here the screen starts to flash
+		// when there are 20 seconds of the time limit remaining and the
+		// flash to white is shown on even seconds (implemented by the
+		// "!(seconds & 1)" in paintEvent() below).  There will therefore
+		// be ten flashes before the time finally runs out.
+
+		--seconds;				// count down level time limit
 		if (seconds<=0)
 		{
-			if (cheats_used & Cheat::NoTimeLimit) seconds = 0;
-			else
+			if (!(cheats_used & Cheat::NoTimeLimit))
 			{
 				endedGame("Your time is up!");
 				return;
 			}
-		}
 
-		++idle;
-		if (idle>10) needsRepaint = currentmap->updateIdle();
+			seconds = 0;
+			in_timelimit = false;
+		}
+		else in_timelimit = (seconds<=20);	// warn when 20 seconds left,
+		if (in_timelimit) needsRepaint = true;	// which will give 10 flashes
+
+		++idle;					// count up standing still time
+		if (idle>10) needsRepaint |= currentmap->updateIdle();
 	}
 	else if (id==timerPlants)
 	{
@@ -406,7 +419,11 @@ void GamePlayer::paintEvent(QPaintEvent *)
                 return;
         }
 
-	currentmap->paintMap(&p, width(), height(), sprites, in_pause);
+	Sprites::GetFlags spriteFlag = Sprites::GetNormal;
+	if (in_pause) spriteFlag = Sprites::GetGrey;
+	else if (in_timelimit & !(seconds & 1)) spriteFlag = Sprites::GetBright;
+
+	currentmap->paintMap(&p, width(), height(), sprites, spriteFlag);
 }
 
 
@@ -476,6 +493,7 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 
 	in_game = false;
 	in_pause = false;
+	in_timelimit = false;
 	emit changedPlayState(in_game,in_pause);
 
 	--lives;					// count down this life

@@ -107,7 +107,9 @@ private:
 	int timerObjects,timerMonsters,timerEggs;
 	int timerSecs,timerPlants;
 	QString episodeName;
-	bool in_game,in_pause;
+	bool in_game;
+	bool in_pause;
+	bool in_timelimit;
 	int lives;
 	int seconds;
 	int points;
