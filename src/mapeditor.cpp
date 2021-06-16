@@ -31,9 +31,6 @@
 #include <qgroupbox.h>
 #include <qgridlayout.h>
 
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
-
 #include <kfdialog/dialogbase.h>
 
 #include "krepton.h"
@@ -42,6 +39,8 @@
 #include "objectlistbox.h"
 #include "spritepreview.h"
 #include "mapgrid.h"
+#include "settings.h"
+
 
 const int default_width = 595;
 const int default_height = 355;
@@ -96,24 +95,26 @@ MapEditor::MapEditor(QWidget *parent)
 	label->setBuddy(map_area);
 	gl->addWidget(label,0,4,Qt::AlignLeft);
 
-	const KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
 	QGroupBox *optiongroup = new QGroupBox("Display",this);
         QVBoxLayout *vl = new QVBoxLayout;
 
-	QCheckBox *cb = new QCheckBox("Transporter routes",optiongroup);
-	cb->setChecked(grp.readEntry("ShowTransporterRoutes", false));
+	KConfigSkeletonItem *ski = Settings::self()->showTransporterRoutesItem();
+	QCheckBox *cb = new QCheckBox(ski->label(), optiongroup);
+	cb->setChecked(Settings::showTransporterRoutes());
 	map_area->showTransporters(cb->isChecked());
 	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterRoutes(bool)));
 	vl->addWidget(cb);
 
-	cb = new QCheckBox("Selected transporter",optiongroup);
-	cb->setChecked(grp.readEntry("ShowTransporterSelected", false));
+	ski = Settings::self()->showSelectedTransporterItem();
+	cb = new QCheckBox(ski->label(), optiongroup);
+	cb->setChecked(Settings::showSelectedTransporter());
 	map_area->showSelectedTransporter(cb->isChecked());
 	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowTransporterSelected(bool)));
 	vl->addWidget(cb);
 
-	cb = new QCheckBox("Spirit routes",optiongroup);
-	cb->setChecked(grp.readEntry("ShowSpiritRoutes", false));
+	ski = Settings::self()->showSpiritRoutesItem();
+	cb = new QCheckBox(ski->label(), optiongroup);
+	cb->setChecked(Settings::showSpiritRoutes());
 	map_area->showSpiritRoutes(cb->isChecked());
 	connect(cb,SIGNAL(toggled(bool)),SLOT(optionShowSpiritRoutes(bool)));
 	vl->addWidget(cb);
@@ -172,31 +173,22 @@ void MapEditor::pressedButton(int button,int x,int y)
 
 void MapEditor::optionShowTransporterRoutes(bool checked)
 {
+	Settings::setShowTransporterRoutes(checked);
 	map_area->showTransporters(checked);
-
-	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
-	grp.writeEntry("ShowTransporterRoutes", checked);
-	grp.sync();
 }
 
 
 void MapEditor::optionShowSpiritRoutes(bool checked)
 {
+	Settings::setShowSpiritRoutes(checked);
 	map_area->showSpiritRoutes(checked);
-
-	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
-	grp.writeEntry("ShowSpiritRoutes", checked);
-	grp.sync();
 }
 
 
 void MapEditor::optionShowTransporterSelected(bool checked)
 {
+	Settings::setShowSelectedTransporter(checked);
 	map_area->showSelectedTransporter(checked);
-
-	KConfigGroup grp = KSharedConfig::openConfig()->group(objectName());
-	grp.writeEntry("ShowTransporterSelected", checked);
-	grp.sync();
 }
 
 

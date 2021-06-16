@@ -26,8 +26,6 @@
 #include "mainwindow.h"
 
 #include <kxmlguiwindow.h>
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kselectaction.h>
@@ -61,6 +59,7 @@
 #include "sounds.h"
 #include "importwizard.h"
 #include "cheatdialog.h"
+#include "settings.h"
 
 
 static const int minimum_wid = 5;			// sizes for main window
@@ -136,12 +135,13 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 	scoresAction->setText(i18n("High Scores..."));
 
-        soundsEnableAction = new KToggleAction(i18n("Sounds"), this);
-	//soundsEnableAction->setIcon(QIcon::fromTheme("audio-volume-medium"));
+	KConfigSkeletonItem *ski = Settings::self()->soundEnabledItem();
+        soundsEnableAction = new KToggleAction(ski->label(), this);
         connect(soundsEnableAction, SIGNAL(triggered()), SLOT(slotSoundsEnable()));
         actionCollection()->addAction("settings_sound_enable", soundsEnableAction);
 
-	soundsSchemeList = new KSelectAction(i18n("Sound Scheme"), this);
+	ski = Settings::self()->soundSchemeItem();
+	soundsSchemeList = new KSelectAction(ski->label(), this);
 	soundsSchemeList->setIcon(QIcon::fromTheme("audio-volume-medium"));
         connect(soundsSchemeList, SIGNAL(triggered(QAction *)), SLOT(slotSoundsScheme(QAction *)));
         actionCollection()->addAction("settings_sound_scheme", soundsSchemeList);
@@ -161,7 +161,8 @@ MainWindow::MainWindow(QWidget *parent)
 	loadspritesAction->setText(i18n("Change Sprites..."));
 	loadspritesAction->setIcon(QIcon::fromTheme("krepton"));
 
-	magnificationList = new KSelectAction(i18n("Display Size"), this);
+	ski = Settings::self()->magnificationItem();
+	magnificationList = new KSelectAction(ski->label(), this);
 	magnificationList->setIcon(QIcon::fromTheme("zoom-in"));
         connect(magnificationList, SIGNAL(triggered(int)), SLOT(slotSetMagnification(int)));
         actionCollection()->addAction("settings_magnification", magnificationList);
@@ -191,10 +192,12 @@ MainWindow::MainWindow(QWidget *parent)
         removeAction = actionCollection()->addAction(KStandardAction::DeleteFile, "file_remove", this, SLOT(slotRemove()));
 	removeAction->setText(i18n("Remove..."));
 
-        strictToggle = new KToggleAction(i18n("Check Consistency Before Saving"), this);
+	ski = Settings::self()->strictCheckingEnabledItem();
+        strictToggle = new KToggleAction(ski->label(), this);
         actionCollection()->addAction("settings_check", strictToggle);
 
-        flashToggle = new KToggleAction(i18n("Flash When Time Running Out"), this);
+	ski = Settings::self()->flashForTimeLimitItem();
+        flashToggle = new KToggleAction(ski->label(), this);
         actionCollection()->addAction("settings_flash", flashToggle);
 
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonui.rc");
@@ -280,29 +283,21 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 
-MainWindow::~MainWindow()
-{
-}
-
-
 void MainWindow::readOptions()
 {
 	qDebug();
 
-	const KConfigGroup grp1 = KSharedConfig::openConfig()->group("Options");
-	soundsEnableAction->setChecked(grp1.readEntry("SoundsEnable", true));
-	QString soundScheme = grp1.readEntry("SoundScheme", "");
+	soundsEnableAction->setChecked(Settings::soundEnabled());
+	const QString soundScheme = Settings::soundScheme();
 	if (!soundScheme.isEmpty()) Sound::self()->setSchemeName(soundScheme);
 	slotSoundsEnable();
 	updateSoundsMenu();
 
-	int mag = grp1.readEntry("Magnification", static_cast<int>(Sprites::Normal));
+	const int mag = Settings::magnification();
 	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
 
-	flashToggle->setChecked(grp1.readEntry("FlashForTimeLimit", true));
-
-	const KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
-	strictToggle->setChecked(grp2.readEntry("StrictChecking", true));
+	flashToggle->setChecked(Settings::flashForTimeLimit());
+	strictToggle->setChecked(Settings::strictCheckingEnabled());
 }
 
 
@@ -310,13 +305,11 @@ void MainWindow::saveOptions()
 {
 	qDebug();
 
-	KConfigGroup grp1 = KSharedConfig::openConfig()->group("Options");
-	grp1.writeEntry("SoundsEnable", soundsEnableAction->isChecked());
-	grp1.writeEntry("SoundScheme", Sound::self()->schemeConfigName());
-	grp1.writeEntry("FlashForTimeLimit", flashToggle->isChecked());
-
-	KConfigGroup grp2 = KSharedConfig::openConfig()->group("Editor");
-	grp2.writeEntry("StrictChecking", strictToggle->isChecked());
+	Settings::setSoundEnabled(soundsEnableAction->isChecked());
+	Settings::setSoundScheme(Sound::self()->schemeConfigName());
+	Settings::setFlashForTimeLimit(flashToggle->isChecked());
+	Settings::setStrictCheckingEnabled(strictToggle->isChecked());
+	Settings::self()->save();
 }
 
 
@@ -686,14 +679,12 @@ void MainWindow::slotSetMagnification(int idx)
 	const Sprites::Magnification selection = static_cast<Sprites::Magnification>(idx);
 	qDebug() << selection;
 	if (selection==Sprites::getMagnification()) return;
+	Settings::setMagnification(idx);
 
 	KMessageBox::information(this,
                                  i18n("This change will take effect when %1 is next started.",
                                       qApp->applicationDisplayName()),
 				 QString(),"sizeChangeMessage");
-
-	KConfigGroup grp = KSharedConfig::openConfig()->group("Options");
-	grp.writeEntry("Magnification", idx);
 }
 
 

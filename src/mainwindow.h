@@ -45,8 +45,8 @@ class MainWindow : public KXmlGuiWindow
 	Q_OBJECT
 
 public:
-	MainWindow(QWidget *parent = NULL);
-	~MainWindow();
+	explicit MainWindow(QWidget *parent = NULL);
+	virtual ~MainWindow() = default;
 
 	void loadGame(const Episode *e);
 	void loadGame(const QString name);

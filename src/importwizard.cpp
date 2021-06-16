@@ -37,8 +37,6 @@
 #include <qtextedit.h>
 
 #include <kassistantdialog.h>
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
 #include <kurlrequester.h>
 
 #include <kfdialog/dialogbase.h>
@@ -46,6 +44,7 @@
 #include "episodes.h"
 #include "importmanager.h"
 #include "importerbase.h"
+#include "settings.h"
 
 //////////////////////////////////////////////////////////////////////////
 //									//
@@ -237,11 +236,7 @@ void ImportWizard::next()
                                         page2source->setUrl(src);
                                 }
 
-                                if (ok)
-                                {
-                                        KConfigGroup grp = KSharedConfig::openConfig()->group("Importer");
-					grp.writeEntry("LastLocation", page2source->url().adjusted(QUrl::RemoveFilename));
-                                }
+                                if (ok) Settings::setImporterLastLocation(page2source->url().adjusted(QUrl::RemoveFilename).url());
                         }
                         else
                         {
@@ -378,8 +373,7 @@ void ImportWizard::setupPage2()
 
 	page2source->fileDialog()->setWindowTitle(page2caption.toString());
 
-        KConfigGroup grp = KSharedConfig::openConfig()->group("Importer");
-	QUrl lastloc = grp.readEntry("LastLocation", QUrl());
+	const QUrl lastloc(Settings::importerLastLocation());
 	if (lastloc.isValid()) page2source->setStartDir(lastloc);
 
 	connect(page2source,SIGNAL(textChanged(const QString &)),this,SLOT(slotPage2SourceSelected()));

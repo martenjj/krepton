@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		03-Jun-21					#
+#  Edit:		16-Jun-21					#
 #########################################################################
 
 project(krepton)
@@ -150,6 +150,8 @@ set(krepton_SRCS
   cheatdialog.cpp
   resourcelist.cpp
 )
+
+kconfig_add_kcfg_files(krepton_SRCS settings.kcfgc)
 
 add_executable(krepton ${krepton_SRCS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/..)

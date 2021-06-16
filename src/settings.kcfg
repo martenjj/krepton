@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+                          http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+  <kcfgfile></kcfgfile>
+  <include>krepton.h</include>
+  <include>sprites.h</include>
+
+  <group name="Options">
+
+    <entry name="SoundEnabled" key="SoundsEnable" type="Bool">
+      <label>Sounds</label>
+      <default>true</default>
+    </entry>
+
+    <entry name="SoundScheme" type="String">
+      <label>Sound Scheme</label>
+      <default></default>
+    </entry>
+
+    <entry name="Magnification" type="Int">
+      <label>Display Size</label>
+      <default code="true">Sprites::Normal</default>
+    </entry>
+
+    <entry name="FlashForTimeLimit" type="Bool">
+      <label>Flash When Time Running Out</label>
+      <default>true</default>
+    </entry>
+
+  </group>
+
+  <group name="Editor">
+
+    <entry name="StrictCheckingEnabled" key="StrictChecking" type="Bool">
+      <label>Check Consistency Before Saving</label>
+      <default>true</default>
+    </entry>
+
+  </group>
+
+  <group name="MapEditor">
+
+    <entry name="ShowTransporterRoutes" type="Bool">
+      <label>Transporter routes</label>
+      <default>false</default>
+    </entry>
+
+    <entry name="ShowSelectedTransporter" key="ShowTransporterSelected" type="Bool">
+      <label>Selected transporter</label>
+      <default>false</default>
+    </entry>
+
+    <entry name="ShowSpiritRoutes" type="Bool">
+      <label>Spirit routes</label>
+      <default>false</default>
+    </entry>
+
+  </group>
+
+  <group name="Importer">
+    <entry name="ImporterLastLocation" key="LastLocation" type="Path">
+      <default></default>
+    </entry>
+
+  </group>
+
+</kcfg>
