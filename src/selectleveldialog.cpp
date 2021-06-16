@@ -29,6 +29,7 @@
 #include <qlabel.h>
 #include <qgridlayout.h>
 #include <qtooltip.h>
+#include <qcoreapplication.h>
 
 #include "krepton.h"
 
@@ -76,6 +77,7 @@ SelectLevelDialog::SelectLevelDialog(const QStringList &levels,const QString &ms
 
     wPasswdEdit = new QLineEdit(mw);
     wPasswdEdit->setEchoMode(QLineEdit::Password);
+    wPasswdEdit->installEventFilter(this);
     gl->addWidget(wPasswdEdit,3,1);
     gl->setColumnStretch(1,1);
     l->setBuddy(wPasswdEdit);
@@ -163,4 +165,44 @@ QByteArray SelectLevelDialog::selectedPassword()
     QByteArray pass = item->text().section(": ",1).toLocal8Bit();
     if (pass.isEmpty()) pass = wPasswdEdit->text().toLocal8Bit();
     return (pass);
+}
+
+
+bool SelectLevelDialog::eventFilter(QObject *obj, QEvent *ev)
+{
+    if (ev->type()==QEvent::KeyPress)
+    {
+        QKeyEvent *kev = static_cast<QKeyEvent *>(ev);
+
+        const int k = kev->key();
+        if (k==Qt::Key_Up || k==Qt::Key_Down)
+        {
+            // If the list widget has keyboard focus, then the user can
+            // move up and down levels using the up/down arrow keys.
+            // However, as soon as a level is selected which needs a
+            // password, the password edit takes focus (set explicitly
+            // in slotSelectionChanged() above) so that the password can
+            // be entered.  The arrow keys then no longer move up and
+            // down through the list, which is disconcerting if wanting
+            // to select another level.
+            //
+            // Since the up/down arrow keys are not used by QLineEdit,
+            // this event filter detects them and sends them to the
+            // list widget instead.  This moves its highlight without
+            // the list widget taking focus.
+            //
+            // Must use sendEvent() and not postEvent(), otherwise there
+            // is a crash:
+            //
+            // QCoreApplication::removePostedEvent: Event of type 6 deleted
+            //   while posted to QListWidget
+            // free(): invalid size
+
+            QCoreApplication::sendEvent(wListBox, ev);
+            return (true);				// event handled
+        }
+
+    }
+
+    return (false);					// pass the event on
 }

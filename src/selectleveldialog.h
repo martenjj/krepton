@@ -43,6 +43,9 @@ public:
 
     QByteArray selectedPassword();
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *ev);
+
 protected slots:
     void slotSelectionChanged();
     void slotCheckButtonOk();
