@@ -60,6 +60,7 @@ public:
 
 	void setCheats(Cheat::Options cheats);
 	bool everCheated() const { return (cheats_ever_used); }
+	void setFlashForTimeLimit(bool on)		{ flashForTimeLimit = on; }
 
 	QStringList listLevels(const Episode *e);
 
@@ -107,7 +108,9 @@ private:
 	int timerObjects,timerMonsters,timerEggs;
 	int timerSecs,timerPlants;
 	QString episodeName;
-	bool in_game,in_pause;
+	bool in_game;
+	bool in_pause;
+	bool in_timelimit;
 	int lives;
 	int seconds;
 	int points;
@@ -119,6 +122,7 @@ private:
 
 	Cheat::Options cheats_used;
 	bool cheats_ever_used;
+	bool flashForTimeLimit;
 
 	void endedGame(const QString &how,bool finish = false);
 };

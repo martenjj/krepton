@@ -30,7 +30,6 @@
 #include <qpixmap.h>
 
 #include "krepton.h"
-#include "sprites.h"
 #include "sounds.h"
 
 
@@ -979,7 +978,7 @@ void MapPlay::die(const QString &how)
 }
 
 
-void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, bool is_paused)
+void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, Sprites::GetFlag state)
 {
 	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{
@@ -1006,17 +1005,16 @@ case Obj::Repton:		obj = currentRepton;
 default:			;			// Avoid warning
 			}
 
-			Monster *m;
-			if ((m = findMonster(mx,my))!=NULL && m->type==Obj::Monster)
-				obj = m->sprite;
+			const Monster *m = findMonster(mx,my);
+			if (m!=NULL && m->type==Obj::Monster) obj = m->sprite;
 
-			QPixmap pix = sprites->get(obj, is_paused);
+			const QPixmap &pix = sprites->get(obj, state);
 			p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
 
 			if (m!=NULL && m->type==Obj::Blip)
 			{
-				pix = sprites->get(m->sprite, is_paused);
-				p->drawPixmap(x*Sprites::sprite_width,y*Sprites::sprite_height,pix);
+				const QPixmap &pix2 = sprites->get(m->sprite, state);
+				p->drawPixmap(x*Sprites::sprite_width, y*Sprites::sprite_height, pix2);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ void SpritePreview::setSprite(const Sprites *sprites, Obj::Type object)
 	}
 	else
 	{
-		setPixmap(sprites->getRaw(object));
+		setPixmap(sprites->get(object, Sprites::GetRaw));
 		setEnabled(true);
 	}
 }

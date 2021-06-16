@@ -377,7 +377,7 @@ bool MapGrid::widgetPaintEvent(QPaintEvent *ev)
 		for (int x = 0; x<mapwidth; ++x)
 		{
 			const int atx = x*Sprites::base_width;
-			p.drawPixmap(atx,aty,sprites->getRaw(map->getCell(x,y)));
+			p.drawPixmap(atx,aty,sprites->get(map->getCell(x,y), Sprites::GetRaw));
 		}
 	}
 

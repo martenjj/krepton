@@ -56,6 +56,6 @@ void ObjectListBox::setSprites(const Sprites *sprites)
 		const Obj::Type obj = static_cast<Obj::Type>(i);
 
 		QListWidgetItem *it = item(i);
-		it->setIcon(QIcon(sprites->getRaw(obj)));
+		it->setIcon(QIcon(sprites->get(obj, Sprites::GetRaw)));
 	}
 }

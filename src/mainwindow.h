@@ -111,6 +111,7 @@ private:
 	KSelectAction *soundsSchemeList;
 
 	KToggleAction *strictToggle;
+	KToggleAction *flashToggle;
 
 	GamePlayer *game;
 	GameEditor *edit;

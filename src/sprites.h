@@ -49,6 +49,14 @@ public:
 		Double = 2
 	};
 
+	enum GetFlag
+	{
+		GetNormal = 0x00,
+		GetGrey   = 0x01,
+		GetBright = 0x02,
+		GetRaw    = 0x04
+	};
+
 	Sprites();					// create as blank
 	explicit Sprites(const Episode *e);		// load from episode
 	explicit Sprites(const Sprites *s);		// create a copy
@@ -58,8 +66,8 @@ public:
 	const QString &loadStatus() const			{ return (status); }
 
 	void prepare(int level);
-	const QPixmap &get(Obj::Type obj, bool paused = false) const	{ Q_ASSERT(!sprites.isEmpty()); return (!paused ? sprites.at(obj) : greysprites.at(obj)); }
-	const QPixmap &getRaw(Obj::Type obj) const			{ Q_ASSERT(!rawsprites.isEmpty()); return (rawsprites.at(obj)); }
+
+	const QPixmap &get(Obj::Type obj, Sprites::GetFlag flag = Sprites::GetNormal) const;
 
 	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
 	bool save(const Episode *e);
@@ -79,6 +87,7 @@ private:
 	QMap<int,QPixmap> files;			// source files per-level
 	QVector<QPixmap> sprites;			// scaled & masked, for game
 	QVector<QPixmap> greysprites;			// grey scaled, for paused game
+	QVector<QPixmap> brightsprites;			// inverted, for time running out
 	QVector<QPixmap> rawsprites;			// unprocessed, for editor
 
 	int preparedFor;				// level sprites are ready for

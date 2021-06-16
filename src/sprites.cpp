@@ -36,6 +36,7 @@
 #include <qfile.h>
 #include <qregexp.h>
 #include <qdir.h>
+#include <qelapsedtimer.h>
 
 #include "episodes.h"
 
@@ -130,24 +131,16 @@ void Sprites::ensureRaw()
 {
     qDebug();
 
+    rawsprites.clear();
     rawsprites.resize(Obj::num_sprites);
 
-    QPixmap std = files.constBegin().value();		// standard pixmaps for editor
+    const QPixmap &std = files.constBegin().value();	// standard pixmaps for editor
     for (int y = 0; y<ynum; ++y)			// "0" will be first if present
     {
 	for (int x = 0; x<xnum; ++x)
 	{
-	    int i = y*xnum + x;
-
-	    QPixmap px(base_width,base_height);
-	    QPainter pp;
-
-	    pp.begin(&px);
-	    pp.drawPixmap(0,0,std,
-			  x*base_width,y*base_height,
-			  base_width,base_height);
-	    pp.end();
-	    rawsprites[i] = px;
+	    int i = y*xnum+x;
+	    rawsprites[i] = std.copy(x*base_width, y*base_height, base_width, base_height);
 	}
     }
 }
@@ -312,10 +305,15 @@ void Sprites::prepare(int level)
 
     if (preparedFor==level) return;			// already ready for level?
 
+    QElapsedTimer timer;
+    timer.start();
+
     sprites.clear();
     sprites.resize(Obj::num_sprites);
     greysprites.clear();
     greysprites.resize(Obj::num_sprites);
+    brightsprites.clear();
+    brightsprites.resize(Obj::num_sprites);
 
     QPixmap src;					// source pixmap, if any
     if (files.contains(level))				// specific one present
@@ -334,25 +332,15 @@ void Sprites::prepare(int level)
 	{
 	    int i = y*xnum + x;
 
-	    QPixmap px(base_width,base_height);
-	    if (!src.isNull())
-	    {
-                QPainter pp;
-
-                pp.begin(&px);
-                pp.drawPixmap(0,0,src,
-                              x*base_width,y*base_height,
-                              base_width,base_height);
-                pp.end();
-	    }
+	    QPixmap px;
+	    if (!src.isNull()) px = src.copy(x*base_width, y*base_height, base_width, base_height);
 	    else px = rawsprites[i];
 
             if (magnification!=Sprites::Normal)
             {
-                QPixmap px2(sprite_width,sprite_height);
-                QPainter pp2(&px2);
-                pp2.drawPixmap(px2.rect(),px);
-                px = px2;
+		    px = px.scaled(sprite_width, sprite_height,
+				   Qt::IgnoreAspectRatio,
+				   Qt::SmoothTransformation);
             }
 
             if (i==Obj::Blip || i==Obj::Blip2)
@@ -361,15 +349,43 @@ void Sprites::prepare(int level)
             }
 
             sprites[i] = px;
-	    // These conversions may be relatively slow, but this
-	    // initialisation is only done at most once per level.
-	    QImage img = px.toImage().convertToFormat(QImage::Format_Grayscale8);
-	    greysprites[i] = QPixmap::fromImage(img);
+
+	    // In the original BBC version, which can be seen working in the
+	    // walkthough video at https://www.youtube.com/watch?v=jfk-ka9ty8A,
+	    // the screen flashing as time runs out is implemented by changing
+	    // all black pixels to white.  That was easy on the BBC with its
+	    // hardware palette, but not so easy with full RGB colour range.
+	    //
+	    // The bright white images for the screen flashing, and also the
+	    // grey versions for use when paused, are therefore precomputed
+	    // at this point.  These conversions may be relatively slow, but
+	    // this initialisation is only done at most once per level.
+
+	    QImage img1 = px.toImage();			// original pixmap for sprite
+							// greyscale verison for pause
+	    QImage img2 = img1.convertToFormat(QImage::Format_Grayscale8);
+	    greysprites[i] = QPixmap::fromImage(img2);
+
+#ifdef FLASH_INVERT_EVERYTHING
+	    img2.invertPixels();			// inverted greyscale version
+	    brightsprites[i] = QPixmap::fromImage(img2);
+#else
+	    for (int xp = 0; xp<img1.width(); ++xp)
+	    {
+		    for (int yp = 0; yp<img1.height(); ++yp)
+		    {					// change all black pixels to white
+			    QColor col = img1.pixelColor(xp, yp);
+			    if (col==Qt::black) img1.setPixelColor(xp, yp, Qt::white);
+
+		    }
+	    }
+	    brightsprites[i] = QPixmap::fromImage(img1);
+#endif
 	}
     }
 
     preparedFor = level;
-    qDebug() << "  prepared for level" << preparedFor;
+    qDebug() << "  prepared for level" << preparedFor << "took" << timer.elapsed() << "ms";
 }
 
 
@@ -385,4 +401,19 @@ void Sprites::removeMultiLevels()
     qDebug();
     files.clear();					// drastic, but what we need
     multiRemoved = true;				// note for save later
+}
+
+
+const QPixmap &Sprites::get(Obj::Type obj, Sprites::GetFlag flag) const
+{
+	if (flag==Sprites::GetRaw)
+	{
+		Q_ASSERT(!rawsprites.isEmpty());
+		return (rawsprites.at(obj));
+	}
+
+	Q_ASSERT(!sprites.isEmpty());
+	if (flag==Sprites::GetGrey) return (greysprites.at(obj));
+	if (flag==Sprites::GetBright) return (brightsprites.at(obj));
+	return (sprites.at(obj));
 }
