@@ -715,36 +715,29 @@ void MainWindow::slotEdit()
 
         if (game->getSprites()->hasMultiLevels() && !editWarned)
         {
-            switch (KMessageBox::questionYesNoCancel(this,
-                                                     i18n("<qt><p>\
+		KMessageBox::ButtonCode q = KMessageBox::questionYesNoCancel(this,
+									     xi18nc("@info", "<p>\
 This game contains level-specific sprite files.  If you edit the sprites using \
 the sprite editor, you will only be editing the default sprites which are used for any \
 levels that do not have specific sprite images.  For levels that do have \
 specific sprites, changes made in the sprite editor will have no effect.\
+</p>\
 <p>\
-To remove the level-specific sprite files, select <b>Remove</b>.  All levels in \
+To remove the level-specific sprite files, select <interface>Remove</interface>.  All levels in \
 the game will then use the same sprite images;  these can be edited using the sprite \
 editor in the usual way.  No files will be removed from the saved copy of the \
 game until it is saved.\
+</p>\
 <p>\
-To retain the level-specific sprite files, select <b>Keep</b>.  Changes made \
-using the sprite editor may not have any effect on played levels."),\
-                                                     i18n("Multiple Sprites"),
-                                                     KStandardGuiItem::remove(),
-                                                     KGuiItem(i18n("Keep"), KStandardGuiItem::yes().icon())))
-            {
-case KMessageBox::Yes:
-		game->getSprites()->removeMultiLevels();
-                break;
-
-case KMessageBox::No:
-                break;
-
-case KMessageBox::Cancel:
-		return;
-            }
-
-            editWarned = true;				// not again for this game
+To retain the level-specific sprite files, select <interface>Keep</interface>.  Changes made \
+using the sprite editor may not have any effect on played levels.\
+</p>"),
+									     i18n("Multiple Sprites"),
+									     KStandardGuiItem::remove(),
+									     KGuiItem(i18n("Keep"), KStandardGuiItem::yes().icon()));
+		if (q==KMessageBox::Cancel) return;
+		if (q==KMessageBox::Yes) game->getSprites()->removeMultiLevels();
+		editWarned = true;			// not again for this game
         }
 
 	if (edit==NULL)

@@ -42,8 +42,6 @@ ObjectListBox::ObjectListBox(bool all, QWidget *parent)
         const QStringList names = all ? ObjectList::allSpriteNames() : ObjectList::allMapNames();
         for (int i = 0; i<names.count(); ++i)
         {
-		const Obj::Type obj = static_cast<Obj::Type>(i);
-
 		QListWidgetItem *item = new QListWidgetItem(names[i]);
 		addItem(item);
         }

@@ -46,7 +46,7 @@ public:
 
 private:
 	QString name;
-	QString path;
+	QString filePath;
 	bool global;
 };
 

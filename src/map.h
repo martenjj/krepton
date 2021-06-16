@@ -102,7 +102,7 @@ protected:
 	bool blipGoDirection(Monster *m, Orientation::Type dir = Orientation::None);
 	bool updateBlip(Monster *m);
 
-	virtual bool blipHit(Monster *m, Obj::Type type)	{ return (false); }
+	virtual bool blipHit(Monster *m, Obj::Type type)	{ Q_UNUSED(m); Q_UNUSED(type); return (false); }
 
 public:
 	static void deltaForDirection(Orientation::Type dir, int *xp, int *yp);

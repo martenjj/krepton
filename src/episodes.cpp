@@ -140,12 +140,12 @@ bool Episode::saveInfoAndMaps(const MapList *maps) const
 
 bool Episode::removeFiles() const
 {
-	qDebug() << "path='" << path << "'";
+	qDebug() << "path='" << filePath << "'";
 
-	QDir dir(path);
+	QDir dir(filePath);
 	if (!dir.exists())
 	{
-		reportError(ki18n("Directory '%1' does not exist"), path);
+		reportError(ki18n("Directory '%1' does not exist"), filePath);
 		return (true);				// equivalent to success
 	}
 
@@ -168,9 +168,9 @@ bool Episode::removeFiles() const
 	}
 
 	dir.cdUp();
-	if (!dir.rmdir(path))
+	if (!dir.rmdir(filePath))
 	{
-		reportError(ki18n("Cannot delete directory '%1'"), path);
+		reportError(ki18n("Cannot delete directory '%1'"), filePath);
 		return (false);
 	}
 
@@ -199,14 +199,14 @@ Episode::Episode(const QString n,bool g,const QString p)
 {
 	name = n;
 	global = g;
-	path = p;
-	path.replace(QRegExp("/+$"),QString(""));
+	filePath = p;
+	filePath.replace(QRegExp("/+$"),QString(""));
 }
 
 
 const QString Episode::getFilePath(const QString file) const
 {
-	return (path+"/"+file);
+	return (filePath+"/"+file);
 }
 
 
