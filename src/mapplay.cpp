@@ -978,7 +978,7 @@ void MapPlay::die(const QString &how)
 }
 
 
-void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, Sprites::GetFlags state)
+void MapPlay::paintMap(QPainter *p, int w, int h, const Sprites *sprites, Sprites::GetFlag state)
 {
 	for (int y = 0; y<=(h/Sprites::sprite_height); ++y)
 	{

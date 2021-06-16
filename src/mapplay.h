@@ -66,7 +66,7 @@ public:
 	bool haveKey() const { return (have_key); }
 	bool haveCrown() const { return (have_crown); }
 
-	void paintMap(QPainter *p, int width, int height, const Sprites *sprites, Sprites::GetFlags state = Sprites::GetNormal);
+	void paintMap(QPainter *p, int width, int height, const Sprites *sprites, Sprites::GetFlag state = Sprites::GetNormal);
 
 	void setCheats(Cheat::Options cheats);
 

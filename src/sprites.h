@@ -56,7 +56,6 @@ public:
 		GetBright = 0x02,
 		GetRaw    = 0x04
 	};
-	Q_DECLARE_FLAGS(GetFlags, GetFlag)
 
 	Sprites();					// create as blank
 	explicit Sprites(const Episode *e);		// load from episode
@@ -67,10 +66,8 @@ public:
 	const QString &loadStatus() const			{ return (status); }
 
 	void prepare(int level);
-	const Q_DECL_DEPRECATED QPixmap &get(Obj::Type obj, bool paused = false) const	{ Q_ASSERT(!sprites.isEmpty()); return (!paused ? sprites.at(obj) : greysprites.at(obj)); }
-	const Q_DECL_DEPRECATED QPixmap &getRaw(Obj::Type obj) const			{ Q_ASSERT(!rawsprites.isEmpty()); return (rawsprites.at(obj)); }
 
-	const QPixmap &get(Obj::Type obj, Sprites::GetFlags flags = Sprites::GetNormal) const;
+	const QPixmap &get(Obj::Type obj, Sprites::GetFlag flag = Sprites::GetNormal) const;
 
 	void setPixel(Obj::Type obj,int x,int y,QColor colour,int level = 0);
 	bool save(const Episode *e);
@@ -98,7 +95,5 @@ private:
 
 	QString status;					// file loading status
 };
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(Sprites::GetFlags)
 
 #endif							// !SPRITES_H

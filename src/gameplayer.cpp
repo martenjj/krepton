@@ -422,7 +422,7 @@ void GamePlayer::paintEvent(QPaintEvent *)
                 return;
         }
 
-	Sprites::GetFlags spriteFlag = Sprites::GetNormal;
+	Sprites::GetFlag spriteFlag = Sprites::GetNormal;
 	if (in_pause) spriteFlag = Sprites::GetGrey;
 	else if (in_timelimit & !(seconds & 1)) spriteFlag = Sprites::GetBright;
 

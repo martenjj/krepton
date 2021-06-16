@@ -404,16 +404,16 @@ void Sprites::removeMultiLevels()
 }
 
 
-const QPixmap &Sprites::get(Obj::Type obj, Sprites::GetFlags flags) const
+const QPixmap &Sprites::get(Obj::Type obj, Sprites::GetFlag flag) const
 {
-	if (flags & Sprites::GetRaw)
+	if (flag==Sprites::GetRaw)
 	{
 		Q_ASSERT(!rawsprites.isEmpty());
 		return (rawsprites.at(obj));
 	}
 
 	Q_ASSERT(!sprites.isEmpty());
-	if (flags & Sprites::GetGrey) return (greysprites.at(obj));
-	if (flags & Sprites::GetBright) return (brightsprites.at(obj));
+	if (flag==Sprites::GetGrey) return (greysprites.at(obj));
+	if (flag==Sprites::GetBright) return (brightsprites.at(obj));
 	return (sprites.at(obj));
 }
