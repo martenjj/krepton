@@ -29,9 +29,9 @@
 #include <klocalizedstring.h>
 
 
-class Obj
+namespace Obj
 {
-public:	enum Type					// available Repton objects
+	enum Type					// available Repton objects
 	{						// DO NOT CHANGE THE ORDER!
 		None = -1,				// no object
 
@@ -94,32 +94,31 @@ public:	enum Type					// available Repton objects
 		Repton_Idle1,				// looking L->R while idle
 		Repton_Idle2				// looking R->L while idle
 	};
-};
+}
 
 
-class Orientation
+namespace Orientation
 {
-public:	enum Type { None = -1, North, South, East, West };
-};
+	enum Type { None = -1, North, South, East, West };
+}
 
 
-class Cheat
+namespace Cheat
 {
-public:
 	enum Option
 	{
-		NoCheats = 0x00,
-		HarmlessPlant = 0x01,			// plants are harmless
-		HarmlessMonster = 0x02,			// monsters are harmless
-		HarmlessSpirit = 0x04,			// spirits are harmless
-		HarmlessSkull = 0x08,			// skulls are harmless
-		CannotBeCrushed = 0x10,			// not crushed by falling object
-		NoTimeLimit = 0x20,			// time limit ignored
+		NoCheats           = 0x00,
+		HarmlessPlant      = 0x01,		// plants are harmless
+		HarmlessMonster    = 0x02,		// monsters are harmless
+		HarmlessSpirit     = 0x04,		// spirits are harmless
+		HarmlessSkull      = 0x08,		// skulls are harmless
+		CannotBeCrushed    = 0x10,		// not crushed by falling object
+		NoTimeLimit        = 0x20,		// time limit ignored
 		NoReplicatingPlant = 0x40,		// plants do not replicate
 	};
 
 	Q_DECLARE_FLAGS(Options, Option)
-};
+}
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Cheat::Options)
 
