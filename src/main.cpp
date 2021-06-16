@@ -39,7 +39,7 @@
 
 #include "krepton.h"
 #include "mainwindow.h"
-#include "version.h"
+#include "vcsversion.h"
 
 
 int main(int argc, char *argv[])
@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 
     KAboutData aboutData("krepton",				// componentName
                          i18n("KRepton"),			// displayName
-#ifdef VCS_HAVE_VERSION
-                         ( VERSION " (" VCS_TYPE_STRING " " VCS_REVISION_STRING ")" ),
+#ifdef VCS_AVAILABLE
+                         ( VERSION " (" VCS_TYPE " " VCS_REVISION ")" ),
 #else
                          VERSION,				// version
 #endif
