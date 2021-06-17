@@ -2,6 +2,25 @@ ChangeLog for KRepton                             -*- mode:text -*-
 =====================
 
 
+Changes from version 5.0 to version 5.1:
+---------------------------------------
+Some internal code tidying up.
+
+Repton can push a falling egg sideways.  This is essential to be able
+to kill all the monsters on "School" screen H.
+
+The player can do an automatic "Repton Shuffle" (go left/right to let
+a rock or egg fall down, then immediately back again to push it
+sideways) by using Shift with the left or right arrow keys.
+
+Saving episodes works properly (the levels retain their correct order)
+if there are more than 10 levels.
+
+The screen flashes when the time limit is about to run out, like the
+original BBC version did.  There is a user option to enable this effect.
+
+
+
 Changes from version 4.4 to version 5.0:
 ---------------------------------------
 Ported to Qt 5 and KDE Frameworks 5.

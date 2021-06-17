@@ -1,6 +1,6 @@
 #########################################################################
 #  Project:		KRepton for KDE4				#
-#  Edit:		16-Jun-21					#
+#  Edit:		17-Jun-21					#
 #########################################################################
 
 project(krepton)
@@ -25,7 +25,7 @@ find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS Core Gui Widgets)
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS I18n Config XmlGui Crash CoreAddons KIO IconThemes Auth)
 
 find_package(Phonon4Qt5 NO_POLICY_SCOPE)
-set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Required for playback of audio/video notes")
+set_package_properties("Phonon4Qt5" PROPERTIES DESCRIPTION "Multimedia playback library" URL "http://phonon.kde.org" TYPE OPTIONAL PURPOSE "Can be used for game sound")
 find_package(LibKFDialog REQUIRED NO_POLICY_SCOPE)
 set_package_properties("LibKFDialog" PROPERTIES DESCRIPTION "KDE Frameworks dialogue utility library" URL "https://github.com/martenjj/libkfdialog" TYPE REQUIRED PURPOSE "Required to build the project")
 
