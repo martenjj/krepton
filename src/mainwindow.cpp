@@ -137,6 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	KConfigSkeletonItem *ski = Settings::self()->soundEnabledItem();
         soundsEnableAction = new KToggleAction(ski->label(), this);
+	soundsEnableAction->setChecked(Settings::soundEnabled());
         connect(soundsEnableAction, SIGNAL(triggered()), SLOT(slotSoundsEnable()));
         actionCollection()->addAction("settings_sound_enable", soundsEnableAction);
 
@@ -194,10 +195,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 	ski = Settings::self()->strictCheckingEnabledItem();
         strictToggle = new KToggleAction(ski->label(), this);
+	strictToggle->setChecked(Settings::strictCheckingEnabled());
+	connect(strictToggle, &KToggleAction::toggled, this, [](bool on) { Settings::setStrictCheckingEnabled(on); });
         actionCollection()->addAction("settings_check", strictToggle);
 
 	ski = Settings::self()->flashForTimeLimitItem();
         flashToggle = new KToggleAction(ski->label(), this);
+	flashToggle->setChecked(Settings::flashForTimeLimit());
+	connect(flashToggle, &KToggleAction::toggled, this, [](bool on) { Settings::setFlashForTimeLimit(on); });
         actionCollection()->addAction("settings_flash", flashToggle);
 
 	setupGUI(KXmlGuiWindow::Keys|KXmlGuiWindow::StatusBar|KXmlGuiWindow::Save|KXmlGuiWindow::Create, "kreptonui.rc");
@@ -287,7 +292,6 @@ void MainWindow::readOptions()
 {
 	qDebug();
 
-	soundsEnableAction->setChecked(Settings::soundEnabled());
 	const QString soundScheme = Settings::soundScheme();
 	if (!soundScheme.isEmpty()) Sound::self()->setSchemeName(soundScheme);
 	slotSoundsEnable();
@@ -295,9 +299,6 @@ void MainWindow::readOptions()
 
 	const int mag = Settings::magnification();
 	Sprites::setMagnification(static_cast<Sprites::Magnification>(mag));
-
-	flashToggle->setChecked(Settings::flashForTimeLimit());
-	strictToggle->setChecked(Settings::strictCheckingEnabled());
 }
 
 
@@ -307,8 +308,6 @@ void MainWindow::saveOptions()
 
 	Settings::setSoundEnabled(soundsEnableAction->isChecked());
 	Settings::setSoundScheme(Sound::self()->schemeConfigName());
-	Settings::setFlashForTimeLimit(flashToggle->isChecked());
-	Settings::setStrictCheckingEnabled(strictToggle->isChecked());
 	Settings::self()->save();
 }
 
@@ -535,7 +534,6 @@ void MainWindow::slotRestartGame()
 	if (currentepisode==NULL) return;		// not loaded, shouldn't happen
 
 	fetchFromEditor();
-	game->setFlashForTimeLimit(flashToggle->isChecked());
 	game->startGame(currentepisode,game->lastLevel());
 }
 
