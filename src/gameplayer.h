@@ -98,6 +98,7 @@ private:
 
 private:
 	void recordLevel(GamePlayer::State state);
+	void newGame();
 
 	MapList maps;
 	Sprites *sprites;

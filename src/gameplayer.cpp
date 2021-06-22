@@ -178,6 +178,13 @@ void GamePlayer::setMaps(const MapList ml)
 }
 
 
+void GamePlayer::newGame()
+{
+	lives = 3;
+	points = 0;
+}
+
+
 void GamePlayer::startGame(const Episode *e,int level)
 {
 	if (e!=NULL)					// starting a new game
@@ -191,8 +198,7 @@ void GamePlayer::startGame(const Episode *e,int level)
 		}
 
 		episodeName = e->getName();
-		lives = 3;
-		points = 0;
+		newGame();
 		emit changedGameState(true);
 	}
 
@@ -301,12 +307,12 @@ void GamePlayer::timerEvent(QTimerEvent *e)
 							// record level as completed
 			if (currentlevel<static_cast<int>(maps.count()-1))
 			{
-				KMessageBox::information(this,"Level finished!");
-				startGame(NULL,currentlevel+1);
+				KMessageBox::information(this, i18n("Level %1 of episode <b>%2</b> completed!", currentlevel+1, episodeName));
+				startGame(NULL, currentlevel+1);
 			}
 			else
 			{
-				KMessageBox::information(this,"Episode finished!");
+				KMessageBox::information(this, i18n("Episode <b>%1</b> finished!", episodeName));
 				emit changedGameState(false);
 				emit gameOver();
 			}
@@ -507,17 +513,48 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 			    "You have %1 lives remaining.", lives);
 	QString msg = i18n("<qt>You died...<br><b>%1</b><p>%2", how, remain);
 
+	bool restartLevel = false;
+
 	if (suicide && lives>0)				// option to continue
 	{
+		// Player killed themselves with more lives remaining.
+		// Options are Continue, Restart, Finish.
 		msg += i18n("<p>Do you want to continue the game?");
-		if (KMessageBox::questionYesNo(this, msg, QString(),
-					       KStandardGuiItem::cont(),
-					       KGuiItem(i18n("Finish"), KStandardGuiItem::stop().icon()))!=KMessageBox::Yes)
+		KMessageBox::ButtonCode q = KMessageBox::questionYesNoCancel(this, msg, QString(),
+									     KStandardGuiItem::cont(),
+									     KGuiItem(i18n("Restart"), KStandardGuiItem::reset().icon()),
+									     KGuiItem(i18n("Finish"), KStandardGuiItem::stop().icon()));
+		if (q==KMessageBox::Cancel) lives = 0;
+		else if (q==KMessageBox::No) restartLevel = true;
+	}
+	else
+	{
+		if (lives==0)
 		{
-			lives = 0;
+			// Player died or killed themselves with no more
+			// lives remaining.  Options are Restart and Finish.
+			KMessageBox::ButtonCode q = KMessageBox::questionYesNo(this, msg, QString(),
+									       KGuiItem(i18n("Restart"), KStandardGuiItem::reset().icon()),
+									       KGuiItem(i18n("Finish"), KStandardGuiItem::stop().icon()));
+			if (q==KMessageBox::Yes) restartLevel = true;
+		}
+		else
+		{
+			// Player died with more lives remaining.
+			// Options are Continue and Restart.
+			KMessageBox::ButtonCode q = KMessageBox::questionYesNo(this, msg, QString(),
+									     KStandardGuiItem::cont(),
+									     KGuiItem(i18n("Restart"), KStandardGuiItem::reset().icon()));
+			if (q==KMessageBox::No) restartLevel = true;
 		}
 	}
-	else KMessageBox::sorry(this, msg);
+
+	if (restartLevel)				// restarting from the beginning
+	{
+		newGame();				// reset lives and points
+		startGame(NULL, currentlevel);		// current episode and level
+		return;
+	}
 
 	if (lives==0)					// not continuing the game
 	{
@@ -525,7 +562,7 @@ void GamePlayer::endedGame(const QString &how,bool suicide)
 		emit gameOver();
 	}
 	else
-	{						// reset if timed out
+	{						// continuing the game
 		if (seconds<=0) seconds = currentmap->getSeconds();
 		currentmap->restartGame();
 
